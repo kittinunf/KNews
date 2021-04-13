@@ -1,0 +1,270 @@
+package com.github.kittinunf.hackernews.api.detail
+
+import com.github.kittinunf.hackernews.api.Data
+import com.github.kittinunf.hackernews.api.list.printDebug
+import com.github.kittinunf.hackernews.repository.HackerNewsRepositoryImpl
+import com.github.kittinunf.hackernews.repository.HackerNewsSuccessfulMockService
+import com.github.kittinunf.hackernews.repository.createRandomStory
+import com.github.kittinunf.hackernews.util.runBlockingTest
+import com.github.kittinunf.redux.createStore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.withIndex
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
+
+class HackerNewsDetailStoreTest {
+
+    private val testScope = CoroutineScope(Dispatchers.Unconfined)
+    private val testRepository = HackerNewsRepositoryImpl(HackerNewsSuccessfulMockService((1..10).toList(), 0))
+    private val store = createStore(
+        testScope,
+        DetailUiState(1),
+        DetailReducer(),
+        DetailDataMiddleware(DetailEnvironment(testScope, testRepository), detailUiStoryStateMapper, detailUiCommentRowStateMapper)
+    )
+
+    @Test
+    fun `should update the story state with loading then ended with success`() {
+        runBlockingTest {
+            store.states
+                .withIndex()
+                .onEach { (index, state) ->
+                    when (index) {
+                        0 -> {
+                            assertEquals(Data.Initial, state.story)
+                            assertEquals(Data.Initial, state.comments)
+                        }
+                        1 -> {
+                            assertEquals(Data.Loading, state.story)
+                        }
+                        2 -> {
+                            val (value, _) = state.story
+                            assertNotNull(value)
+                        }
+                    }
+                }
+                .printDebug()
+                .launchIn(testScope)
+
+            // load
+            store.dispatch(DetailAction.LoadStory)
+        }
+    }
+
+    @Test
+    fun `should update the story state without loading`() {
+        runBlockingTest {
+            store.states
+                .withIndex()
+                .onEach { (index, state) ->
+                    when (index) {
+                        1 -> {
+                            val (value, _) = state.story
+                            assertNotNull(value)
+                            assertEquals(state.storyId, value.id)
+                            assertEquals(listOf(11, 21, 31), value.commentIds)
+                        }
+                    }
+                }
+                .printDebug()
+                .launchIn(testScope)
+
+            // load
+            store.dispatch(DetailAction.SetInitialStory(detailUiStoryStateMapper.map(createRandomStory(1))))
+        }
+    }
+
+    @Test
+    fun `should update the comments state with loading then ended with success`() {
+        runBlockingTest {
+            store.states
+                .withIndex()
+                .onEach { (index, state) ->
+                    when (index) {
+                        3 -> {
+                            assertEquals(Data.Loading, state.comments)
+                        }
+                        4 -> {
+                            val (value, _) = state.comments
+                            assertNotNull(value)
+                            assertEquals(3, value.size)
+                            assertEquals("Comment11", value[0].text)
+                            assertEquals("Ann21", value[1].by)
+                        }
+                    }
+                }
+                .printDebug()
+                .launchIn(testScope)
+
+            // load
+            store.dispatch(DetailAction.LoadStory)
+            store.dispatch(DetailAction.LoadStoryComments)
+        }
+    }
+
+    @Test
+    fun `should update the comment state even the story itself is not in the success`() {
+        runBlockingTest {
+            store.states
+                .withIndex()
+                .onEach { (index, state) ->
+                    when (index) {
+                        1 -> {
+                            assertEquals(Data.Loading, state.comments)
+                        }
+                        2 -> {
+                            val (value, _) = state.comments
+                            assertNotNull(value)
+                            assertEquals(3, value.size)
+                            assertEquals("Comment11", value[0].text)
+                            assertEquals("Ann21", value[1].by)
+                        }
+                    }
+                }
+                .printDebug()
+                .launchIn(testScope)
+
+            // load
+            store.dispatch(DetailAction.LoadStoryComments)
+        }
+    }
+
+    @Test
+    fun `should update the comment state when the story is already in success`() {
+        runBlockingTest {
+            store.states
+                .withIndex()
+                .onEach { (index, state) ->
+                    when (index) {
+                        1 -> {
+                            val (value, _) = state.story
+                            assertNotNull(value)
+                            assertEquals(1, value.id)
+                            assertEquals("http://1.com", value.url.toString())
+                        }
+                        2 -> {
+                            assertEquals(Data.Loading, state.comments)
+                        }
+                        3 -> {
+                            val (value, _) = state.comments
+                            assertNotNull(value)
+                            assertEquals(3, value.size)
+                            assertEquals("Comment11", value[0].text)
+                            assertEquals("Ann21", value[1].by)
+                        }
+                    }
+                }
+                .printDebug()
+                .launchIn(testScope)
+
+            // load
+            store.dispatch(DetailAction.SetInitialStory(detailUiStoryStateMapper.map(createRandomStory(1))))
+            store.dispatch(DetailAction.LoadStoryComments)
+        }
+    }
+
+    @Test
+    fun `should update the story state with loading then ended with failure`() {
+        val store = createStore(
+            testScope,
+            DetailUiState(101),
+            DetailReducer(),
+            DetailDataMiddleware(DetailEnvironment(testScope, testRepository), detailUiStoryStateMapper, detailUiCommentRowStateMapper)
+        )
+
+        runBlockingTest {
+            store.states
+                .withIndex()
+                .onEach { (index, state) ->
+                    when (index) {
+                        1 -> {
+                            assertEquals(Data.Loading, state.story)
+                        }
+                        2 -> {
+                            val (_, err) = state.story
+                            assertNotNull(err)
+                            assertTrue(err is DetailError.LoadStoryError)
+                        }
+                    }
+                }
+                .printDebug()
+                .launchIn(testScope)
+
+            store.dispatch(DetailAction.LoadStory)
+        }
+    }
+
+    @Test
+    fun `should update the comments state with loading then ended with failure`() {
+        val store = createStore(
+            testScope,
+            DetailUiState(5),
+            DetailReducer(),
+            DetailDataMiddleware(DetailEnvironment(testScope, testRepository), detailUiStoryStateMapper, detailUiCommentRowStateMapper)
+        )
+
+        runBlockingTest {
+            store.states
+                .withIndex()
+                .onEach { (index, state) ->
+                    when (index) {
+                        2 -> {
+                            val (_, err) = state.comments
+                            assertNotNull(err)
+                            assertTrue(err is DetailError.LoadCommentsError)
+                        }
+                    }
+                }
+                .printDebug()
+                .launchIn(testScope)
+
+            store.dispatch(DetailAction.LoadStoryComments)
+        }
+    }
+
+    @Test
+    fun `should update the comment state with loading then ended with success for story without comments`() {
+        val store = createStore(
+            testScope,
+            DetailUiState(100),
+            DetailReducer(),
+            DetailDataMiddleware(DetailEnvironment(testScope, testRepository), detailUiStoryStateMapper, detailUiCommentRowStateMapper)
+        )
+
+        runBlockingTest {
+            store.states
+                .withIndex()
+                .onEach { (index, state) ->
+                    when (index) {
+                        1 -> {
+                            assertEquals(Data.Loading, state.story)
+                        }
+                        2 -> {
+                            val (value, _) = state.story
+                            assertNotNull(value)
+
+                            assertEquals(100, value.id)
+                        }
+                        3 -> {
+                            assertEquals(Data.Loading, state.comments)
+                        }
+                        4 -> {
+                            val (value, _) = state.comments
+                            assertNotNull(value)
+                            assertEquals(0, value.size)
+                        }
+                    }
+                }
+                .printDebug()
+                .launchIn(testScope)
+
+            store.dispatch(DetailAction.LoadStory)
+            store.dispatch(DetailAction.LoadStoryComments)
+        }
+    }
+}
