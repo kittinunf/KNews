@@ -196,7 +196,7 @@ class HackerNewsListViewModelWrapper: ObservableObject {
     }
 }
 ```
-
+* UI for iOS
 ```swift
 @ObservedObject var viewModel: HackerNewsListViewModelWrapper
 let stories = viewModel.state.stories 
