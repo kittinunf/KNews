@@ -334,11 +334,10 @@ xcframework successfully written out to: KNews/libs/hackernews/build/bin/ios/Hac
 xcframework successfully written out to: KNews/libs/hackernews/build/bin/ios/HackerNews-release.xcframework
 ```
 
-You can't install the iOS app from the command line, please move to
-the [.pbxproj](KNews-ios/KNews/KNews.xcodeproj), then you should be able to run the iOS on Xcode
-like as usual.
+In the case, you can't install the iOS app from the command line (either you don't want to or you don't have necessary xcode-install tool), please move to
+the [.pbxproj](KNews-ios/KNews/KNews.xcodeproj), then you should be able to run the iOS on Xcode like usual.
 
-For install iOS app:
+For install iOS app: (with the command-line tool)
 
 ```shell
 make install_ios
