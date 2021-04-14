@@ -1,6 +1,6 @@
 object Kotlin {
 
-    private const val version = "1.4.30"
+    private const val version = "1.4.31"
 
     const val plugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"
     const val pluginSerialization = "org.jetbrains.kotlin:kotlin-serialization:$version"
@@ -18,10 +18,11 @@ object Android {
 
     const val buildToolsVersion = "30.0.3"
 
-    private const val version = "7.0.0-alpha12"
+    private const val version = "7.0.0-alpha14"
     const val plugin = "com.android.tools.build:gradle:$version"
 
-    const val material = "com.google.android.material:material:1.3.0"
+    private const val materialVersion = "1.3.0"
+    const val material = "com.google.android.material:material:$materialVersion"
 }
 
 object AndroidX {

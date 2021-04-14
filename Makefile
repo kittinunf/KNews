@@ -9,7 +9,7 @@ install: install_android install_ios
 
 lib:
 	./gradlew :libs:redux:build
-	./gradlew :libs:hackernews:build
+	./gradlew :libs:hackernews:build -x sourcesJar
 
 ios: lib
 	./gradlew createXCFramework

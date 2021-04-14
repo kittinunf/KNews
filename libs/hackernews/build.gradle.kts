@@ -121,6 +121,10 @@ android {
 }
 
 tasks {
+    withType<Jar> {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
+
     fun getFrameworks(buildType: String): List<String> {
         val arm64 = project.buildDir.resolve("bin/iosArm64/${buildType}Framework/HackerNews.framework").toString()
         val x64 = project.buildDir.resolve("bin/iosx64/${buildType}Framework/HackerNews.framework").toString()
