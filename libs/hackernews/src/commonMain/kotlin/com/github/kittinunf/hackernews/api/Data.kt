@@ -1,6 +1,6 @@
 package com.github.kittinunf.hackernews.api
 
-sealed class Data<out V : Any, out E : Any> {
+sealed class Data<out V : Any?, out E : Any> {
 
     open operator fun component1(): V? = null
     open operator fun component2(): E? = null
@@ -11,7 +11,7 @@ sealed class Data<out V : Any, out E : Any> {
 
     object Loading : Data<Nothing, Nothing>(), Incomplete
 
-    class Success<out V : Any>(val value: V) : Data<V, Nothing>(), Complete {
+    class Success<out V : Any?>(val value: V) : Data<V, Nothing>(), Complete {
 
         override fun component1(): V = value
 

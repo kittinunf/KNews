@@ -1,18 +1,20 @@
 package com.github.kittinunf.hackernews.store
 
-import com.github.kittinunf.hackernews.api.detail.DetailAction
 import com.github.kittinunf.hackernews.api.detail.DetailDataMiddleware
 import com.github.kittinunf.hackernews.api.detail.DetailEnvironment
 import com.github.kittinunf.hackernews.api.detail.DetailReducer
 import com.github.kittinunf.hackernews.api.detail.DetailUiState
+import com.github.kittinunf.hackernews.api.detail.LoadStoryComments
 import com.github.kittinunf.hackernews.api.detail.detailUiCommentRowStateMapper
 import com.github.kittinunf.hackernews.api.detail.detailUiStoryStateMapper
-import com.github.kittinunf.hackernews.api.list.ListAction
 import com.github.kittinunf.hackernews.api.list.ListDataMiddleware
 import com.github.kittinunf.hackernews.api.list.ListEnvironment
 import com.github.kittinunf.hackernews.api.list.ListReducer
 import com.github.kittinunf.hackernews.api.list.ListUiSortCondition
 import com.github.kittinunf.hackernews.api.list.ListUiState
+import com.github.kittinunf.hackernews.api.list.LoadNextStories
+import com.github.kittinunf.hackernews.api.list.LoadStories
+import com.github.kittinunf.hackernews.api.list.Sort
 import com.github.kittinunf.hackernews.api.list.listUiRowStateMapper
 import com.github.kittinunf.hackernews.api.list.printDebug
 import com.github.kittinunf.hackernews.network.NetworkModule
@@ -51,19 +53,19 @@ class HackerNewsStoreTest {
                 .printDebug()
                 .launchIn(testScope)
 
-            store.dispatch(ListAction.LoadStories)
+            store.dispatch(LoadStories)
 
             delay(2000)
 
-            store.dispatch(ListAction.LoadNextStories(2))
+            store.dispatch(LoadNextStories(2))
 
             delay(2000)
 
-            store.dispatch(ListAction.LoadNextStories(3))
+            store.dispatch(LoadNextStories(3))
 
             delay(2000)
 
-            store.dispatch(ListAction.Sort(ListUiSortCondition.Title))
+            store.dispatch(Sort(ListUiSortCondition.Title))
 
             delay(500)
         }
@@ -83,7 +85,7 @@ class HackerNewsStoreTest {
                 .printDebug()
                 .launchIn(testScope)
 
-            store.dispatch(DetailAction.LoadStoryComments)
+            store.dispatch(LoadStoryComments)
 
             delay(4600)
         }

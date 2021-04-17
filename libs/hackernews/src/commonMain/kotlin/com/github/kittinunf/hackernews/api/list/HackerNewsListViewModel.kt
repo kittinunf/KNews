@@ -28,20 +28,20 @@ class HackerNewsListViewModel(private val service: HackerNewsService) : NativeVi
     fun loadStories() {
         currentPage = 1
         scope.launch {
-            store.dispatch(ListAction.LoadStories)
+            store.dispatch(LoadStories)
         }
     }
 
     fun loadNextStories() {
         currentPage += 1
         scope.launch {
-            store.dispatch(ListAction.LoadNextStories(currentPage))
+            store.dispatch(LoadNextStories(currentPage))
         }
     }
 
     fun sortBy(sortCondition: ListUiSortCondition) {
         scope.launch {
-            store.dispatch(ListAction.Sort(sortCondition))
+            store.dispatch(Sort(sortCondition))
         }
     }
 }

@@ -1,23 +1,23 @@
 package com.github.kittinunf.hackernews.api.detail
 
 import com.github.kittinunf.hackernews.api.Data
-import com.github.kittinunf.hackernews.api.list.toHumanConsumableText
+import com.github.kittinunf.hackernews.api.common.LoadAction
+import com.github.kittinunf.hackernews.api.common.ResultAction
+import com.github.kittinunf.hackernews.api.common.toData
 import com.github.kittinunf.hackernews.model.Comment
 import com.github.kittinunf.hackernews.model.Story
 import com.github.kittinunf.hackernews.repository.HackerNewsRepository
 import com.github.kittinunf.hackernews.util.Mapper
-import com.github.kittinunf.redux.Action
+import com.github.kittinunf.hackernews.util.Result
 import com.github.kittinunf.redux.Environment
 import com.github.kittinunf.redux.Middleware
 import com.github.kittinunf.redux.Order
 import com.github.kittinunf.redux.Reducer
 import com.github.kittinunf.redux.State
 import com.github.kittinunf.redux.StoreType
-import com.github.kittinunf.hackernews.util.Result
 import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
@@ -31,60 +31,47 @@ data class DetailUiState(
     val comments: Data<List<DetailUiCommentRowState>, DetailError> = Data.Initial
 ) : State
 
-sealed class DetailError {
-    class LoadStoryError(val error: String) : DetailError()
-    class LoadCommentsError(val error: String) : DetailError()
-}
+sealed class DetailError(message: String) : Throwable(message)
+class LoadStoryError(val error: String) : DetailError(error)
+class LoadStoryCommentsError(val error: String) : DetailError(error)
 
-sealed class DetailAction : Action {
-    class SetInitialStory(val state: DetailUiStoryState) : DetailAction()
-    object LoadStory : DetailAction()
-    object LoadStoryComments : DetailAction()
+typealias DetailAction = Any
 
-    class Success<T>(val fromAction: Action, val value: T) : DetailAction()
-    class Failure(val fromAction: Action, val error: String) : DetailAction()
-}
+class SetInitialStory(val state: DetailUiStoryState) : DetailAction()
+object LoadStory : LoadAction<Nothing>()
+object LoadStoryComments : LoadAction<Nothing>()
 
-class DetailReducer : Reducer<DetailUiState, DetailAction> {
+class DetailReducer : Reducer<DetailUiState> {
 
     override fun reduce(currentState: DetailUiState, action: DetailAction): DetailUiState {
         return when (action) {
-            is DetailAction.SetInitialStory -> {
+            is SetInitialStory -> {
                 currentState.copy(storyId = action.state.id, story = Data.Success(action.state))
             }
 
-            is DetailAction.LoadStory -> {
+            is LoadStory -> {
                 currentState.copy(story = Data.Loading)
             }
 
-            is DetailAction.LoadStoryComments -> {
+            is LoadStoryComments -> {
                 currentState.copy(comments = Data.Loading)
             }
 
-            is DetailAction.Success<*> -> {
-                require(action.fromAction is DetailAction.LoadStory || action.fromAction is DetailAction.LoadStoryComments)
+            is ResultAction<*, *> -> {
+                require(action.fromAction is LoadStory || action.fromAction is LoadStoryComments)
 
                 return with(currentState) {
-                    if (action.fromAction is DetailAction.LoadStory) {
-                        copy(story = Data.Success(action.value!! as DetailUiStoryState))
+                    if (action.fromAction is LoadStory) {
+                        val result = action.result as Result<DetailUiStoryState, DetailError>
+                        copy(story = result.toData())
                     } else {
-                        copy(comments = Data.Success((action.value as? List<DetailUiCommentRowState>) ?: emptyList()))
+                        val result = action.result as Result<List<DetailUiCommentRowState>, DetailError>
+                        copy(comments = result.toData())
                     }
                 }
             }
 
-            is DetailAction.Failure -> {
-                require(action.fromAction is DetailAction.LoadStory || action.fromAction is DetailAction.LoadStoryComments)
-
-                return with(currentState) {
-                    if (action.fromAction is DetailAction.LoadStory) {
-                        copy(story = Data.Failure(DetailError.LoadStoryError(action.error)))
-                    } else {
-                        println(action.error)
-                        copy(comments = Data.Failure(DetailError.LoadCommentsError(action.error)))
-                    }
-                }
-            }
+            else -> currentState
         }
     }
 }
@@ -95,13 +82,13 @@ class DetailDataMiddleware(
     override val environment: DetailEnvironment,
     private val detailUiStoryStateMapper: Mapper<Story, DetailUiStoryState>,
     private val detailUiCommentRowStateMapper: Mapper<Comment, DetailUiCommentRowState>
-) : Middleware<DetailUiState, DetailAction, DetailEnvironment> {
+) : Middleware<DetailUiState, DetailEnvironment> {
 
-    override fun process(order: Order, store: StoreType<DetailUiState, DetailAction, DetailEnvironment>, state: DetailUiState, action: DetailAction) {
+    override fun process(order: Order, store: StoreType<DetailUiState, DetailEnvironment>, state: DetailUiState, action: DetailAction) {
         when (order) {
             Order.BeforeReducingState -> {
                 when (action) {
-                    is DetailAction.LoadStory -> {
+                    is LoadStory -> {
                         // the current loading is already in-flight
                         if (state.story is Data.Loading) return
 
@@ -109,15 +96,15 @@ class DetailDataMiddleware(
                             scope.launch {
                                 val result = repository.getStory(state.storyId)
                                 result.fold(success = {
-                                    store.dispatch(DetailAction.Success(action, detailUiStoryStateMapper.map(it)))
+                                    store.dispatch(ResultAction(action, Result.success(detailUiStoryStateMapper.map(it))))
                                 }, failure = {
-                                    store.dispatch(DetailAction.Failure(action, it.message ?: "Unknown error"))
+                                    store.dispatch(ResultAction(action, Result.error(LoadStoryError(it.message ?: "Unknown error"))))
                                 })
                             }
                         }
                     }
 
-                    is DetailAction.LoadStoryComments -> {
+                    is LoadStoryComments -> {
                         // the current loading is already in-flight
                         if (state.comments is Data.Loading) return
 
@@ -130,9 +117,9 @@ class DetailDataMiddleware(
                                 } else repository.getStoryComments(state.storyId)
 
                                 result.fold(success = {
-                                    store.dispatch((DetailAction.Success(action, it?.map(detailUiCommentRowStateMapper::map))))
+                                    store.dispatch(ResultAction(action, Result.success(it?.map(detailUiCommentRowStateMapper::map))))
                                 }, failure = {
-                                    store.dispatch(DetailAction.Failure(action, it.message ?: "Unknown error"))
+                                    store.dispatch(ResultAction(action, Result.Failure(LoadStoryCommentsError(it.message ?: "Unknown error"))))
                                 })
                             }
                         }
@@ -147,20 +134,4 @@ class DetailDataMiddleware(
     }
 }
 
-internal val detailUiStoryStateMapper = object : Mapper<Story, DetailUiStoryState> {
-    override fun map(t: Story): DetailUiStoryState {
-        return DetailUiStoryState(id = t.id, title = t.title, url = Url(t.url), commentIds = t.kids, descendants = t.descendants)
-    }
-}
-
-@OptIn(ExperimentalTime::class)
-internal val detailUiCommentRowStateMapper = object : Mapper<Comment, DetailUiCommentRowState> {
-
-    override fun map(t: Comment): DetailUiCommentRowState {
-        val now = Clock.System.now()
-        val diff = now.epochSeconds - t.time
-        return DetailUiCommentRowState(text = t.text, by = t.by, fromNow = diff, fromNowText = diff.toHumanConsumableText())
-    }
-}
-
-typealias Store = StoreType<DetailUiState, DetailAction, DetailEnvironment>
+typealias Store = StoreType<DetailUiState, DetailEnvironment>

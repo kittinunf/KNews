@@ -1,7 +1,9 @@
 package com.github.kittinunf.hackernews.api.list
 
 import com.github.kittinunf.hackernews.api.Data
+import com.github.kittinunf.hackernews.api.common.ResultAction
 import com.github.kittinunf.hackernews.repository.createRandomStory
+import com.github.kittinunf.hackernews.util.Result
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -15,7 +17,7 @@ class HackerNewsListReducerTest {
     @Test
     fun `should bring uiState to Load state when load action is dispatched`() {
         val currentState = ListUiState()
-        val state = reducer.reduce(currentState, ListAction.LoadStories)
+        val state = reducer.reduce(currentState, LoadStories)
 
         assertEquals(Data.Loading, state.stories)
     }
@@ -23,7 +25,7 @@ class HackerNewsListReducerTest {
     @Test
     fun `should bring uiState to Success state when load action is ended with success`() {
         val currentState = ListUiState(stories = Data.Loading)
-        val state = reducer.reduce(currentState, ListAction.Success(ListAction.LoadStories, listOf(createRandomStory(1), createRandomStory(2)).map(listUiRowStateMapper::map)))
+        val state = reducer.reduce(currentState, ResultAction(LoadStories, Result.success(listOf(createRandomStory(1), createRandomStory(2)).map(listUiRowStateMapper::map))))
 
         assertTrue(state.stories.isSuccess)
         val (value, _) = state.stories
@@ -38,19 +40,19 @@ class HackerNewsListReducerTest {
     @Test
     fun `should bring uiState to Failure state when load action is ended with failure`() {
         val currentState = ListUiState(stories = Data.Loading)
-        val state = reducer.reduce(currentState, ListAction.Failure(ListAction.LoadStories, "Cannot load stories"))
+        val state = reducer.reduce(currentState, ResultAction(LoadStories, Result.error(LoadStoriesError("Cannot load stories"))))
 
         assertTrue(state.stories.isFailure)
         val (_, err) = state.stories
         assertNotNull(err)
-        assertTrue(err is ListError.LoadStoriesError)
+        assertTrue(err is LoadStoriesError)
         assertEquals("Cannot load stories", err.error)
     }
 
     @Test
     fun `should bring uiState to LoadNext state when load next action is dispatched`() {
         val currentState = ListUiState()
-        val state = reducer.reduce(currentState, ListAction.LoadNextStories(2))
+        val state = reducer.reduce(currentState, LoadNextStories(2))
 
         assertEquals(Data.Loading, state.nextStories)
     }
@@ -59,7 +61,7 @@ class HackerNewsListReducerTest {
     fun `should bring uiState to Success state when load next action is ended with success`() {
         val currentState = ListUiState(nextStories = Data.Loading)
         val state =
-            reducer.reduce(currentState, ListAction.Success(ListAction.LoadNextStories(2), listOf(createRandomStory(3), createRandomStory(4)).map(listUiRowStateMapper::map)))
+            reducer.reduce(currentState, ResultAction(LoadNextStories(2), Result.success(listOf(createRandomStory(3), createRandomStory(4)).map(listUiRowStateMapper::map))))
 
         assertTrue(state.nextStories.isSuccess)
         val (value, _) = state.nextStories
@@ -72,12 +74,12 @@ class HackerNewsListReducerTest {
     @Test
     fun `should bring uiState to Failure state when load next action is ended with failure`() {
         val currentState = ListUiState(nextStories = Data.Loading)
-        val state = reducer.reduce(currentState, ListAction.Failure(ListAction.LoadNextStories(2), "Cannot load next stories"))
+        val state = reducer.reduce(currentState, ResultAction(LoadNextStories(2), Result.error(LoadNextStoriesError("Cannot load next stories"))))
 
         assertTrue(state.nextStories.isFailure)
         val (_, err) = state.nextStories
         assertNotNull(err)
-        assertTrue(err is ListError.LoadNextStoriesError)
+        assertTrue(err is LoadNextStoriesError)
         assertEquals("Cannot load next stories", err.error)
     }
 
@@ -85,9 +87,8 @@ class HackerNewsListReducerTest {
     fun `should add the stories into the main stories list after load next action is ended with success`() {
         val currentState = ListUiState(stories = Data.Success(listOf(createRandomStory(1), createRandomStory(2)).map(listUiRowStateMapper::map)))
         val state = reducer.reduce(
-            currentState, ListAction.Success(
-                ListAction.LoadNextStories(page = 2), listOf(createRandomStory(3), createRandomStory(4), createRandomStory(5)).map(listUiRowStateMapper::map)
-            )
+            currentState,
+            ResultAction(LoadNextStories(page = 2), Result.success(listOf(createRandomStory(3), createRandomStory(4), createRandomStory(5)).map(listUiRowStateMapper::map)))
         )
 
         assertTrue(state.stories.isSuccess)
@@ -99,7 +100,7 @@ class HackerNewsListReducerTest {
     @Test
     fun `should not do anything with the main stories list after load next action is ended with failure`() {
         val currentState = ListUiState(stories = Data.Initial)
-        val state = reducer.reduce(currentState, ListAction.Success(ListAction.LoadNextStories(page = 2), listOf(createRandomStory(1)).map(listUiRowStateMapper::map)))
+        val state = reducer.reduce(currentState, ResultAction(LoadNextStories(page = 2), Result.success(listOf(createRandomStory(1)).map(listUiRowStateMapper::map))))
 
         val (value, error) = state.stories
         assertNull(value)
@@ -110,7 +111,7 @@ class HackerNewsListReducerTest {
     fun `should sort according to the current sorting condition`() {
         val currentState = ListUiState(sortCondition = ListUiSortCondition.Score, stories = Data.Initial)
         val state = reducer.reduce(
-            currentState, ListAction.Success(ListAction.LoadStories, listOf(createRandomStory(1), createRandomStory(2), createRandomStory(4)).map(listUiRowStateMapper::map))
+            currentState, ResultAction(LoadStories, Result.success(listOf(createRandomStory(1), createRandomStory(2), createRandomStory(4)).map(listUiRowStateMapper::map)))
         )
 
         val (value, _) = state.stories
@@ -124,7 +125,7 @@ class HackerNewsListReducerTest {
     fun `should sort according to the update sorting condition`() {
         val currentState = ListUiState()
         val state0 = reducer.reduce(
-            currentState, ListAction.Success(ListAction.LoadStories, listOf(createRandomStory(1), createRandomStory(2), createRandomStory(4)).map(listUiRowStateMapper::map))
+            currentState, ResultAction(LoadStories, Result.success(listOf(createRandomStory(1), createRandomStory(2), createRandomStory(4)).map(listUiRowStateMapper::map)))
         )
 
         val (value0, _) = state0.stories
@@ -133,7 +134,7 @@ class HackerNewsListReducerTest {
         assertEquals(200, value0[1].score)
         assertEquals(400, value0[2].score)
 
-        val state1 = reducer.reduce(state0, ListAction.Sort(ListUiSortCondition.Score))
+        val state1 = reducer.reduce(state0, Sort(ListUiSortCondition.Score))
 
         val (value1, _) = state1.stories
         assertNotNull(value1)
@@ -146,10 +147,10 @@ class HackerNewsListReducerTest {
     fun `should not do sort for stories state other than success`() {
         val currentState = ListUiState()
 
-        val state0 = reducer.reduce(currentState, ListAction.Failure(ListAction.LoadStories, "Error loading stories"))
+        val state0 = reducer.reduce(currentState, ResultAction(LoadStories, Result.error(LoadNextStoriesError("Error loading stories"))))
         assertEquals(state0.sortCondition, ListUiSortCondition.None)
 
-        val state1 = reducer.reduce(state0, ListAction.Sort(ListUiSortCondition.Recent))
+        val state1 = reducer.reduce(state0, Sort(ListUiSortCondition.Recent))
 
         assertTrue(state1.stories.isFailure)
         assertEquals(state1.sortCondition, ListUiSortCondition.Recent)
@@ -160,12 +161,11 @@ class HackerNewsListReducerTest {
         val currentState = ListUiState(stories = Data.Success(listOf(createRandomStory(1), createRandomStory(2)).map(listUiRowStateMapper::map)))
 
         val state0 = reducer.reduce(
-            currentState, ListAction.Success(
-                ListAction.LoadNextStories(page = 2), listOf(createRandomStory(3), createRandomStory(4), createRandomStory(5)).map(listUiRowStateMapper::map)
-            )
+            currentState,
+            ResultAction(LoadNextStories(page = 2), Result.success(listOf(createRandomStory(3), createRandomStory(4), createRandomStory(5)).map(listUiRowStateMapper::map)))
         )
 
-        val state1 = reducer.reduce(state0, ListAction.Sort(ListUiSortCondition.Score))
+        val state1 = reducer.reduce(state0, Sort(ListUiSortCondition.Score))
 
         val (value1, _) = state1.stories
         assertNotNull(value1)

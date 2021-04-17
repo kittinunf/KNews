@@ -1,11 +1,16 @@
 package com.github.kittinunf.hackernews.api.list
 
 import com.github.kittinunf.hackernews.api.Data
+import com.github.kittinunf.hackernews.api.common.LoadAction
+import com.github.kittinunf.hackernews.api.common.ResultAction
+import com.github.kittinunf.hackernews.api.common.toData
+import com.github.kittinunf.hackernews.api.detail.LoadStoryError
 import com.github.kittinunf.hackernews.api.map
 import com.github.kittinunf.hackernews.model.Story
 import com.github.kittinunf.hackernews.repository.HackerNewsRepository
 import com.github.kittinunf.hackernews.util.Mapper
-import com.github.kittinunf.redux.Action
+import com.github.kittinunf.hackernews.util.Result
+import com.github.kittinunf.hackernews.util.map
 import com.github.kittinunf.redux.Environment
 import com.github.kittinunf.redux.Middleware
 import com.github.kittinunf.redux.Order
@@ -15,7 +20,6 @@ import com.github.kittinunf.redux.StoreType
 import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import kotlin.time.ExperimentalTime
 
 enum class ListUiSortCondition(val comparator: Comparator<ListUiRowState>?) {
@@ -41,95 +45,92 @@ data class ListUiRowState(
 data class ListUiState(
     val sortCondition: ListUiSortCondition = ListUiSortCondition.None,
     val stories: Data<List<ListUiRowState>, ListError> = Data.Initial,
-    val nextStories: Data<List<ListUiRowState>, ListError> = Data.Initial
+    val nextStories: Data<List<ListUiRowState>?, ListError> = Data.Initial
 ) : State
 
-sealed class ListError {
-    class LoadStoriesError(val error: String) : ListError()
-    class LoadNextStoriesError(val error: String) : ListError()
-}
+sealed class ListError(message: String) : Throwable(message)
+class LoadStoriesError(val error: String) : ListError(error)
+class LoadNextStoriesError(val error: String) : ListError(error)
 
-sealed class ListAction : Action {
-    object LoadStories : ListAction()
-    class LoadNextStories(val page: Int) : ListAction()
-    class Sort(val sortCondition: ListUiSortCondition) : ListAction()
+typealias ListAction = Any
 
-    class Success(val fromAction: ListAction, val stories: List<ListUiRowState>?) : ListAction()
-    class Failure(val fromAction: ListAction, val error: String) : ListAction()
-}
+object LoadStories : LoadAction<Nothing>()
+class LoadNextStories(val page: Int) : LoadAction<Int>(page)
+class Sort(val sortCondition: ListUiSortCondition) : ListAction()
 
-class ListReducer : Reducer<ListUiState, ListAction> {
+class ListReducer : Reducer<ListUiState> {
 
     override fun reduce(currentState: ListUiState, action: ListAction): ListUiState {
-        when (action) {
-            is ListAction.LoadStories -> {
-                return currentState.copy(stories = Data.Loading)
+        return when (action) {
+            is LoadStories -> {
+                currentState.copy(stories = Data.Loading)
             }
 
-            is ListAction.LoadNextStories -> {
-                return currentState.copy(nextStories = Data.Loading)
+            is LoadNextStories -> {
+                currentState.copy(nextStories = Data.Loading)
             }
 
-            is ListAction.Sort -> {
+            is Sort -> {
                 val newSortCondition = action.sortCondition
                 val newSortComparator = action.sortCondition.comparator
 
                 if (newSortCondition == currentState.sortCondition) return currentState
 
-                return currentState.copy(sortCondition = newSortCondition, stories = currentState.stories.map {
+                currentState.copy(sortCondition = newSortCondition, stories = currentState.stories.map {
                     if (newSortComparator != null) it.sortedWith(newSortComparator) else it
                 })
             }
 
-            is ListAction.Success -> {
-                require(action.fromAction is ListAction.LoadStories || action.fromAction is ListAction.LoadNextStories)
+            is ResultAction<*, *> -> {
+                require(action.fromAction is LoadStories || action.fromAction is LoadNextStories)
 
-                return if (action.fromAction is ListAction.LoadStories) {
-                    val sortedStories = if (currentState.sortCondition != ListUiSortCondition.None) {
-                        val list = action.stories?.toMutableList()
-                        list?.sortWith(currentState.sortCondition.comparator!!)
-                        list
-                    } else action.stories
-                    currentState.copy(stories = Data.Success(sortedStories.orEmpty()))
+                if (action.fromAction is LoadStories) {
+                    val result = action.result as Result<List<ListUiRowState>, ListError>
+
+                    val sortedResult = result.map<List<ListUiRowState>, List<ListUiRowState>, ListError> {
+                        val comparator = currentState.sortCondition.comparator
+                        if (comparator != null) {
+                            val list = it.toMutableList()
+                            list.sortWith(currentState.sortCondition.comparator)
+                            list
+                        } else it
+                    }
+
+                    currentState.copy(stories = sortedResult.toData() as Data<List<ListUiRowState>, ListError>)
                 } else {
                     // when loadNextStories success we need to append our data into the stories
+                    val result = action.result as Result<List<ListUiRowState>?, ListError>
                     val stories = currentState.stories
-                    val newStories = if (stories is Data.Success) {
-                        val list = stories.value.toMutableList()
-                        list.addAll(action.stories.orEmpty())
+                    val sortedStories = stories.map {
+                        val list = it.toMutableList()
 
-                        if (currentState.sortCondition != ListUiSortCondition.None) {
-                            list.sortWith(currentState.sortCondition.comparator!!)
+                        val (value, _) = result
+                        list.addAll(value.orEmpty())
+
+                        val comparator = currentState.sortCondition.comparator
+                        if (comparator != null) {
+                            list.sortWith(comparator)
                         }
-
-                        Data.Success(list)
-                    } else stories
-                    currentState.copy(stories = newStories, nextStories = Data.Success(action.stories.orEmpty()))
+                        list
+                    }
+                    currentState.copy(stories = sortedStories, nextStories = result.toData())
                 }
             }
 
-            is ListAction.Failure -> {
-                require(action.fromAction is ListAction.LoadStories || action.fromAction is ListAction.LoadNextStories)
-
-                return if (action.fromAction is ListAction.LoadStories) {
-                    currentState.copy(stories = Data.Failure(ListError.LoadStoriesError(action.error)))
-                } else {
-                    currentState.copy(nextStories = Data.Failure(ListError.LoadNextStoriesError(action.error)))
-                }
-            }
+            else -> currentState
         }
     }
 }
 
 class ListEnvironment(val scope: CoroutineScope, val repository: HackerNewsRepository) : Environment
 
-class ListDataMiddleware(override val environment: ListEnvironment, private val mapper: Mapper<Story, ListUiRowState>) : Middleware<ListUiState, ListAction, ListEnvironment> {
+class ListDataMiddleware(override val environment: ListEnvironment, private val mapper: Mapper<Story, ListUiRowState>) : Middleware<ListUiState, ListEnvironment> {
 
-    override fun process(order: Order, store: StoreType<ListUiState, ListAction, ListEnvironment>, state: ListUiState, action: ListAction) {
+    override fun process(order: Order, store: StoreType<ListUiState, ListEnvironment>, state: ListUiState, action: ListAction) {
         when (order) {
             Order.BeforeReducingState -> {
                 when (action) {
-                    ListAction.LoadStories -> {
+                    is LoadStories -> {
                         // the current loading is already in-flight
                         if (state.stories is Data.Loading) return
 
@@ -137,19 +138,19 @@ class ListDataMiddleware(override val environment: ListEnvironment, private val 
                             scope.launch {
                                 val result = repository.getTopStories()
                                 result.fold(success = {
-                                    store.dispatch(ListAction.Success(action, it?.map(mapper::map)))
+                                    store.dispatch(ResultAction(action, Result.success(it?.map(mapper::map))))
                                 }, failure = {
-                                    store.dispatch(ListAction.Failure(action, it.message ?: "Unknown error"))
+                                    store.dispatch(ResultAction(action, Result.error(LoadStoriesError(it.message ?: "Unknown error"))))
                                 })
                             }
                         }
                     }
-                    is ListAction.LoadNextStories -> {
+                    is LoadNextStories -> {
                         // the current loading is already in-flight and the main list is not done yet
                         if (state.nextStories is Data.Loading) return
                         if (state.stories.isSuccess.not()) {
                             with(environment) {
-                                scope.launch { store.dispatch(ListAction.Failure(action, "Data inconsistency, not loading next page")) }
+                                scope.launch { store.dispatch(ResultAction(action, Result.error(LoadNextStoriesError("Data inconsistency, not loading next page")))) }
                             }
                             return
                         }
@@ -158,9 +159,9 @@ class ListDataMiddleware(override val environment: ListEnvironment, private val 
                             scope.launch {
                                 val result = repository.getTopStories(action.page)
                                 result.fold(success = {
-                                    store.dispatch(ListAction.Success(action, it?.map(mapper::map)))
+                                    store.dispatch(ResultAction(action, Result.success(it?.map(mapper::map))))
                                 }, failure = {
-                                    store.dispatch(ListAction.Failure(action, it.message ?: "Unknown error"))
+                                    store.dispatch(ResultAction(action, Result.error(LoadNextStoriesError(it.message ?: "Unknown error"))))
                                 })
                             }
                         }
@@ -175,34 +176,4 @@ class ListDataMiddleware(override val environment: ListEnvironment, private val 
     }
 }
 
-@OptIn(ExperimentalTime::class)
-internal val listUiRowStateMapper = object : Mapper<Story, ListUiRowState> {
-    override fun map(t: Story): ListUiRowState {
-        val now = Clock.System.now()
-        val diff = now.epochSeconds - t.time
-        return ListUiRowState(
-            id = t.id,
-            title = t.title,
-            url = Url(t.url),
-            score = t.score,
-            by = t.by,
-            fromNow = diff,
-            fromNowText = diff.toHumanConsumableText(),
-            commentIds = t.kids,
-            descendants = t.descendants
-        )
-    }
-}
-
-// Int here represent the diff in seconds
-internal fun Long.toHumanConsumableText(): String {
-    if (this < 0) return "Unknown ago"
-    return when (this) {
-        in 0..59 -> "$this seconds ago"
-        in 60..3599 -> "${this / 60} minutes ago"
-        in 3600..86399 -> "${this / (60 * 60)} hours ago"
-        else -> "${this / (60 * 60 * 24)} days ago"
-    }
-}
-
-typealias Store = StoreType<ListUiState, ListAction, ListEnvironment>
+typealias Store = StoreType<ListUiState, ListEnvironment>

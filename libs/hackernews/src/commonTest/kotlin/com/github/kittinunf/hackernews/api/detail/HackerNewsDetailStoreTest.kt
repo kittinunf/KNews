@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.withIndex
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class HackerNewsDetailStoreTest {
@@ -52,7 +53,7 @@ class HackerNewsDetailStoreTest {
                 .launchIn(testScope)
 
             // load
-            store.dispatch(DetailAction.LoadStory)
+            store.dispatch(LoadStory)
         }
     }
 
@@ -75,7 +76,7 @@ class HackerNewsDetailStoreTest {
                 .launchIn(testScope)
 
             // load
-            store.dispatch(DetailAction.SetInitialStory(detailUiStoryStateMapper.map(createRandomStory(1))))
+            store.dispatch(SetInitialStory(detailUiStoryStateMapper.map(createRandomStory(1))))
         }
     }
 
@@ -102,8 +103,8 @@ class HackerNewsDetailStoreTest {
                 .launchIn(testScope)
 
             // load
-            store.dispatch(DetailAction.LoadStory)
-            store.dispatch(DetailAction.LoadStoryComments)
+            store.dispatch(LoadStory)
+            store.dispatch(LoadStoryComments)
         }
     }
 
@@ -130,7 +131,7 @@ class HackerNewsDetailStoreTest {
                 .launchIn(testScope)
 
             // load
-            store.dispatch(DetailAction.LoadStoryComments)
+            store.dispatch(LoadStoryComments)
         }
     }
 
@@ -163,8 +164,8 @@ class HackerNewsDetailStoreTest {
                 .launchIn(testScope)
 
             // load
-            store.dispatch(DetailAction.SetInitialStory(detailUiStoryStateMapper.map(createRandomStory(1))))
-            store.dispatch(DetailAction.LoadStoryComments)
+            store.dispatch(SetInitialStory(detailUiStoryStateMapper.map(createRandomStory(1))))
+            store.dispatch(LoadStoryComments)
         }
     }
 
@@ -188,14 +189,14 @@ class HackerNewsDetailStoreTest {
                         2 -> {
                             val (_, err) = state.story
                             assertNotNull(err)
-                            assertTrue(err is DetailError.LoadStoryError)
+                            assertTrue(err is LoadStoryError)
                         }
                     }
                 }
                 .printDebug()
                 .launchIn(testScope)
 
-            store.dispatch(DetailAction.LoadStory)
+            store.dispatch(LoadStory)
         }
     }
 
@@ -216,14 +217,14 @@ class HackerNewsDetailStoreTest {
                         2 -> {
                             val (_, err) = state.comments
                             assertNotNull(err)
-                            assertTrue(err is DetailError.LoadCommentsError)
+                            assertTrue(err is LoadStoryCommentsError)
                         }
                     }
                 }
                 .printDebug()
                 .launchIn(testScope)
 
-            store.dispatch(DetailAction.LoadStoryComments)
+            store.dispatch(LoadStoryComments)
         }
     }
 
@@ -255,16 +256,16 @@ class HackerNewsDetailStoreTest {
                         }
                         4 -> {
                             val (value, _) = state.comments
-                            assertNotNull(value)
-                            assertEquals(0, value.size)
+                            assertNull(value) // this represent story without comment
+                            assertEquals(null, value?.size)
                         }
                     }
                 }
                 .printDebug()
                 .launchIn(testScope)
 
-            store.dispatch(DetailAction.LoadStory)
-            store.dispatch(DetailAction.LoadStoryComments)
+            store.dispatch(LoadStory)
+            store.dispatch(LoadStoryComments)
         }
     }
 }

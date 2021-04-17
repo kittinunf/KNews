@@ -47,10 +47,10 @@ sealed class Result<out V : Any?, out E : Throwable> {
     companion object {
         // Factory methods
         fun <E : Throwable> error(ex: E) = Failure(ex)
-        fun <V : Any?> success(v: V) = Success(v)
+        fun <V> success(v: V) = Success(v)
 
-        fun <V : Any?, E : Throwable> of(f: () -> V): Result<V, E> = try {
-            success(f())
+        fun <V, E : Throwable> of(f: () -> V?): Result<V, E> = try {
+            success(f()) as Result<V, E>
         } catch (e: Throwable) {
             @Suppress("UNCHECKED_CAST")
             error(e as E)
@@ -58,7 +58,7 @@ sealed class Result<out V : Any?, out E : Throwable> {
     }
 }
 
-inline fun <V : Any?> Result<V, *>.success(f: (V) -> Unit) = fold(f, {})
+inline fun <V> Result<V, *>.success(f: (V) -> Unit) = fold(f, {})
 
 inline fun <E : Throwable> Result<*, E>.failure(f: (E) -> Unit) = fold({}, f)
 
@@ -77,6 +77,13 @@ inline fun <T : Any?, U : Any?, reified E : Throwable> Result<T, *>.map(transfor
         else -> throw ex
     }
 }
+
+inline fun <reified E : Throwable, reified EE : Throwable> Result<*, E>.mapError(transform: (E) -> EE): Result<*, EE> =
+    when (this) {
+        is Result.Success -> Result.Success(value)
+        is Result.Failure -> Result.Failure(transform(error))
+    }
+
 
 inline fun <V : Any?, U : Any?, reified E : Throwable> Result<V, E>.flatMap(transform: (V) -> Result<U, E>): Result<U, E> = try {
     when (this) {

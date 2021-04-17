@@ -1,14 +1,10 @@
 package com.github.kittinunf.hackernews.api.list
 
 import com.github.kittinunf.hackernews.api.Data
-import com.github.kittinunf.hackernews.model.Comment
-import com.github.kittinunf.hackernews.model.Story
 import com.github.kittinunf.hackernews.repository.HackerNewsRepositoryImpl
-import com.github.kittinunf.hackernews.repository.HackerNewsService
 import com.github.kittinunf.hackernews.repository.HackerNewsStoryFailureMockService
+import com.github.kittinunf.hackernews.repository.HackerNewsStoryNextPageFailureMockService
 import com.github.kittinunf.hackernews.repository.HackerNewsSuccessfulMockService
-import com.github.kittinunf.hackernews.repository.createRandomStory
-import com.github.kittinunf.hackernews.util.Result
 import com.github.kittinunf.hackernews.util.runBlockingTest
 import com.github.kittinunf.redux.createStore
 import kotlinx.coroutines.CoroutineScope
@@ -54,7 +50,7 @@ class HackerNewsListStoreTest {
                 .launchIn(testScope)
 
             // load
-            store.dispatch(ListAction.LoadStories)
+            store.dispatch(LoadStories)
         }
     }
 
@@ -100,9 +96,9 @@ class HackerNewsListStoreTest {
                 .launchIn(testScope)
 
             // load
-            store.dispatch(ListAction.LoadStories)
-            store.dispatch(ListAction.LoadNextStories(2))
-            store.dispatch(ListAction.LoadNextStories(3))
+            store.dispatch(LoadStories)
+            store.dispatch(LoadNextStories(2))
+            store.dispatch(LoadNextStories(3))
         }
     }
 
@@ -120,7 +116,7 @@ class HackerNewsListStoreTest {
                         2 -> {
                             val (_, err) = state.stories
                             assertTrue(state.stories is Data.Failure)
-                            assertTrue(err is ListError.LoadStoriesError)
+                            assertTrue(err is LoadStoriesError)
                         }
                     }
                 }
@@ -128,7 +124,7 @@ class HackerNewsListStoreTest {
                 .launchIn(testScope)
 
             // load
-            store.dispatch(ListAction.LoadStories)
+            store.dispatch(LoadStories)
         }
     }
 
@@ -146,7 +142,7 @@ class HackerNewsListStoreTest {
                         2 -> {
                             val (_, err) = state.stories
                             assertTrue(state.stories is Data.Failure)
-                            assertTrue(err is ListError.LoadStoriesError)
+                            assertTrue(err is LoadStoriesError)
                         }
                         3 -> {
                             assertTrue(state.nextStories is Data.Loading)
@@ -154,7 +150,7 @@ class HackerNewsListStoreTest {
                         4 -> {
                             val (_, err) = state.nextStories
                             assertTrue(state.nextStories is Data.Failure)
-                            assertTrue(err is ListError.LoadNextStoriesError)
+                            assertTrue(err is LoadNextStoriesError)
                         }
                     }
                 }
@@ -162,8 +158,8 @@ class HackerNewsListStoreTest {
                 .launchIn(testScope)
 
             // load
-            store.dispatch(ListAction.LoadStories)
-            store.dispatch(ListAction.LoadNextStories(2))
+            store.dispatch(LoadStories)
+            store.dispatch(LoadNextStories(2))
         }
     }
 
@@ -189,7 +185,7 @@ class HackerNewsListStoreTest {
                         4 -> {
                             val (_, err) = state.nextStories
                             assertTrue(state.nextStories is Data.Failure)
-                            assertTrue(err is ListError.LoadNextStoriesError)
+                            assertTrue(err is LoadNextStoriesError)
                         }
                     }
                 }
@@ -197,8 +193,8 @@ class HackerNewsListStoreTest {
                 .launchIn(testScope)
 
             // load
-            store.dispatch(ListAction.LoadStories)
-            store.dispatch(ListAction.LoadNextStories(2))
+            store.dispatch(LoadStories)
+            store.dispatch(LoadNextStories(2))
         }
     }
 
@@ -242,9 +238,9 @@ class HackerNewsListStoreTest {
                 .launchIn(testScope)
 
             // load
-            store.dispatch(ListAction.LoadStories)
-            store.dispatch(ListAction.LoadNextStories(2))
-            store.dispatch(ListAction.Sort(ListUiSortCondition.Score))
+            store.dispatch(LoadStories)
+            store.dispatch(LoadNextStories(2))
+            store.dispatch(Sort(ListUiSortCondition.Score))
         }
     }
 
@@ -296,23 +292,11 @@ class HackerNewsListStoreTest {
                 .launchIn(testScope)
 
             // load
-            store.dispatch(ListAction.Sort(ListUiSortCondition.Score))
-            store.dispatch(ListAction.LoadStories)
-            store.dispatch(ListAction.LoadNextStories(2))
+            store.dispatch(Sort(ListUiSortCondition.Score))
+            store.dispatch(LoadStories)
+            store.dispatch(LoadNextStories(2))
         }
     }
 }
 
 fun <T> Flow<T>.printDebug() = onEach { println(it) }
-
-class HackerNewsStoryNextPageFailureMockService : HackerNewsService {
-
-    override suspend fun getTopStories(): Result<List<Int>, Throwable> = Result.success(listOf(1, 2, 3, 4, 5, 6))
-
-    override suspend fun getStory(id: Int): Result<Story, Throwable> {
-        if (id == 6) return Result.error(IllegalArgumentException("6 cannot be found"))
-        return Result.success(createRandomStory(id))
-    }
-
-    override suspend fun getComment(id: Int): Result<Comment, Throwable> = Result.error(NotImplementedError())
-}

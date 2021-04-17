@@ -25,19 +25,19 @@ class HackerNewsDetailViewModel(private val service: HackerNewsService) : Native
 
     fun setInitialStory(state: DetailUiStoryState) {
         scope.launch {
-            store.dispatch(DetailAction.SetInitialStory(state))
+            store.dispatch(SetInitialStory(state))
         }
     }
 
     fun loadStory() {
         scope.launch {
-            store.dispatch(DetailAction.LoadStory)
+            store.dispatch(LoadStory)
         }
     }
 
     fun loadStoryComments() {
         scope.launch {
-            store.dispatch(DetailAction.LoadStoryComments)
+            store.dispatch(LoadStoryComments)
         }
     }
 }
