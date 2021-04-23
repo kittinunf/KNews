@@ -4,7 +4,6 @@ import com.github.kittinunf.hackernews.api.Data
 import com.github.kittinunf.hackernews.api.common.LoadAction
 import com.github.kittinunf.hackernews.api.common.ResultAction
 import com.github.kittinunf.hackernews.api.common.toData
-import com.github.kittinunf.hackernews.api.detail.LoadStoryError
 import com.github.kittinunf.hackernews.api.map
 import com.github.kittinunf.hackernews.model.Story
 import com.github.kittinunf.hackernews.repository.HackerNewsRepository
@@ -128,7 +127,7 @@ class ListDataMiddleware(override val environment: ListEnvironment, private val 
 
     override fun process(order: Order, store: StoreType<ListUiState, ListEnvironment>, state: ListUiState, action: ListAction) {
         when (order) {
-            Order.BeforeReducingState -> {
+            Order.Before -> {
                 when (action) {
                     is LoadStories -> {
                         // the current loading is already in-flight
@@ -170,7 +169,7 @@ class ListDataMiddleware(override val environment: ListEnvironment, private val 
                     }
                 }
             }
-            Order.AfterReducingState -> {
+            Order.After -> {
             }
         }
     }

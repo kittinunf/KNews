@@ -16,9 +16,14 @@ import kotlin.test.fail
 data class CounterState(val counter: Int = 0) : State
 
 typealias CounterAction = Any
-class Increment(val by: Int) : CounterAction()
-class Decrement(val by: Int) : CounterAction()
-class Set(val value: Int) : CounterAction()
+class Increment(val by: Int) : CounterAction(), Identifiable {
+    override val identifier: String = "inc"
+}
+class Decrement(val by: Int) : CounterAction(), Identifiable {
+    override val identifier: String = "dec"
+}
+
+class Set(val value: Int) : CounterAction(), Identifiable
 
 object CounterEnvironment : Environment
 
@@ -27,15 +32,13 @@ typealias CounterStore = StoreType<CounterState, CounterEnvironment>
 class ReduxTest {
 
     private val counterState = CounterState()
-    private val counterReducer = object : Reducer<CounterState> {
-        override fun reduce(currentState: CounterState, action: Any): CounterState {
-            return with(currentState) {
-                when (action) {
-                    is Increment -> copy(counter = counter + action.by)
-                    is Decrement -> copy(counter = counter - action.by)
-                    is Set -> copy(counter = action.value)
-                    else -> currentState
-                }
+    private val counterReducer = Reducer { currentState: CounterState, action ->
+        with(currentState) {
+            when (action) {
+                is Increment -> copy(counter = counter + action.by)
+                is Decrement -> copy(counter = counter - action.by)
+                is Set -> copy(counter = action.value)
+                else -> currentState
             }
         }
     }
@@ -44,8 +47,7 @@ class ReduxTest {
     private val store = createStore<CounterState, CounterEnvironment>(testScope, counterState, counterReducer)
 
     @BeforeTest
-    fun before() {
-    }
+    fun before() {}
 
     @Test
     fun `should increment state`() {
@@ -65,8 +67,6 @@ class ReduxTest {
             store.dispatch(Increment(1))
             store.dispatch(Increment(2))
         }
-
-        println(store.states.value)
     }
 
     @Test
@@ -106,15 +106,14 @@ class ReduxTest {
     }
 
     @Test
-    fun `should emit value even the state not changed`() {
+    fun `should emit value if the state not changed`() {
         runBlockingTest {
             store.states
                 .withIndex()
                 .onEach { (index, state) ->
                     when (index) {
                         0 -> assertEquals(0, state.counter)
-                        1 -> assertEquals(0, state.counter)
-                        2 -> assertEquals(0, state.counter)
+                        else -> fail("should not reach here")
                     }
                 }
                 .printDebug()
@@ -126,7 +125,7 @@ class ReduxTest {
     }
 
     @Test
-    fun `should not emit same value if states used`() {
+    fun `should not emit same value up until the same state is emitted`() {
         runBlockingTest {
             store.states
                 .withIndex()
@@ -134,7 +133,7 @@ class ReduxTest {
                     when (index) {
                         0 -> assertEquals(0, state.counter)
                         1 -> assertEquals(1, state.counter)
-                        else -> fail()
+                        else -> fail("should not reach here")
                     }
                 }
                 .printDebug()
@@ -147,7 +146,7 @@ class ReduxTest {
     }
 
     @Test
-    fun `should dispatch multiple value from Flow initiator`() {
+    fun `should dispatch multiple value from Flow emitter block`() {
         runBlockingTest {
             store.states
                 .withIndex()
@@ -169,14 +168,14 @@ class ReduxTest {
     }
 
     @Test
-    fun `should invoke middleware if set`() {
+    fun `should invoke middleware if one is being set`() {
         data class SideEffectData(var value: Int)
 
         val sideEffectData = SideEffectData(100)
 
         val middleware = object : Middleware<CounterState, CounterEnvironment> {
             override fun process(order: Order, store: CounterStore, state: CounterState, action: Any) {
-                if (order == Order.BeforeReducingState) {
+                if (order == Order.Before) {
                     assertEquals(0, state.counter)
                     assertTrue(action is Increment)
                 } else {
@@ -209,7 +208,7 @@ class ReduxTest {
 
         val middleware = object : Middleware<CounterState, CounterEnvironment> {
             override fun process(order: Order, store: CounterStore, state: CounterState, action: Any) {
-                if (order == Order.BeforeReducingState) {
+                if (order == Order.Before) {
                     assertEquals(0, state.counter)
                     assertTrue(action is Increment)
                 } else {
@@ -247,7 +246,7 @@ class ReduxTest {
     fun `should invoke middleware in the correct order`() {
         val middleware = object : Middleware<CounterState, CounterEnvironment> {
             override fun process(order: Order, store: CounterStore, state: CounterState, action: Any) {
-                if (order == Order.BeforeReducingState) {
+                if (order == Order.Before) {
                     assertEquals(0, state.counter)
                     assertTrue(action is Increment)
                 } else {
@@ -272,10 +271,10 @@ class ReduxTest {
     }
 
     @Test
-    fun `should dispatch action from the middleware`() {
+    fun `should be able to dispatch action from the middleware`() {
         val middleware = object : Middleware<CounterState, CounterEnvironment> {
             override fun process(order: Order, store: StoreType<CounterState, CounterEnvironment>, state: CounterState, action: Any) {
-                if (order == Order.BeforeReducingState) {
+                if (order == Order.Before) {
                     assertTrue(action is Increment)
                 } else {
                     assertTrue(action is Increment)
@@ -297,17 +296,13 @@ class ReduxTest {
         runBlockingTest {
             store.states
                 .withIndex()
-                .onEach { (index, state) ->
-                    when (index) {
-                        2 -> assertEquals(110, state.counter)
-                        3 -> assertEquals(310, state.counter)
-                    }
-                }
                 .printDebug()
                 .launchIn(testScope)
 
             store.dispatch(Increment(100))
         }
+
+        assertEquals(310, store.currentState.counter)
     }
 
     class Multiply(val by: Int) : CounterAction()
@@ -336,13 +331,11 @@ class ReduxTest {
 
     @Test
     fun `should able to use combine reducer as usual reducer`() {
-        val localReducer = object : Reducer<CounterState> {
-            override fun reduce(currentState: CounterState, action: Any): CounterState {
-                return when (action) {
-                    is Multiply -> currentState.copy(counter = currentState.counter * action.by)
-                    is Divide -> currentState.copy(counter = currentState.counter / action.by)
-                    else -> currentState
-                }
+        val localReducer = Reducer<CounterState> { currentState, action ->
+            when (action) {
+                is Multiply -> currentState.copy(counter = currentState.counter * action.by)
+                is Divide -> currentState.copy(counter = currentState.counter / action.by)
+                else -> currentState
             }
         }
 

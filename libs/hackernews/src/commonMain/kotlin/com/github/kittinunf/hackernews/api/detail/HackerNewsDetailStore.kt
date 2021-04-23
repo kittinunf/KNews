@@ -86,7 +86,7 @@ class DetailDataMiddleware(
 
     override fun process(order: Order, store: StoreType<DetailUiState, DetailEnvironment>, state: DetailUiState, action: DetailAction) {
         when (order) {
-            Order.BeforeReducingState -> {
+            Order.Before -> {
                 when (action) {
                     is LoadStory -> {
                         // the current loading is already in-flight
@@ -128,7 +128,7 @@ class DetailDataMiddleware(
                     }
                 }
             }
-            Order.AfterReducingState -> {
+            Order.After -> {
             }
         }
     }
