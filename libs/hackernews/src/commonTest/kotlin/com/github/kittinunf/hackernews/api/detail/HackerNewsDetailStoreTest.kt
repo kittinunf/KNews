@@ -22,12 +22,7 @@ class HackerNewsDetailStoreTest {
 
     private val testScope = CoroutineScope(Dispatchers.Unconfined)
     private val testRepository = HackerNewsRepositoryImpl(HackerNewsSuccessfulMockService((1..10).toList(), 0))
-    private val store = createStore(
-        testScope,
-        DetailUiState(1),
-        DetailReducer(),
-        DetailDataMiddleware(DetailEnvironment(testScope, testRepository), detailUiStoryStateMapper, detailUiCommentRowStateMapper)
-    )
+    private val store = DetailStore(DetailUiState(1), testScope, DetailEnvironment(testScope, testRepository))
 
     @Test
     fun `should update the story state with loading then ended with success`() {
@@ -171,12 +166,7 @@ class HackerNewsDetailStoreTest {
 
     @Test
     fun `should update the story state with loading then ended with failure`() {
-        val store = createStore(
-            testScope,
-            DetailUiState(101),
-            DetailReducer(),
-            DetailDataMiddleware(DetailEnvironment(testScope, testRepository), detailUiStoryStateMapper, detailUiCommentRowStateMapper)
-        )
+        val store = DetailStore(DetailUiState(101), testScope, DetailEnvironment(testScope, testRepository))
 
         runBlockingTest {
             store.states
@@ -202,12 +192,7 @@ class HackerNewsDetailStoreTest {
 
     @Test
     fun `should update the comments state with loading then ended with failure`() {
-        val store = createStore(
-            testScope,
-            DetailUiState(5),
-            DetailReducer(),
-            DetailDataMiddleware(DetailEnvironment(testScope, testRepository), detailUiStoryStateMapper, detailUiCommentRowStateMapper)
-        )
+        val store = DetailStore(DetailUiState(5), testScope, DetailEnvironment(testScope, testRepository))
 
         runBlockingTest {
             store.states
@@ -230,12 +215,7 @@ class HackerNewsDetailStoreTest {
 
     @Test
     fun `should update the comment state with loading then ended with success for story without comments`() {
-        val store = createStore(
-            testScope,
-            DetailUiState(100),
-            DetailReducer(),
-            DetailDataMiddleware(DetailEnvironment(testScope, testRepository), detailUiStoryStateMapper, detailUiCommentRowStateMapper)
-        )
+        val store = DetailStore(DetailUiState(100), testScope, DetailEnvironment(testScope, testRepository))
 
         runBlockingTest {
             store.states

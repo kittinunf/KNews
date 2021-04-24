@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,23 +48,22 @@ import com.github.kittinunf.hackernews.api.list.HackerNewsListViewModelFactory
 import com.github.kittinunf.hackernews.api.list.ListUiRowState
 import com.github.kittinunf.hackernews.api.list.ListUiSortCondition
 import com.github.kittinunf.hackernews.repository.HackerNewsService
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun KNewsListScreen(isSortSelected: Boolean, onSortSelected: () -> Unit, onStoryClick: (ListUiRowState) -> Unit, service: HackerNewsService) {
     val viewModel = viewModel<HackerNewsListViewModel>(factory = HackerNewsListViewModelFactory(service))
-    val scope = rememberCoroutineScope()
-    val states = viewModel.states.collectAsState()
 
-    when (val stories = states.value.stories) {
+    val states by viewModel.states.collectAsState(rememberCoroutineScope().coroutineContext)
+
+    when (val stories = states.stories) {
         is Data.Initial -> {
             viewModel.loadStories()
         }
         is Data.Loading -> LoadingComponent()
         is Data.Success ->
             SortOverlayComponent(selected = isSortSelected,
-                currentSortingCondition = states.value.sortCondition,
+                currentSortingCondition = states.sortCondition,
                 onSortConditionSelected = { sortCondition ->
                     onSortSelected()
                     viewModel.sortBy(sortCondition)
@@ -79,15 +79,11 @@ fun KNewsListScreen(isSortSelected: Boolean, onSortSelected: () -> Unit, onStory
                         })
                 })
         is Data.Failure -> {
-            ErrorComponent {
-                scope.launch {
-                    viewModel.loadStories()
-                }
-            }
+            ErrorComponent { viewModel.loadStories() }
         }
     }
 
-    AnimatedVisibility(visible = states.value.nextStories is Data.Loading) {
+    AnimatedVisibility(visible = states.nextStories is Data.Loading) {
         Row(modifier = Modifier.fillMaxWidth()) {
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         }

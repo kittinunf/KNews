@@ -14,25 +14,30 @@ import kotlinx.coroutines.flow.stateIn
 
 interface State
 
-fun interface Reducer<S : State> {
+typealias AnyReducer<S> = Reducer<S, Any>
 
-    fun reduce(currentState: S, action: Any): S
+fun interface Reducer<S : State, in A : Any> {
+
+    fun reduce(currentState: S, action: A): S
 }
 
-class NoopReducer<S : State> : Reducer<S> {
+class NoopReducer<S : State> : AnyReducer<S> {
 
     override fun reduce(currentState: S, action: Any): S = currentState
 }
 
 enum class Order {
-    Before,
-    After
+    BeforeReduce,
+    AfterReduced
 }
 
-interface Middleware<S : State, E : Environment> {
+typealias AnyMiddleware<S, E> = Middleware<S, Any, E>
+
+interface Middleware<S : State, in A : Any, E : Environment> {
+
     val environment: E
 
-    fun process(order: Order, store: StoreType<S, E>, state: S, action: Any) {}
+    fun process(order: Order, store: StoreType<S, E>, state: S, action: A) {}
 }
 
 interface Environment
@@ -49,22 +54,22 @@ interface StoreType<S : State, E : Environment> {
 
     suspend fun dispatch(actions: Flow<Any>)
 
-    fun addMiddleware(middleware: Middleware<S, E>)
+    fun addMiddleware(middleware: AnyMiddleware<S, E>)
 
-    fun removeMiddleware(middleware: Middleware<S, E>): Boolean
+    fun removeMiddleware(middleware: AnyMiddleware<S, E>): Boolean
 }
 
 fun <S : State> createStore(
     scope: CoroutineScope = GlobalScope,
     initialState: S,
-    reducer: Reducer<S>,
+    reducer: AnyReducer<S>,
 ): StoreType<S, Nothing> = Store(scope, initialState, reducer, mutableListOf())
 
 fun <S : State, E : Environment> createStore(
     scope: CoroutineScope = GlobalScope,
     initialState: S,
-    reducer: Reducer<S>,
-    middleware: Middleware<S, E>
+    reducer: AnyReducer<S>,
+    middleware: AnyMiddleware<S, E>
 ): StoreType<S, E> {
     return Store(scope, initialState, reducer, mutableListOf(middleware))
 }
@@ -72,23 +77,23 @@ fun <S : State, E : Environment> createStore(
 fun <S : State, E : Environment> createStore(
     scope: CoroutineScope = GlobalScope,
     initialState: S,
-    reducer: Reducer<S>,
-    vararg middlewares: Middleware<S, E>
+    reducer: AnyReducer<S>,
+    vararg middlewares: AnyMiddleware<S, E>
 ): StoreType<S, E> {
     return Store(scope, initialState, reducer, middlewares.toMutableList())
 }
 
-interface StateScanner<S : State, E : Environment> {
+interface StateScannerEngine<S : State, E : Environment> {
 
     suspend fun scan(storeType: StoreType<S, E>, state: S, action: Any): S
 }
 
-private class DefaultStateScanner<S : State, E : Environment>(private val reducer: Reducer<S>, private val middlewares: List<Middleware<S, E>>) : StateScanner<S, E> {
+private class DefaultEngine<S : State, E : Environment>(private val reducer: AnyReducer<S>, private val middlewares: List<AnyMiddleware<S, E>>) : StateScannerEngine<S, E> {
 
     override suspend fun scan(storeType: StoreType<S, E>, state: S, action: Any): S {
-        middlewares.onEach { it.process(Order.Before, storeType, state, action) }
+        middlewares.onEach { it.process(Order.BeforeReduce, storeType, state, action) }
         val nextState = reducer.reduce(state, action)
-        middlewares.onEach { it.process(Order.After, storeType, nextState, action) }
+        middlewares.onEach { it.process(Order.AfterReduced, storeType, nextState, action) }
         return nextState
     }
 }
@@ -96,9 +101,9 @@ private class DefaultStateScanner<S : State, E : Environment>(private val reduce
 class Store<S : State, E : Environment> internal constructor(
     scope: CoroutineScope,
     initialState: S,
-    reducer: Reducer<S> = NoopReducer(),
-    private val middlewares: MutableList<Middleware<S, E>> = mutableListOf(),
-    scanner: StateScanner<S, E> = DefaultStateScanner(reducer, middlewares)
+    reducer: AnyReducer<S> = NoopReducer(),
+    private val middlewares: MutableList<AnyMiddleware<S, E>> = mutableListOf(),
+    engine: StateScannerEngine<S, E> = DefaultEngine(reducer, middlewares)
 ) : StoreType<S, E> {
 
     companion object {
@@ -116,13 +121,12 @@ class Store<S : State, E : Environment> internal constructor(
         get() = states.value
 
     init {
-        states = _actions
-            .scan(initialState to NoAction as Any) { (state, _), action ->
-                val nextState = scanner.scan(this, state, action)
-                nextState to action
-            }
-            .map { it.first }
-            .stateIn(scope, SharingStarted.Eagerly, initialState)
+        states = _actions.scan(initialState to NoAction as Any) { (state, _), action ->
+            val nextState = engine.scan(this, state, action)
+            nextState to action
+        }
+        .map { it.first }
+        .stateIn(scope, SharingStarted.Eagerly, initialState)
     }
 
     override suspend fun dispatch(action: Any) {
@@ -135,18 +139,18 @@ class Store<S : State, E : Environment> internal constructor(
         actions.collect(_actions::emit)
     }
 
-    override fun addMiddleware(middleware: Middleware<S, E>) {
+    override fun addMiddleware(middleware: AnyMiddleware<S, E>) {
         middlewares.add(middleware)
     }
 
-    override fun removeMiddleware(middleware: Middleware<S, E>): Boolean = middlewares.remove(middleware)
+    override fun removeMiddleware(middleware: AnyMiddleware<S, E>): Boolean = middlewares.remove(middleware)
 }
 
-fun <S : State> combineReducers(reducers: List<Reducer<S>>): Reducer<S> = CompositeReducer(reducers)
+fun <S : State> combineReducers(reducers: List<AnyReducer<S>>): AnyReducer<S> = CompositeReducer(reducers)
 
-fun <S : State> combineReducers(vararg reducers: Reducer<S>): Reducer<S> = CompositeReducer(reducers.asList())
+fun <S : State> combineReducers(vararg reducers: AnyReducer<S>): AnyReducer<S> = CompositeReducer(reducers.asList())
 
-private class CompositeReducer<S : State>(private val reducers: List<Reducer<S>>) : Reducer<S> {
+private class CompositeReducer<S : State>(private val reducers: List<AnyReducer<S>>) : AnyReducer<S> {
 
     override fun reduce(currentState: S, action: Any): S = reducers.fold(currentState) { state, reducer ->
         reducer.reduce(state, action)

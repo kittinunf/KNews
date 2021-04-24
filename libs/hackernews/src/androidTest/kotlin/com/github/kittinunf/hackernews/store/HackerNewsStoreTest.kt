@@ -1,21 +1,17 @@
 package com.github.kittinunf.hackernews.store
 
-import com.github.kittinunf.hackernews.api.detail.DetailDataMiddleware
 import com.github.kittinunf.hackernews.api.detail.DetailEnvironment
-import com.github.kittinunf.hackernews.api.detail.DetailReducer
+import com.github.kittinunf.hackernews.api.detail.DetailStore
 import com.github.kittinunf.hackernews.api.detail.DetailUiState
 import com.github.kittinunf.hackernews.api.detail.LoadStoryComments
 import com.github.kittinunf.hackernews.api.detail.detailUiCommentRowStateMapper
 import com.github.kittinunf.hackernews.api.detail.detailUiStoryStateMapper
-import com.github.kittinunf.hackernews.api.list.ListDataMiddleware
 import com.github.kittinunf.hackernews.api.list.ListEnvironment
-import com.github.kittinunf.hackernews.api.list.ListReducer
+import com.github.kittinunf.hackernews.api.list.ListStore
 import com.github.kittinunf.hackernews.api.list.ListUiSortCondition
-import com.github.kittinunf.hackernews.api.list.ListUiState
 import com.github.kittinunf.hackernews.api.list.LoadNextStories
 import com.github.kittinunf.hackernews.api.list.LoadStories
 import com.github.kittinunf.hackernews.api.list.Sort
-import com.github.kittinunf.hackernews.api.list.listUiRowStateMapper
 import com.github.kittinunf.hackernews.api.list.printDebug
 import com.github.kittinunf.hackernews.network.NetworkModule
 import com.github.kittinunf.hackernews.network.addBaseUrl
@@ -41,12 +37,12 @@ class HackerNewsStoreTest {
     })
 
     private val service = HackerNewsServiceImpl(network)
-    private val repository = HackerNewsRepositoryImpl(service)
+    private val testRepository = HackerNewsRepositoryImpl(service)
     private val testScope = CoroutineScope(Dispatchers.Unconfined)
 
     @Test
     fun `list screen`() {
-        val store = createStore(testScope, ListUiState(), ListReducer(), ListDataMiddleware(ListEnvironment(testScope, repository), listUiRowStateMapper))
+        val store = ListStore(testScope, ListEnvironment(testScope, testRepository))
 
         runBlockingTest {
             store.states
@@ -73,12 +69,7 @@ class HackerNewsStoreTest {
 
     @Test
     fun `detail screen`() {
-        val store = createStore(
-            testScope,
-            DetailUiState(26688965),
-            DetailReducer(),
-            DetailDataMiddleware(DetailEnvironment(testScope, repository), detailUiStoryStateMapper, detailUiCommentRowStateMapper)
-        )
+        val store = DetailStore(DetailUiState(26688965), testScope, DetailEnvironment(testScope, testRepository))
 
         runBlockingTest {
             store.states

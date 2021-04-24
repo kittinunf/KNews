@@ -29,7 +29,7 @@ struct KNewsDetailView: View {
                             Text("Comments: \(state.commentIds?.count ?? 0)")
                                 .font(.system(size: 14))
                                 .padding(10)
-                            CommentListView(comments: comments.get() as! [DetailUiCommentRowState])
+                            CommentListView(comments: comments.get() as? [DetailUiCommentRowState] ?? [])
                         }
                     } else if (comments.isFailure) {
                         

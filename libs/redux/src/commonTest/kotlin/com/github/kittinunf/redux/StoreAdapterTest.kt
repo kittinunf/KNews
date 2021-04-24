@@ -17,10 +17,10 @@ class StoreAdapterTest {
     private val counterState = CounterState()
 
     private val reducers = mapOf(
-        "inc" to StrictReducer { currentState: CounterState, action: Increment ->
+        "inc" to Reducer { currentState: CounterState, action: Increment ->
             currentState.copy(counter = currentState.counter + action.by)
         },
-        "dec" to StrictReducer { currentState: CounterState, action: Decrement ->
+        "dec" to Reducer { currentState: CounterState, action: Decrement ->
             currentState.copy(counter = currentState.counter - action.by)
         }
     )
@@ -153,14 +153,16 @@ class StoreAdapterTest {
         val sideEffectData = SideEffectData(100)
 
         val middlewares = mapOf(
-            "inc" to object : StrictMiddleware<CounterState, Increment, CounterEnvironment> {
+            "inc" to object : Middleware<CounterState, Increment, CounterEnvironment> {
                 override fun process(order: Order, store: CounterStore, state: CounterState, action: Increment) {
-                    if (order == Order.Before) {
+                    if (order == Order.BeforeReduce) {
                         assertEquals(0, state.counter)
                     } else {
                         sideEffectData.value = sideEffectData.value + state.counter
                     }
                 }
+
+                override val environment: CounterEnvironment =  CounterEnvironment
             }
         )
 
@@ -187,15 +189,17 @@ class StoreAdapterTest {
     @Test
     fun `should invoke middleware in the correct order`() {
         val middlewares = mapOf(
-            "inc" to object : StrictMiddleware<CounterState, Increment, CounterEnvironment> {
+            "inc" to object : Middleware<CounterState, Increment, CounterEnvironment> {
 
                 override fun process(order: Order, store: CounterStore, state: CounterState, action: Increment) {
-                    if (order == Order.Before) {
+                    if (order == Order.BeforeReduce) {
                         assertEquals(0, state.counter)
                     } else {
                         assertEquals(100, state.counter)
                     }
                 }
+
+                override val environment: CounterEnvironment = CounterEnvironment
             }
         )
 
@@ -214,7 +218,7 @@ class StoreAdapterTest {
     @Test
     fun `should invoke even we don't provide the customization on the identifier with the qualified name`() {
         val reducers = mapOf(
-            "com.github.kittinunf.redux.Set" to StrictReducer { currentState: CounterState, action: Set ->
+            "com.github.kittinunf.redux.Set" to Reducer { currentState: CounterState, action: Set ->
                 currentState.copy(counter = action.value)
             }
         )
@@ -236,9 +240,9 @@ class StoreAdapterTest {
     @Test
     fun `should be able to dispatch action from the middleware`() {
         val middlewares = mapOf(
-            "inc" to object : StrictMiddleware<CounterState, Increment, CounterEnvironment> {
+            "inc" to object : Middleware<CounterState, Increment, CounterEnvironment> {
                 override fun process(order: Order, store: CounterStore, state: CounterState, action: Increment) {
-                    if (order == Order.After) {
+                    if (order == Order.AfterReduced) {
                         if (state.counter == 100) {
                             // dispatch another action from middleware
                             runBlockingTest {
@@ -249,6 +253,8 @@ class StoreAdapterTest {
                         }
                     }
                 }
+
+                override val environment: CounterEnvironment = CounterEnvironment
             }
         )
 

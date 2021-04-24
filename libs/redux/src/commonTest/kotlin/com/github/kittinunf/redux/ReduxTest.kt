@@ -32,7 +32,7 @@ typealias CounterStore = StoreType<CounterState, CounterEnvironment>
 class ReduxTest {
 
     private val counterState = CounterState()
-    private val counterReducer = Reducer { currentState: CounterState, action ->
+    private val counterReducer = AnyReducer { currentState: CounterState, action ->
         with(currentState) {
             when (action) {
                 is Increment -> copy(counter = counter + action.by)
@@ -173,9 +173,9 @@ class ReduxTest {
 
         val sideEffectData = SideEffectData(100)
 
-        val middleware = object : Middleware<CounterState, CounterEnvironment> {
+        val middleware = object : AnyMiddleware<CounterState, CounterEnvironment> {
             override fun process(order: Order, store: CounterStore, state: CounterState, action: Any) {
-                if (order == Order.Before) {
+                if (order == Order.BeforeReduce) {
                     assertEquals(0, state.counter)
                     assertTrue(action is Increment)
                 } else {
@@ -206,9 +206,9 @@ class ReduxTest {
 
         val sideEffectData = SideEffectData(100)
 
-        val middleware = object : Middleware<CounterState, CounterEnvironment> {
+        val middleware = object : AnyMiddleware<CounterState, CounterEnvironment> {
             override fun process(order: Order, store: CounterStore, state: CounterState, action: Any) {
-                if (order == Order.Before) {
+                if (order == Order.BeforeReduce) {
                     assertEquals(0, state.counter)
                     assertTrue(action is Increment)
                 } else {
@@ -244,9 +244,9 @@ class ReduxTest {
 
     @Test
     fun `should invoke middleware in the correct order`() {
-        val middleware = object : Middleware<CounterState, CounterEnvironment> {
+        val middleware = object : AnyMiddleware<CounterState, CounterEnvironment> {
             override fun process(order: Order, store: CounterStore, state: CounterState, action: Any) {
-                if (order == Order.Before) {
+                if (order == Order.BeforeReduce) {
                     assertEquals(0, state.counter)
                     assertTrue(action is Increment)
                 } else {
@@ -272,9 +272,9 @@ class ReduxTest {
 
     @Test
     fun `should be able to dispatch action from the middleware`() {
-        val middleware = object : Middleware<CounterState, CounterEnvironment> {
+        val middleware = object : AnyMiddleware<CounterState, CounterEnvironment> {
             override fun process(order: Order, store: StoreType<CounterState, CounterEnvironment>, state: CounterState, action: Any) {
-                if (order == Order.Before) {
+                if (order == Order.BeforeReduce) {
                     assertTrue(action is Increment)
                 } else {
                     assertTrue(action is Increment)
@@ -331,7 +331,7 @@ class ReduxTest {
 
     @Test
     fun `should able to use combine reducer as usual reducer`() {
-        val localReducer = Reducer<CounterState> { currentState, action ->
+        val localReducer = AnyReducer<CounterState> { currentState, action ->
             when (action) {
                 is Multiply -> currentState.copy(counter = currentState.counter * action.by)
                 is Divide -> currentState.copy(counter = currentState.counter / action.by)

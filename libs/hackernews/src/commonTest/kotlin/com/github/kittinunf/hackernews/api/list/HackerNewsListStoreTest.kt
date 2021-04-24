@@ -6,7 +6,6 @@ import com.github.kittinunf.hackernews.repository.HackerNewsStoryFailureMockServ
 import com.github.kittinunf.hackernews.repository.HackerNewsStoryNextPageFailureMockService
 import com.github.kittinunf.hackernews.repository.HackerNewsSuccessfulMockService
 import com.github.kittinunf.hackernews.util.runBlockingTest
-import com.github.kittinunf.redux.createStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -22,7 +21,7 @@ class HackerNewsListStoreTest {
 
     private val testScope = CoroutineScope(Dispatchers.Unconfined)
     private val testRepository = HackerNewsRepositoryImpl(HackerNewsSuccessfulMockService((1..10).toList(), 0))
-    private val store = createStore(testScope, ListUiState(), ListReducer(), ListDataMiddleware(ListEnvironment(testScope, testRepository), listUiRowStateMapper))
+    private val store = ListStore(testScope, ListEnvironment(testScope, testRepository))
 
     @Test
     fun `should update the stories state with loading then ended with success`() {
@@ -106,7 +105,7 @@ class HackerNewsListStoreTest {
     fun `should update the stories state with loading then ended with failure`() {
         val repository = HackerNewsRepositoryImpl(HackerNewsStoryFailureMockService())
 
-        val store = createStore(testScope, ListUiState(), ListReducer(), ListDataMiddleware(ListEnvironment(testScope, repository), listUiRowStateMapper))
+        val store = ListStore(testScope, ListEnvironment(testScope, repository))
 
         runBlockingTest {
             store.states
@@ -132,7 +131,7 @@ class HackerNewsListStoreTest {
     fun `should update the next stories state with loading then ended with failure`() {
         val repository = HackerNewsRepositoryImpl(HackerNewsStoryFailureMockService())
 
-        val store = createStore(testScope, ListUiState(), ListReducer(), ListDataMiddleware(ListEnvironment(testScope, repository), listUiRowStateMapper))
+        val store = ListStore(testScope, ListEnvironment(testScope, repository))
 
         runBlockingTest {
             store.states
@@ -167,7 +166,7 @@ class HackerNewsListStoreTest {
     fun `should update the next stories state with loading then end with failure while the stories is intact`() {
         val repository = HackerNewsRepositoryImpl(HackerNewsStoryNextPageFailureMockService())
 
-        val store = createStore(testScope, ListUiState(), ListReducer(), ListDataMiddleware(ListEnvironment(testScope, repository), listUiRowStateMapper))
+        val store = ListStore(testScope, ListEnvironment(testScope, repository))
 
         runBlockingTest {
             store.states

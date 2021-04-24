@@ -31,7 +31,7 @@ object AndroidX {
         const val test = "1.2.0"
         const val jUnit = "1.1.1"
         const val core = "1.3.2"
-        const val lifeCycle = "2.3.1"
+        const val lifeCycle = "2.4.0-alpha01"
         const val compose = "1.0.0-beta01"
         const val composeActivity = "1.3.0-alpha05"
         const val composeViewModel = "1.0.0-alpha03"

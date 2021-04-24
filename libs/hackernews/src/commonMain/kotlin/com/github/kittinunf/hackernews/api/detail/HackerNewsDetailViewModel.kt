@@ -3,19 +3,11 @@ package com.github.kittinunf.hackernews.api.detail
 import com.github.kittinunf.hackernews.api.NativeViewModel
 import com.github.kittinunf.hackernews.repository.HackerNewsRepositoryImpl
 import com.github.kittinunf.hackernews.repository.HackerNewsService
-import com.github.kittinunf.redux.createStore
 import kotlinx.coroutines.launch
 
 class HackerNewsDetailViewModel(private val service: HackerNewsService) : NativeViewModel() {
 
-    private val store: Store by lazy {
-        createStore(
-            scope = scope,
-            initialState = DetailUiState(),
-            reducer = DetailReducer(),
-            middleware = DetailDataMiddleware(DetailEnvironment(scope, HackerNewsRepositoryImpl(service = service)), detailUiStoryStateMapper, detailUiCommentRowStateMapper)
-        )
-    }
+    private val store: Store by lazy { DetailStore(scope = scope, environment = DetailEnvironment(scope, HackerNewsRepositoryImpl(service))) }
 
     @Suppress("Unused")
     val currentState

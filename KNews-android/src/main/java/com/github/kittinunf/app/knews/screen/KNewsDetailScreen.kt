@@ -27,12 +27,18 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.rememberBackdropScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.kittinunf.app.knews.ui.theme.typography
 import com.github.kittinunf.hackernews.api.Data
@@ -42,20 +48,19 @@ import com.github.kittinunf.hackernews.api.detail.DetailUiStoryState
 import com.github.kittinunf.hackernews.api.detail.HackerNewsDetailViewModel
 import com.github.kittinunf.hackernews.api.detail.HackerNewsDetailViewModelFactory
 import com.github.kittinunf.hackernews.repository.HackerNewsService
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun KNewsDetailScreen(detailUiState: DetailUiState, service: HackerNewsService) {
     val viewModel = viewModel<HackerNewsDetailViewModel>(factory = HackerNewsDetailViewModelFactory(service))
-    val scope = rememberCoroutineScope()
-    val states = viewModel.states.collectAsState()
 
-    if (detailUiState.story.isSuccess) {
-        viewModel.setInitialStory(detailUiState.story.get()!!)
-    } else {
-        viewModel.loadStory()
+    val states by viewModel.states.collectAsState(rememberCoroutineScope().coroutineContext)
+
+    when (val story = detailUiState.story) {
+        is Data.Success -> viewModel.setInitialStory(story.value)
+        else -> viewModel.loadStory()
     }
+
     viewModel.loadStoryComments()
 
     BackdropScaffold(appBar = {},
@@ -63,17 +68,13 @@ fun KNewsDetailScreen(detailUiState: DetailUiState, service: HackerNewsService) 
         frontLayerScrimColor = Color.Transparent,
         backLayerBackgroundColor = Color.Transparent,
         backLayerContent = {
-            when (val story = states.value.story) {
+            when (val story = states.story) {
                 is Data.Loading -> LoadingComponent()
                 is Data.Success -> {
                     StoryComponent(state = story.value)
                 }
                 is Data.Failure -> {
-                    ErrorComponent {
-                        scope.launch {
-                            viewModel.loadStory()
-                        }
-                    }
+                    ErrorComponent { viewModel.loadStory() }
                 }
             }
         },
@@ -83,17 +84,13 @@ fun KNewsDetailScreen(detailUiState: DetailUiState, service: HackerNewsService) 
                 Column(modifier = Modifier.padding(16.dp)) {
                     Icon(modifier = Modifier.align(Alignment.CenterHorizontally), imageVector = Icons.Default.KeyboardArrowUp, contentDescription = null)
 
-                    when (val comments = states.value.comments) {
+                    when (val comments = states.comments) {
                         is Data.Loading -> LoadingComponent()
                         is Data.Success -> {
                             CommentComponent(comments = comments.value)
                         }
                         is Data.Failure -> {
-                            ErrorComponent {
-                                scope.launch {
-                                    viewModel.loadStoryComments()
-                                }
-                            }
+                            ErrorComponent { viewModel.loadStoryComments() }
                         }
                     }
                 }
@@ -112,11 +109,9 @@ fun StoryComponent(state: DetailUiStoryState) {
         with(view) {
             settings.javaScriptEnabled = true
             webViewClient = object : WebViewClient() {
-                override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                }
+                override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {}
 
-                override fun onPageFinished(view: WebView?, url: String?) {
-                }
+                override fun onPageFinished(view: WebView?, url: String?) {}
             }
             loadUrl(state.url.toString())
         }
