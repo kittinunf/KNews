@@ -131,20 +131,27 @@ Compose UI's State is updated, then the UI will be re-rendered accordingly.
 Core's ViewModels (i.e. HackerNewsListViewModel and HackerNewsDetailViewModel)
 
 ```kotlin
+internal fun ListStore(scope: CoroutineScope, environment: ListEnvironment): Store {
+    return createStore(
+        scope = scope,
+        initialState = ListUiState(),
+        reducers = mapOf(
+            LoadNextStoriesReducer(),
+            LoadStoriesReducer(),
+            SortReducer(),
+            ResultActionReducer()
+        ),
+        middlewares = mapOf(
+            LoadStoriesEffect(environment, listUiRowStateMapper),
+            LoadNextStoriesEffect(environment, listUiRowStateMapper)
+        )
+    )
+}
+
 class HackerNewsDetailViewModel(private val service: HackerNewsService) : NativeViewModel() {
 
     private val store: Store by lazy {
-        createStore(
-            scope = scope,
-            initialState = DetailUiState(),
-            reducer = DetailReducer(),
-            middleware = DetailDataMiddleware(
-                DetailEnvironment(
-                    scope,
-                    HackerNewsRepositoryImpl(service = service)
-                ), detailUiStoryStateMapper, detailUiCommentRowStateMapper
-            )
-        )
+        ListStore(scope, ListEnvironment(scope, HackerNewsRepositoryImpl(service)))
     }
 
     @Suppress("Unused")
@@ -196,7 +203,9 @@ class HackerNewsListViewModelWrapper: ObservableObject {
     }
 }
 ```
+
 * UI for iOS
+
 ```swift
 @ObservedObject var viewModel: HackerNewsListViewModelWrapper
 let stories = viewModel.state.stories 
@@ -204,9 +213,10 @@ let stories = viewModel.state.stories
 // Update the UI according to the states changes with SwiftUI
 ```
 
-As you can see now that we have reaching the point where things are pretty similar on both iOS and
-Android, we are publishing something that will change over time from the core. Then, we convert them
-into the abstraction data type that can react to our UI toolkit (Jetpack Compose and SwiftUI)
+As you can see now that we have converged things to the point where things are pretty similar on
+both iOS and Android, we are publishing something that will change over time from the core. Then, we
+convert them into the abstraction data type that can react to our UI toolkit (Jetpack Compose and
+SwiftUI)
 
 To recap, this is the table represents what we are discussing so far.
 
@@ -334,8 +344,10 @@ xcframework successfully written out to: KNews/libs/hackernews/build/bin/ios/Hac
 xcframework successfully written out to: KNews/libs/hackernews/build/bin/ios/HackerNews-release.xcframework
 ```
 
-In the case, you can't install the iOS app from the command line (either you don't want to or you don't have necessary xcode-install tool), please move to
-the [.pbxproj](KNews-ios/KNews/KNews.xcodeproj), then you should be able to run the iOS on Xcode like usual.
+In the case, you can't install the iOS app from the command line (either you don't want to or you
+don't have necessary xcode-install tool), please move to
+the [.pbxproj](KNews-ios/KNews/KNews.xcodeproj), then you should be able to run the iOS on Xcode
+like usual.
 
 For install iOS app: (with the command-line tool)
 
