@@ -53,18 +53,22 @@ internal object LoadStoryComments : LoadAction<Nothing>(), Identifiable {
     override val identifier: String = "LoadStoryComments"
 }
 
+@Suppress("FunctionName")
 internal fun SetInitialStoryReducer() = "SetInitialStory" to Reducer { currentState: DetailUiState, action: SetInitialStory ->
     currentState.copy(storyId = action.state.id, story = Data.Success(action.state))
 }
 
+@Suppress("FunctionName")
 internal fun LoadStoryReducer() = "LoadStory" to Reducer { currentState: DetailUiState, _: LoadStory ->
     currentState.copy(story = Data.Loading)
 }
 
+@Suppress("FunctionName")
 internal fun LoadStoryCommentsReducer() = "LoadStoryComments" to Reducer { currentState: DetailUiState, _: LoadStoryComments ->
     currentState.copy(comments = Data.Loading)
 }
 
+@Suppress("FunctionName")
 internal fun ResultActionReducer() = "ResultAction" to Reducer { currentState: DetailUiState, action: ResultAction<*, *> ->
     require(action.fromAction is LoadStory || action.fromAction is LoadStoryComments)
 
@@ -84,9 +88,11 @@ internal class DetailEnvironment(val scope: CoroutineScope, val repository: Hack
 internal typealias Store = StoreType<DetailUiState, DetailEnvironment>
 internal typealias Effect<A> = EffectType<DetailUiState, A, DetailEnvironment>
 
+@Suppress("FunctionName")
 internal fun LoadStoryEffect(environment: DetailEnvironment, mapper: Mapper<Story, DetailUiStoryState>): Effect<LoadStory> =
     "LoadStory" to object : Middleware<DetailUiState, LoadStory, DetailEnvironment> {
         override fun process(order: Order, store: StoreType<DetailUiState, DetailEnvironment>, state: DetailUiState, action: LoadStory) {
+            // we only perform side effect in the beforeReduce order
             if (order == Order.AfterReduced) return
 
             // the current loading is already in-flight
@@ -96,7 +102,7 @@ internal fun LoadStoryEffect(environment: DetailEnvironment, mapper: Mapper<Stor
                 scope.launch {
                     val result = repository.getStory(state.storyId)
                     result.fold(success = {
-                        store.dispatch(ResultAction(action, Result.success(detailUiStoryStateMapper.map(it))))
+                        store.dispatch(ResultAction(action, Result.success(mapper(it))))
                     }, failure = {
                         store.dispatch(ResultAction(action, Result.error(LoadStoryError(it.message ?: "Unknown error"))))
                     })
@@ -107,10 +113,13 @@ internal fun LoadStoryEffect(environment: DetailEnvironment, mapper: Mapper<Stor
         override val environment: DetailEnvironment = environment
     }
 
+@Suppress("FunctionName")
 internal fun LoadStoryCommentsEffect(environment: DetailEnvironment, mapper: Mapper<Comment, DetailUiCommentRowState>): Effect<LoadStoryComments> =
     "LoadStoryComments" to object : Middleware<DetailUiState, LoadStoryComments, DetailEnvironment> {
         override fun process(order: Order, store: StoreType<DetailUiState, DetailEnvironment>, state: DetailUiState, action: LoadStoryComments) {
+            // we only perform side effect in the beforeReduce order
             if (order == Order.AfterReduced) return
+
             // the current loading is already in-flight
             if (state.comments is Data.Loading) return
 
@@ -123,7 +132,7 @@ internal fun LoadStoryCommentsEffect(environment: DetailEnvironment, mapper: Map
                     } else repository.getStoryComments(state.storyId)
 
                     result.fold(success = {
-                        store.dispatch(ResultAction(action, Result.success(it?.map(detailUiCommentRowStateMapper::map))))
+                        store.dispatch(ResultAction(action, Result.success(it?.map(mapper::invoke))))
                     }, failure = {
                         store.dispatch(ResultAction(action, Result.Failure(LoadStoryCommentsError(it.message ?: "Unknown error"))))
                     })
@@ -146,8 +155,8 @@ internal fun DetailStore(initialState: DetailUiState = DetailUiState(), scope: C
             ResultActionReducer()
         ),
         middlewares = mapOf(
-            LoadStoryEffect(environment, detailUiStoryStateMapper),
-            LoadStoryCommentsEffect(environment, detailUiCommentRowStateMapper)
+            LoadStoryEffect(environment, ::detailUiStoryStateMapper),
+            LoadStoryCommentsEffect(environment, ::detailUiCommentRowStateMapper)
         )
     )
 }

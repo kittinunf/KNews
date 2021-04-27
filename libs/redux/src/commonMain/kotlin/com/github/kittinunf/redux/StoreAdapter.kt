@@ -50,7 +50,7 @@ private class StoreAdapterEngine<S : State, A : Any, E : Environment>(
 
         return if (typedAction == null) state else {
             middleware?.process(Order.BeforeReduce, storeType, state, typedAction)
-            val nextState = reducer.reduce(state, typedAction)
+            val nextState = reducer(state, typedAction)
             middleware?.process(Order.AfterReduced, storeType, nextState, typedAction)
             nextState
         }

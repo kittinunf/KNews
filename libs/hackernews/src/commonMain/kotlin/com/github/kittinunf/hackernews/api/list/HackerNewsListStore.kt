@@ -138,6 +138,7 @@ internal typealias Effect<A> = EffectType<ListUiState, A, ListEnvironment>
 internal fun LoadStoriesEffect(environment: ListEnvironment, mapper: Mapper<Story, ListUiRowState>): Effect<LoadStories> =
     "LoadStories" to object : Middleware<ListUiState, LoadStories, ListEnvironment> {
         override fun process(order: Order, store: Store, state: ListUiState, action: LoadStories) {
+            // we only perform side effect in the beforeReduce order
             if (order == Order.AfterReduced) return
 
             // the current loading is already in-flight
@@ -147,7 +148,7 @@ internal fun LoadStoriesEffect(environment: ListEnvironment, mapper: Mapper<Stor
                 scope.launch {
                     val result = repository.getTopStories()
                     result.fold(success = {
-                        store.dispatch(ResultAction(action, Result.success(it?.map(mapper::map))))
+                        store.dispatch(ResultAction(action, Result.success(it?.map(mapper::invoke))))
                     }, failure = {
                         store.dispatch(ResultAction(action, Result.error(LoadStoriesError(it.message ?: "Unknown error"))))
                     })
@@ -161,8 +162,8 @@ internal fun LoadStoriesEffect(environment: ListEnvironment, mapper: Mapper<Stor
 @Suppress("FunctionName")
 internal fun LoadNextStoriesEffect(environment: ListEnvironment, mapper: Mapper<Story, ListUiRowState>): Effect<LoadNextStories> =
     "LoadNextStories" to object : Middleware<ListUiState, LoadNextStories, ListEnvironment> {
-
         override fun process(order: Order, store: StoreType<ListUiState, ListEnvironment>, state: ListUiState, action: LoadNextStories) {
+            // we only perform side effect in the beforeReduce order
             if (order == Order.AfterReduced) return
 
             // the current loading is already in-flight and the main list is not done yet
@@ -178,7 +179,7 @@ internal fun LoadNextStoriesEffect(environment: ListEnvironment, mapper: Mapper<
                 scope.launch {
                     val result = repository.getTopStories(action.page)
                     result.fold(success = {
-                        store.dispatch(ResultAction(action, Result.success(it?.map(mapper::map))))
+                        store.dispatch(ResultAction(action, Result.success(it?.map(mapper::invoke))))
                     }, failure = {
                         store.dispatch(ResultAction(action, Result.error(LoadNextStoriesError(it.message ?: "Unknown error"))))
                     })
@@ -201,8 +202,8 @@ internal fun ListStore(scope: CoroutineScope, environment: ListEnvironment): Sto
             ResultActionReducer()
         ),
         middlewares = mapOf(
-            LoadStoriesEffect(environment, listUiRowStateMapper),
-            LoadNextStoriesEffect(environment, listUiRowStateMapper)
+            LoadStoriesEffect(environment, ::listUiRowStateMapper),
+            LoadNextStoriesEffect(environment, ::listUiRowStateMapper)
         )
     )
 }

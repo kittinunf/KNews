@@ -1,5 +1,5 @@
 package com.github.kittinunf.hackernews.util
 
-interface Mapper<T : Any, U : Any> {
-    fun map(t: T): U
+fun interface Mapper<T : Any, U : Any> {
+    operator fun invoke(t: T): U
 }

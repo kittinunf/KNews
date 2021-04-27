@@ -1,28 +1,25 @@
 package com.github.kittinunf.hackernews.api.list
 
 import com.github.kittinunf.hackernews.model.Story
-import com.github.kittinunf.hackernews.util.Mapper
 import io.ktor.http.Url
 import kotlinx.datetime.Clock
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
-internal val listUiRowStateMapper = object : Mapper<Story, ListUiRowState> {
-    override fun map(t: Story): ListUiRowState {
-        val now = Clock.System.now()
-        val diff = now.epochSeconds - t.time
-        return ListUiRowState(
-            id = t.id,
-            title = t.title,
-            url = Url(t.url),
-            score = t.score,
-            by = t.by,
-            fromNow = diff,
-            fromNowText = diff.toHumanConsumableText(),
-            commentIds = t.kids,
-            descendants = t.descendants
-        )
-    }
+fun listUiRowStateMapper(story: Story): ListUiRowState {
+    val now = Clock.System.now()
+    val diff = now.epochSeconds - story.time
+    return ListUiRowState(
+        id = story.id,
+        title = story.title,
+        url = Url(story.url),
+        score = story.score,
+        by = story.by,
+        fromNow = diff,
+        fromNowText = diff.toHumanConsumableText(),
+        commentIds = story.kids,
+        descendants = story.descendants
+    )
 }
 
 // Int here represent the diff in seconds

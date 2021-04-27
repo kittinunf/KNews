@@ -18,12 +18,12 @@ typealias AnyReducer<S> = Reducer<S, Any>
 
 fun interface Reducer<S : State, in A : Any> {
 
-    fun reduce(currentState: S, action: A): S
+    operator fun invoke(currentState: S, action: A): S
 }
 
 class NoopReducer<S : State> : AnyReducer<S> {
 
-    override fun reduce(currentState: S, action: Any): S = currentState
+    override operator fun invoke(currentState: S, action: Any): S = currentState
 }
 
 enum class Order {
@@ -96,7 +96,7 @@ private class DefaultEngine<S : State, E : Environment>(override var reducer: An
 
     override suspend fun scan(storeType: StoreType<S, E>, state: S, action: Any): S {
         middlewares.onEach { it.process(Order.BeforeReduce, storeType, state, action) }
-        val nextState = reducer.reduce(state, action)
+        val nextState = reducer(state, action)
         middlewares.onEach { it.process(Order.AfterReduced, storeType, nextState, action) }
         return nextState
     }
@@ -113,18 +113,13 @@ class Store<S : State, E : Environment> internal constructor(scope: CoroutineSco
 
     private val _actions = MutableSharedFlow<Any>(replay = 0, extraBufferCapacity = defaultBufferCapacity, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
-    override val states: StateFlow<S>
+    override val states: StateFlow<S> = _actions.scan(initialState to NoAction as Any) { (state, _), action ->
+        val nextState = engine.scan(this, state, action)
+        nextState to action
+    }.map { it.first }.stateIn(scope, SharingStarted.Eagerly, initialState)
 
     override val currentState: S
         get() = states.value
-
-    init {
-        states = _actions.scan(initialState to NoAction as Any) { (state, _), action ->
-            val nextState = engine.scan(this, state, action)
-            nextState to action
-        }.map { it.first }
-        .stateIn(scope, SharingStarted.Eagerly, initialState)
-    }
 
     override suspend fun dispatch(action: Any) {
         _actions.emit(action)
@@ -149,7 +144,7 @@ fun <S : State> combineReducers(vararg reducers: AnyReducer<S>): AnyReducer<S> =
 
 private class CompositeReducer<S : State>(private val reducers: List<AnyReducer<S>>) : AnyReducer<S> {
 
-    override fun reduce(currentState: S, action: Any): S = reducers.fold(currentState) { state, reducer ->
-        reducer.reduce(state, action)
+    override operator fun invoke(currentState: S, action: Any): S = reducers.fold(currentState) { state, reducer ->
+        reducer(state, action)
     }
 }

@@ -71,7 +71,7 @@ class HackerNewsDetailStoreTest {
                 .launchIn(testScope)
 
             // load
-            store.dispatch(SetInitialStory(detailUiStoryStateMapper.map(createRandomStory(1))))
+            store.dispatch(SetInitialStory(detailUiStoryStateMapper(createRandomStory(1))))
         }
     }
 
@@ -159,7 +159,7 @@ class HackerNewsDetailStoreTest {
                 .launchIn(testScope)
 
             // load
-            store.dispatch(SetInitialStory(detailUiStoryStateMapper.map(createRandomStory(1))))
+            store.dispatch(SetInitialStory(detailUiStoryStateMapper(createRandomStory(1))))
             store.dispatch(LoadStoryComments)
         }
     }
