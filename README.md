@@ -303,6 +303,23 @@ Just to simplify the build process and the way that we work with core libraries,
 Makefile so it is easier to build. This will also run tasks that compile, build and verify tests
 then generate the final artifact for you.
 
+Also, due to the fact that we use newer version of Gradle for Jetpack compose support, you will need a canary version of Android Studio (2020.3.1 or later) if you want to sync/build the project with IDE;
+
+E.g. This is the environment that we current use as of April 2021.
+
+```
+Android Studio Arctic Fox | 2020.3.1 Canary 14
+Build #AI-203.7717.56.2031.7260174, built on April 6, 2021
+Runtime version: 11.0.9.1+0-b77-7246554 x86_64
+VM: OpenJDK 64-Bit Server VM by JetBrains s.r.o.
+macOS 10.15.7
+GC: G1 Young Generation, G1 Old Generation
+Memory: 3072M
+Cores: 16
+Registry: external.system.auto.import.disabled=true
+Non-Bundled Plugins: IdeaVIM, Key Promoter X, name.kropp.intellij.makefile, com.developerphil.adbidea, org.intellij.plugins.markdown
+```
+
 For clean:
 
 ```shell
