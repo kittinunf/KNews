@@ -305,7 +305,9 @@ then generate the final artifact for you.
 
 Also, due to the fact that we use newer version of Gradle for Jetpack compose support, you will need a canary version of Android Studio (2020.3.1 or later) if you want to sync/build the project with IDE;
 
-E.g. This is the environment that we current use as of April 2021.
+E.g. This is the environment that we currently use as of April 2021.  
+
+### Android Studio
 
 ```
 Android Studio Arctic Fox | 2020.3.1 Canary 14
@@ -318,6 +320,14 @@ Memory: 3072M
 Cores: 16
 Registry: external.system.auto.import.disabled=true
 Non-Bundled Plugins: IdeaVIM, Key Promoter X, name.kropp.intellij.makefile, com.developerphil.adbidea, org.intellij.plugins.markdown
+```
+
+### Xcode
+
+```
+Xcode
+
+Version 12.4 (12D4e)
 ```
 
 For clean:
