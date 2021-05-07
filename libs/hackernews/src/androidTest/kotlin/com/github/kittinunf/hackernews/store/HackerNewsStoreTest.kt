@@ -21,7 +21,7 @@ import com.github.kittinunf.hackernews.network.createHttpClient
 import com.github.kittinunf.hackernews.repository.HackerNewsRepositoryImpl
 import com.github.kittinunf.hackernews.repository.HackerNewsServiceImpl
 import com.github.kittinunf.hackernews.util.runBlockingTest
-import com.github.kittinunf.redux.createStore
+import com.github.kittinunf.cored.createStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

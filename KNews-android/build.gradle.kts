@@ -52,6 +52,11 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.0.0-beta01"
     }
+
+    kotlinOptions {
+        useIR = true
+        freeCompilerArgs = listOf("-P", "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true")
+    }
 }
 
 dependencies {
@@ -59,7 +64,6 @@ dependencies {
     // add this instead if you want to consume and the binary format (aar) (debug or release)
     // implementation(group = "com.github.kittinunf.hackernews", name = "hackernews-debug", version = "+")
     implementation(project(":libs:hackernews"))
-    implementation(project(":libs:redux"))
     implementation(Coroutines.core)
     implementation(Coroutines.android)
     implementation(Ktor.core)

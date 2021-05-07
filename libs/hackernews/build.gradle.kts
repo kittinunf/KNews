@@ -38,7 +38,7 @@ kotlin {
 
         val commonMain by getting {
             dependencies {
-                api(project(":libs:redux"))
+                api(CoRed.core)
 
                 implementation(Coroutines.core)
 
@@ -109,8 +109,6 @@ android {
     defaultConfig {
         minSdkVersion(Android.minSdkVersion)
         targetSdkVersion(Android.targetSdkVersion)
-        versionCode = 1
-        versionName = "1.0"
     }
 
     buildTypes {

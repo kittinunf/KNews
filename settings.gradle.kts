@@ -13,5 +13,4 @@ pluginManagement {
 include("KNews-android")
 
 // libraries
-include("libs:redux")
 include("libs:hackernews")

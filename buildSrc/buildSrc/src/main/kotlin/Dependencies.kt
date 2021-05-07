@@ -1,6 +1,6 @@
 object Kotlin {
 
-    private const val version = "1.4.31"
+    private const val version = "1.4.32"
 
     const val plugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"
     const val pluginSerialization = "org.jetbrains.kotlin:kotlin-serialization:$version"
@@ -18,7 +18,7 @@ object Android {
 
     const val buildToolsVersion = "30.0.3"
 
-    private const val version = "7.0.0-alpha14"
+    private const val version = "7.0.0-alpha15"
     const val plugin = "com.android.tools.build:gradle:$version"
 
     private const val materialVersion = "1.3.0"
@@ -89,6 +89,13 @@ object Ktor {
     const val mock = "io.ktor:ktor-client-mock:$version"
 }
 
+object CoRed {
+
+    private const val version = "0.1.2"
+
+    const val core = "com.github.kittinunf.cored:cored:$version"
+}
+
 // Test libraries
 object JUnit {
 
@@ -100,5 +107,6 @@ object JUnit {
 }
 
 object Jacoco {
+
     const val version = "0.8.6"
 }

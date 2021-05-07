@@ -6,7 +6,6 @@ import com.github.kittinunf.hackernews.repository.HackerNewsRepositoryImpl
 import com.github.kittinunf.hackernews.repository.HackerNewsSuccessfulMockService
 import com.github.kittinunf.hackernews.repository.createRandomStory
 import com.github.kittinunf.hackernews.util.runBlockingTest
-import com.github.kittinunf.redux.createStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
