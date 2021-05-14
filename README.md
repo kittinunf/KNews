@@ -5,9 +5,8 @@ consumes [HackerNews API](https://github.com/HackerNews/API) with Kotlin Multi-P
 
 ## About
 
-My idea is to build 2-page simple mobile applications (for both iOS and Android :) ). I planned to
-make this simple enough so I can finish within a week and but at the same, it represents the
-real-world app example that comprises of the quality of modern mobile app architecture which is
+My idea is to build 2-page simple mobile applications (for both iOS and Android :) ). We want to build something relatively complex enough that can represent the
+real-world example-ish app that also comprises of the quality of modern mobile app architecture which is
 modular, scalable, testable and maintainable.
 
 ## Project structure

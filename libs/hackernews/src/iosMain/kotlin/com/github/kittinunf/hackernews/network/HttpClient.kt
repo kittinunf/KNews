@@ -9,7 +9,7 @@ import platform.Foundation.NSURLSessionAuthChallengeUseCredential
 import platform.Foundation.credentialForTrust
 import platform.Foundation.serverTrust
 
-actual fun createHttpClient(clientConfig: HttpClientConfig<*>.() -> Unit): HttpClient = HttpClient(Ios) {
+actual fun HttpClient(clientConfig: HttpClientConfig<*>.() -> Unit): HttpClient = HttpClient(Ios) {
     clientConfig(this)
     engine {
         handleChallenge { _, _, challenge, completionHandler ->

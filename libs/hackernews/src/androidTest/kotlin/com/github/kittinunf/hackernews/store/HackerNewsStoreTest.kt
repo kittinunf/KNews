@@ -4,8 +4,6 @@ import com.github.kittinunf.hackernews.api.detail.DetailEnvironment
 import com.github.kittinunf.hackernews.api.detail.DetailStore
 import com.github.kittinunf.hackernews.api.detail.DetailUiState
 import com.github.kittinunf.hackernews.api.detail.LoadStoryComments
-import com.github.kittinunf.hackernews.api.detail.detailUiCommentRowStateMapper
-import com.github.kittinunf.hackernews.api.detail.detailUiStoryStateMapper
 import com.github.kittinunf.hackernews.api.list.ListEnvironment
 import com.github.kittinunf.hackernews.api.list.ListStore
 import com.github.kittinunf.hackernews.api.list.ListUiSortCondition
@@ -13,15 +11,14 @@ import com.github.kittinunf.hackernews.api.list.LoadNextStories
 import com.github.kittinunf.hackernews.api.list.LoadStories
 import com.github.kittinunf.hackernews.api.list.Sort
 import com.github.kittinunf.hackernews.api.list.printDebug
+import com.github.kittinunf.hackernews.network.HttpClient
 import com.github.kittinunf.hackernews.network.NetworkModule
 import com.github.kittinunf.hackernews.network.addBaseUrl
 import com.github.kittinunf.hackernews.network.addHackerNewsJsonSerializer
 import com.github.kittinunf.hackernews.network.addLogging
-import com.github.kittinunf.hackernews.network.createHttpClient
 import com.github.kittinunf.hackernews.repository.HackerNewsRepositoryImpl
 import com.github.kittinunf.hackernews.repository.HackerNewsServiceImpl
 import com.github.kittinunf.hackernews.util.runBlockingTest
-import com.github.kittinunf.cored.createStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -30,7 +27,7 @@ import org.junit.Test
 
 class HackerNewsStoreTest {
 
-    private val network = NetworkModule(createHttpClient {
+    private val network = NetworkModule(HttpClient {
         addBaseUrl("https://hacker-news.firebaseio.com/")
         addHackerNewsJsonSerializer()
         addLogging()

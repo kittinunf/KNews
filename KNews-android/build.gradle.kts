@@ -50,7 +50,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.0.0-beta01"
+        kotlinCompilerExtensionVersion = AndroidX.Versions.compose
     }
 
     kotlinOptions {

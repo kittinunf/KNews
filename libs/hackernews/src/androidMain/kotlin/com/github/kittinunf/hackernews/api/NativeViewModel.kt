@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 
 actual open class NativeViewModel : ViewModel() {
+
     actual val scope: CoroutineScope = viewModelScope
 
     actual fun cancel() {
