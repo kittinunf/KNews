@@ -91,7 +91,7 @@ object Ktor {
 
 object CoRed {
 
-    private const val version = "0.2.0"
+    private const val version = "0.1.2"
 
     const val core = "com.github.kittinunf.cored:cored:$version"
 }
