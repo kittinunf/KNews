@@ -50,20 +50,19 @@ The top level overview project structure is the following;
 
 For the big picture, there are 2 main parts, the first one is the app modules (this includes both
 iOS and Android app named [KNews-ios](KNews-ios) and [KNew-android](KNews-android), respectively).
-The second one is the libs modules. Inside of the [libs](libs) modules contains 2 sub-modules.
-Firstly, it is a [lib/redux](libs/redux)
-which is the core architecture of the app. Secondly, there is the [lib/hackernews](libs/hackernews)
-which is contain a domain-specific library which relates to HackerNews API.
+The second one is the libs modules. Inside of the [libs](libs) modules contains 1 module that contain a domain-specific library which relates to HackerNews API.
 
-(*) is the final artifact that will be consumed by the App which are `.aar` and `.xcframework` for
-debug and release buildType that will be finally consumed by our mobile apps.
+The core of the library used roll-by-my-own KMP library named [CoRed](https://github.com/kittinunf/CoRed).
+
+(*) is the final artifacts that can be used by the App which are `.aar` and `.xcframework` for
+debug and release buildType that will be finally consumed by the application layer for both iOS and Android app.
 
 ### App modules
 
 Both app modules use modern/declarative/cutting-edge UI toolkit that is available at this moment to
-develop the UI part. They are [Jetpack Compose](https://developer.android.com/jetpack/compose) for
+develop the UI related part. They are [Jetpack Compose](https://developer.android.com/jetpack/compose) for
 building Android app (KNews-android) and [SwiftUI](https://developer.apple.com/xcode/swiftui/) for
-iOS app (KNews-ios). They are simple yet powerful toolkit for driving modern apps' UI. Both is
+iOS app (KNews-ios). They are simple yet powerful toolkit for driving modern apps' UI. Both libraries are
 backed by modern Kotlin and Swift programming languages.
 
 ### Library modules (Libs)
@@ -79,20 +78,17 @@ some business logic.
 Due to the fact that we want to build both iOS & Android apps. It would be too-time consuming and
 too much duplicate code if we were to write the "core" library part twice in 2 programming
 languages. One in Swift and the other in Kotlin. Luckily, Kotlin has a multi-platform feature that
-can transpile/compile the Kotlin code down to the native code for darwin. This is called a Kotlin
-Multi Platform programming or [KMP](https://kotlinlang.org/docs/multiplatform.html). The core of
-this app used this technique to be able to achieve the fact that we want to share the core part of
-the app for both iOS and Android apps.
-
-Libs module has 2 small sub modules which are both KMP-backed module. They
-are [redux](libs/redux/README.md) and [hackernews](libs/hackernews/README.md).
+can transpile/compile the Kotlin code down to the native code for Darwin. This is called a Kotlin/Native
+which is altogether it is called [KMP](https://kotlinlang.org/docs/multiplatform.html). The core of
+this app used this technique to be able to achieve the fact that we want to share the core part of our mobile app upto the ViewModel layer which will be described in the next section.
 
 ### App Architecture
 
-Heart and soul of the application lies in the library hackernews (`libs/hackernews`) which is power
-by custom made/roll-by-my-own implementation of
-the [Redux](https://redux.js.org/introduction/getting-started) architecture in Kotlin KMP
-implementation. As we don't want to re-invent anything new, we follow closely the paradigm that is
+Heart and soul of the application lies in the library hackernews (`libs/hackernews`) which is powered
+by [CoRed](https://github.com/kittinunf/CoRed).
+
+CoRed is basically a [Redux](https://redux.js.org/introduction/getting-started) implementation in Kotlin KMP
+technology. As we want to have the best way to manage the state, we follow closely the Redux paradigm that is
 proven to be working by the web front-end technology.
 
 ```none
@@ -105,15 +101,13 @@ proven to be working by the web front-end technology.
 └──────────────────────────▲───────┘
                            │        
                     ┌──────┴───────┐
-                    │ Redux (libs) │       Library layer (Redux)
+                    │ Redux (libs) │       Library layer (CoRed)
                     └──────────────┘
 ```
 
 Inside with our app, we use simple MVVM architecture where VM hold a single source of truth of the
-screen and how the UI should look like. The output from the core layer is a single stream that of
-the UI state that UI can subscribed to. This is represented and unfortunately need to be wrapped
-twice with platform specific stream abstraction for the UI tool kit to be able to update UI
-automatically.
+screen and how the UI should look like. The output from the core layer is a single stream that represents
+the UI state that UI can subscribed to. On the iOS side, it is unfortunately needed to be wrapped by the thin layer called ViewModelWrapper.
 
 #### MVVM
 
@@ -121,11 +115,12 @@ automatically.
 
 * Android 🤖
 
-The update is being abstracted with a class that represents a value over time
+The update stream is being abstracted with a class that represents a value over time
 called ["State"](https://developer.android.com/jetpack/compose/state) which resides in our ViewModel
 which lies in the code module libs/hackerNews (we can use it directly straight from the core lib).
+
 Whenever the State object is updated with our UI state that is published from our core layer. The
-Compose UI's State is updated, then the UI will be re-rendered accordingly.
+Compose UI's State is updated, then the UI will be rendered accordingly (and re-render as the state is updated).
 
 Core's ViewModels (i.e. HackerNewsListViewModel and HackerNewsDetailViewModel)
 
@@ -171,7 +166,7 @@ val stories = states.stories
 // update UI according to the states changes with compose UI
 ```
 
-The `collectAsState()` is a Kotlin compose extension that convert the Coroutine's flow into the
+The `collectAsState()` is a Kotlin compose extension that convert the Coroutine's flow (in our case it is StateFlow) into the
 State object that can be updated by Jetpack's Compose UI toolkit.
 
 * iOS 🍎
@@ -179,8 +174,8 @@ State object that can be updated by Jetpack's Compose UI toolkit.
 The update is being abstracted with the help of Apple's reactive solution
 called [Combine](https://developer.apple.com/documentation/combine) library. The key components that
 make the Swift UI toolkit update the view tree accordingly are the `ObservableObject`
-and `@Published`. This represent with a ViewModel wrapper layer (eg. for the list screen it
-is `HackerNewsListViewModelWrapper`).
+and `@Published`. This represent with a ViewModel wrapper layer (eg. For the list screen, it
+is `HackerNewsListViewModelWrapper` and for detail screen it is `HackerNewsDetailViewModelWrapper`).
 
 ```swift
 class HackerNewsListViewModelWrapper: ObservableObject {
@@ -213,7 +208,7 @@ let stories = viewModel.state.stories
 ```
 
 As you can see now that we have converged things to the point where things are pretty similar on
-both iOS and Android, we are publishing something that will change over time from the core. Then, we
+both iOS and Android, we are publishing something that will change over time from the core library. Then, we
 convert them into the abstraction data type that can react to our UI toolkit (Jetpack Compose and
 SwiftUI)
 
@@ -249,7 +244,7 @@ In our VM, as our application grows managing state in a plain code could be very
 is powered by predictable state handling strategy which is known as Redux. The idea behind Redux is
 simple. Make the state changes as confined / specific as much as possible through the help of Redux
 abstraction, eg. Reducer. We will be discussing about this more in detail inside
-Redux's [README](libs/redux/README.md) file.
+Redux's [README](https://github.com/kittinunf/CoRed/blob/main/README.md) file.
 
 ```none
 
@@ -265,16 +260,16 @@ Redux's [README](libs/redux/README.md) file.
                                        ─┘
 ```
 
-Inside our View is a Redux store, that specify how do we interact with our store with Action, then
-we use the Action to mutate our State in a pure function called Reducer. In the reducer, we define
-how our Action will change our State. If we want to interact with the external dependency, we can
-use Middleware to do so.
+Inside our View is a Redux's store, that encode how we interact with our store with `Action`, then
+we use the Action to mutate our `State` in a pure function called `Reducer`. In the `Reducer`, we define
+how our `Action` will change our `State`. If we want to interact with the external dependency (such as interact with side-effect), we can
+use `Middleware` to do so.
 
 ## Dependencies
 
 As one of the main goal of this project, we are trying to minimize the 3rd party dependencies used
-in this project. However, the big ones that we couldn't avoid are the ones from Kotlin team like
-Kotlin standard library and KotlinX (Kotlin extension).
+in this project. However, the big ones are the ones from Kotlin team like
+Kotlin standard library and Kotlinx (Kotlin extension).
 
 ### Core (Kotlin related)
 
@@ -299,8 +294,7 @@ Kotlin standard library and KotlinX (Kotlin extension).
 ## How to build
 
 Just to simplify the build process and the way that we work with core libraries, we have created
-Makefile so it is easier to build. This will also run tasks that compile, build and verify tests
-then generate the final artifact for you.
+[Makefile](./Makefile) so it is easier to execute command from the CLI (underneath it is used the gradlew command). This make task will also run tasks like compile, build and verify tests then generate the final artifact(s) for you.
 
 Also, due to the fact that we use newer version of Gradle for Jetpack compose support, you will need a canary version of Android Studio (2020.3.1 or later) if you want to sync/build the project with IDE;
 
