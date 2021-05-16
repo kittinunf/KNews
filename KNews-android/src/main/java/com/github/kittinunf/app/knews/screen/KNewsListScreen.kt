@@ -16,7 +16,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
@@ -51,7 +54,7 @@ import com.github.kittinunf.hackernews.repository.HackerNewsService
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun KNewsListScreen(isSortSelected: Boolean, onSortSelected: () -> Unit, onStoryClick: (ListUiRowState) -> Unit, service: HackerNewsService) {
+fun KNewsListScreen(isSortSelected: Boolean, scrollState: LazyListState, onSortSelected: () -> Unit, onStoryClick: (ListUiRowState) -> Unit, service: HackerNewsService) {
     val viewModel = viewModel<HackerNewsListViewModel>(factory = HackerNewsListViewModelFactory(service))
 
     val states by viewModel.states.collectAsState(rememberCoroutineScope().coroutineContext)
@@ -73,7 +76,10 @@ fun KNewsListScreen(isSortSelected: Boolean, onSortSelected: () -> Unit, onStory
                 },
                 content = {
                     StoryListComponent(rowStates = stories.value,
-                        onStoryClick = { onStoryClick(it) },
+                        scrollState = scrollState,
+                        onStoryClick = { _, state ->
+                            onStoryClick(state)
+                        },
                         onLoadNext = {
                             viewModel.loadNextStories()
                         })
@@ -136,10 +142,10 @@ fun SortOverlayItemComponent(text: String, selected: Boolean, onClick: () -> Uni
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun StoryListComponent(rowStates: List<ListUiRowState>, onStoryClick: (ListUiRowState) -> Unit, onLoadNext: @Composable () -> Unit) {
+fun StoryListComponent(rowStates: List<ListUiRowState>, scrollState: LazyListState, onStoryClick: (Int, ListUiRowState) -> Unit, onLoadNext: @Composable () -> Unit) {
     val lastIndex = rowStates.lastIndex
 
-    LazyColumn {
+    LazyColumn(state = scrollState) {
         itemsIndexed(items = rowStates, key = { _, rowState -> rowState.id }, itemContent = { index, rowState ->
             Card(
                 shape = RoundedCornerShape(8.dp),
@@ -147,7 +153,9 @@ fun StoryListComponent(rowStates: List<ListUiRowState>, onStoryClick: (ListUiRow
                 modifier = Modifier
                     .fillParentMaxWidth()
                     .padding(8.dp)
-                    .clickable { onStoryClick(rowState) }
+                    .clickable {
+                        onStoryClick(index, rowState)
+                    }
             ) {
                 Column {
                     ListItem(

@@ -16,8 +16,6 @@ object Android {
     const val targetSdkVersion = 30
     const val compileSdkVersion = 30
 
-    const val buildToolsVersion = "30.0.3"
-
     private const val version = "7.0.0-alpha15"
     const val plugin = "com.android.tools.build:gradle:$version"
 
@@ -28,8 +26,6 @@ object Android {
 object AndroidX {
 
     object Versions {
-        const val test = "1.2.0"
-        const val jUnit = "1.1.1"
         const val core = "1.3.2"
         const val lifeCycle = "2.4.0-alpha01"
         const val compose = "1.0.0-beta06"
@@ -38,15 +34,13 @@ object AndroidX {
     }
 
     const val coreKtx = "androidx.core:core-ktx:${Versions.core}"
-    const val composeUi = "androidx.compose.ui:ui:${Versions.compose}"
+    const val composeActivity = "androidx.activity:activity-compose:${Versions.composeActivity}"
     const val composeMaterial = "androidx.compose.material:material:${Versions.compose}"
     const val composeTooling = "androidx.compose.ui:ui-tooling:${Versions.compose}"
+    const val composeUi = "androidx.compose.ui:ui:${Versions.compose}"
     const val composeViewModel = "androidx.lifecycle:lifecycle-viewmodel-compose:${Versions.composeViewModel}"
-    const val composeActivity = "androidx.activity:activity-compose:${Versions.composeActivity}"
     const val lifeCycleViewModel = "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifeCycle}"
     const val lifeCycleRuntime = "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifeCycle}"
-    const val testRules = "androidx.test:rules:${Versions.test}"
-    const val testJunit = "androidx.test.ext:junit:${Versions.jUnit}"
 }
 
 object Coroutines {

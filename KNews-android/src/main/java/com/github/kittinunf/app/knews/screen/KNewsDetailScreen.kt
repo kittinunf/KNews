@@ -82,7 +82,7 @@ fun KNewsDetailScreen(detailUiState: DetailUiState, service: HackerNewsService) 
                     when (val comments = states.comments) {
                         is Data.Loading -> LoadingComponent()
                         is Data.Success -> {
-                            CommentComponent(comments = comments.value)
+                            CommentComponent(comments = comments.value ?: emptyList())
                         }
                         is Data.Failure -> {
                             ErrorComponent { viewModel.loadStoryComments() }

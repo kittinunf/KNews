@@ -89,8 +89,7 @@ kotlin {
 }
 
 android {
-    compileSdkVersion(Android.compileSdkVersion)
-    buildToolsVersion(Android.buildToolsVersion)
+    compileSdk = Android.compileSdkVersion
 
     sourceSets {
         getByName("main") {
@@ -107,8 +106,8 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion(Android.minSdkVersion)
-        targetSdkVersion(Android.targetSdkVersion)
+        minSdk = Android.minSdkVersion
+        targetSdk = Android.targetSdkVersion
     }
 
     buildTypes {
@@ -119,10 +118,6 @@ android {
 }
 
 tasks {
-    withType<Jar> {
-        duplicatesStrategy = DuplicatesStrategy.INCLUDE
-    }
-
     fun getFrameworks(buildType: String): List<String> {
         val arm64 = project.buildDir.resolve("bin/iosArm64/${buildType}Framework/HackerNews.framework").toString()
         val x64 = project.buildDir.resolve("bin/iosx64/${buildType}Framework/HackerNews.framework").toString()

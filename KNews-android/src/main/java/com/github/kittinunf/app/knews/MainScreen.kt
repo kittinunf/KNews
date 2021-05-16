@@ -5,6 +5,7 @@ import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Icon
 import androidx.compose.material.IconToggleButton
 import androidx.compose.material.Scaffold
@@ -42,6 +43,8 @@ fun MainScaffold() {
     var navigationState by remember { mutableStateOf<NavigationState>(NavigationState.ListScreen) }
     var isSortButtonSelected by remember { mutableStateOf(false) }
 
+    val scrollState = rememberLazyListState()
+
     LocalOnBackPressedDispatcherOwner.current.onBackPressedDispatcher.apply {
         addCallback(owner = LocalLifecycleOwner.current, enabled = true) {
             isEnabled = navigationState is NavigationState.DetailScreen
@@ -70,6 +73,7 @@ fun MainScaffold() {
                     NavigationState.ListScreen -> {
                         KNewsListScreen(
                             isSortSelected = isSortButtonSelected,
+                            scrollState = scrollState,
                             onSortSelected = {
                                 isSortButtonSelected = !isSortButtonSelected
                             },

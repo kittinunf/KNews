@@ -15,13 +15,12 @@ repositories {
 }
 
 android {
-    compileSdk = 30
-    buildToolsVersion = "30.0.3"
+    compileSdk = Android.compileSdkVersion
 
     defaultConfig {
         applicationId = "com.github.kittinunf.app.knews"
-        minSdk = 24
-        targetSdk = 30
+        minSdk = Android.minSdkVersion
+        targetSdk = Android.targetSdkVersion
         versionCode = 1
         versionName = "1.0.0"
 
@@ -49,10 +48,6 @@ android {
         compose = true
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = AndroidX.Versions.compose
-    }
-
     kotlinOptions {
         useIR = true
         freeCompilerArgs = listOf("-P", "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true")
@@ -61,7 +56,7 @@ android {
 
 dependencies {
     // link hackernews lib and dependencies
-    // add this instead if you want to consume and the binary format (aar) (debug or release)
+    // add this instead if you want to consume in the binary format (aar) (debug or release)
     // implementation(group = "com.github.kittinunf.hackernews", name = "hackernews-debug", version = "+")
     implementation(project(":libs:hackernews"))
     implementation(Coroutines.core)
@@ -79,9 +74,9 @@ dependencies {
 
     // compose
     implementation(AndroidX.composeActivity)
-    implementation(AndroidX.composeUi)
     implementation(AndroidX.composeMaterial)
     implementation(AndroidX.composeTooling)
+    implementation(AndroidX.composeUi)
     implementation(AndroidX.composeViewModel)
 
     // lifecycle

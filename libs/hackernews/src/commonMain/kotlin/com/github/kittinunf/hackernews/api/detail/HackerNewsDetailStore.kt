@@ -32,7 +32,7 @@ data class DetailUiStoryState(val id: Int, val title: String, val url: Url, val 
 data class DetailUiState(
     val storyId: Int = -1,
     val story: Data<DetailUiStoryState, DetailError> = Data.Initial,
-    val comments: Data<List<DetailUiCommentRowState>, DetailError> = Data.Initial
+    val comments: Data<List<DetailUiCommentRowState>?, DetailError> = Data.Initial
 ) : State
 
 sealed class DetailError(message: String) : Throwable(message)
@@ -77,7 +77,7 @@ internal fun ResultActionReducer() = "ResultAction" to Reducer { currentState: D
             val result = action.result as Result<DetailUiStoryState, DetailError>
             copy(story = result.toData())
         } else {
-            val result = action.result as Result<List<DetailUiCommentRowState>, DetailError>
+            val result = action.result as Result<List<DetailUiCommentRowState>?, DetailError>
             copy(comments = result.toData())
         }
     }
