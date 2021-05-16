@@ -52,7 +52,7 @@ For the big picture, there are 2 main parts, the first one is the app modules (t
 iOS and Android app named [KNews-ios](KNews-ios) and [KNew-android](KNews-android), respectively).
 The second one is the libs modules. Inside of the [libs](libs) modules contains 1 module that contain a domain-specific library which relates to HackerNews API.
 
-The core of the library used roll-by-my-own KMP library named [CoRed](https://github.com/kittinunf/CoRed).
+The core of the HackerNews library uses redux implementation in KMP named [CoRed](https://github.com/kittinunf/CoRed).
 
 (*) is the final artifacts that can be used by the App which are `.aar` and `.xcframework` for
 debug and release buildType that will be finally consumed by the application layer for both iOS and Android app.
