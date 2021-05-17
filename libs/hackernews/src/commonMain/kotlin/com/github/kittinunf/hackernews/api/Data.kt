@@ -9,13 +9,16 @@ sealed class Data<out V : Any?, out E : Any> {
 
     object Initial : Data<Nothing, Nothing>(), Incomplete
 
-    object Loading : Data<Nothing, Nothing>(), Incomplete
+    class Loading<out V>(val value: V? = null) : Data<V, Nothing>(), Incomplete {
 
-    class Success<out V : Any?>(val value: V) : Data<V, Nothing>(), Complete {
+        override fun get(): V? = value
+    }
 
-        override fun component1(): V = value
+    class Success<out V>(val value: V?) : Data<V, Nothing>(), Complete {
 
-        override fun get(): V = value
+        override fun component1(): V? = value
+
+        override fun get(): V? = value
 
         override fun toString() = "[Success: $value]"
     }
@@ -52,17 +55,17 @@ sealed class Data<out V : Any?, out E : Any> {
         get() = this is Incomplete
 }
 
-fun <V : Any, U : Any, E : Any> Data<V, E>.map(transform: (V) -> U): Data<U, E> = mapBoth(transform, { it })
+fun <V : Any?, U : Any?, E : Any> Data<V, E>.map(transform: (V?) -> U): Data<U, E> = mapBoth(transform, { it })
 
-fun <V : Any, E : Any, EE : Any> Data<V, E>.mapError(transform: (E) -> EE): Data<V, EE> = mapBoth({ it }, transform)
+fun <V : Any?, E : Any, EE : Any> Data<V, E>.mapError(transform: (E) -> EE): Data<V, EE> = mapBoth({ it }, transform)
 
-private inline fun <V : Any, E : Any, U : Any, EE : Any> Data<V, E>.mapBoth(
-    transform: (V) -> U,
+private inline fun <V : Any?, E : Any, U : Any?, EE : Any> Data<V, E>.mapBoth(
+    transform: (V?) -> U?,
     transformError: (E) -> EE
 ): Data<U, EE> =
     when (this) {
         Data.Initial -> Data.Initial
-        Data.Loading -> Data.Loading
+        is Data.Loading -> Data.Loading(transform(value))
         is Data.Success -> Data.Success(transform(value))
         is Data.Failure -> Data.Failure(transformError(error))
     }

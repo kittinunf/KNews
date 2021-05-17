@@ -21,6 +21,9 @@ object Android {
 
     private const val materialVersion = "1.3.0"
     const val material = "com.google.android.material:material:$materialVersion"
+
+    private const val accompanistVersion = "0.9.1"
+    const val accompanist = "com.google.accompanist:accompanist-swiperefresh:$accompanistVersion"
 }
 
 object AndroidX {

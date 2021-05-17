@@ -52,7 +52,7 @@ fun KNewsDetailScreen(detailUiState: DetailUiState, service: HackerNewsService) 
     val states by viewModel.states.collectAsState(rememberCoroutineScope().coroutineContext)
 
     when (val story = detailUiState.story) {
-        is Data.Success -> viewModel.setInitialStory(story.value)
+        is Data.Success -> viewModel.setInitialStory(story.value ?: error("No story"))
         else -> viewModel.loadStory()
     }
 
@@ -66,7 +66,7 @@ fun KNewsDetailScreen(detailUiState: DetailUiState, service: HackerNewsService) 
             when (val story = states.story) {
                 is Data.Loading -> LoadingComponent()
                 is Data.Success -> {
-                    StoryComponent(state = story.value)
+                    StoryComponent(state = story.value ?: error("No story"))
                 }
                 is Data.Failure -> {
                     ErrorComponent { viewModel.loadStory() }

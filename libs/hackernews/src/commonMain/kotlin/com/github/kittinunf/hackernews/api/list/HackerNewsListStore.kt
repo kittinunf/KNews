@@ -70,12 +70,12 @@ internal class Sort(val sortCondition: ListUiSortCondition) : ListAction(), Iden
 
 @Suppress("FunctionName")
 internal fun LoadStoriesReducer() = "LoadStories" to Reducer { currentState: ListUiState, _: LoadStories ->
-    currentState.copy(stories = Data.Loading)
+    currentState.copy(stories = Data.Loading(currentState.stories.get()))
 }
 
 @Suppress("FunctionName")
 internal fun LoadNextStoriesReducer() = "LoadNextStories" to Reducer { currentState: ListUiState, _: LoadNextStories ->
-    currentState.copy(nextStories = Data.Loading)
+    currentState.copy(nextStories = Data.Loading())
 }
 
 @Suppress("FunctionName")
@@ -86,6 +86,8 @@ internal fun SortReducer() = "Sort" to Reducer { currentState: ListUiState, acti
     if (newSortCondition == currentState.sortCondition) return@Reducer currentState
 
     currentState.copy(sortCondition = newSortCondition, stories = currentState.stories.map {
+        it ?: return@map emptyList()
+
         if (newSortComparator != null) it.sortedWith(newSortComparator) else it
     })
 }
@@ -113,7 +115,7 @@ internal fun ResultActionReducer() = "ResultAction" to Reducer { currentState: L
             val result = action.result as Result<List<ListUiRowState>?, ListError>
             val stories = currentState.stories
             val sortedStories = stories.map {
-                val list = it.toMutableList()
+                val list = it?.toMutableList() ?: mutableListOf()
 
                 val (value, _) = result
                 list.addAll(value.orEmpty())

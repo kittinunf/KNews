@@ -35,7 +35,7 @@ class HackerNewsListStoreTest {
                             assertEquals(Data.Initial, state.nextStories)
                         }
                         1 -> {
-                            assertEquals(Data.Loading, state.stories)
+                            assertTrue(state.stories is Data.Loading)
                             assertEquals(Data.Initial, state.nextStories)
                         }
                         2 -> {

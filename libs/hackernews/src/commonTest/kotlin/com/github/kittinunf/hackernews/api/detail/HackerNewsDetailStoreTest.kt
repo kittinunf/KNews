@@ -35,7 +35,7 @@ class HackerNewsDetailStoreTest {
                             assertEquals(Data.Initial, state.comments)
                         }
                         1 -> {
-                            assertEquals(Data.Loading, state.story)
+                            assertTrue(state.story is Data.Loading)
                         }
                         2 -> {
                             val (value, _) = state.story
@@ -82,7 +82,7 @@ class HackerNewsDetailStoreTest {
                 .onEach { (index, state) ->
                     when (index) {
                         3 -> {
-                            assertEquals(Data.Loading, state.comments)
+                            assertTrue(state.comments is Data.Loading)
                         }
                         4 -> {
                             val (value, _) = state.comments
@@ -110,7 +110,7 @@ class HackerNewsDetailStoreTest {
                 .onEach { (index, state) ->
                     when (index) {
                         1 -> {
-                            assertEquals(Data.Loading, state.comments)
+                            assertTrue(state.comments is Data.Loading)
                         }
                         2 -> {
                             val (value, _) = state.comments
@@ -143,7 +143,7 @@ class HackerNewsDetailStoreTest {
                             assertEquals("http://1.com", value.url.toString())
                         }
                         2 -> {
-                            assertEquals(Data.Loading, state.comments)
+                            assertTrue(state.comments is Data.Loading)
                         }
                         3 -> {
                             val (value, _) = state.comments
@@ -173,7 +173,7 @@ class HackerNewsDetailStoreTest {
                 .onEach { (index, state) ->
                     when (index) {
                         1 -> {
-                            assertEquals(Data.Loading, state.story)
+                            assertTrue(state.story is Data.Loading)
                         }
                         2 -> {
                             val (_, err) = state.story
@@ -222,7 +222,7 @@ class HackerNewsDetailStoreTest {
                 .onEach { (index, state) ->
                     when (index) {
                         1 -> {
-                            assertEquals(Data.Loading, state.story)
+                            assertTrue(state.story is Data.Loading)
                         }
                         2 -> {
                             val (value, _) = state.story
@@ -231,7 +231,7 @@ class HackerNewsDetailStoreTest {
                             assertEquals(100, value.id)
                         }
                         3 -> {
-                            assertEquals(Data.Loading, state.comments)
+                            assertTrue(state.comments is Data.Loading)
                         }
                         4 -> {
                             val (value, _) = state.comments

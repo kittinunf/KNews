@@ -18,12 +18,12 @@ class HackerNewsListReducerTest {
         val (_, reducer) = LoadStoriesReducer()
         val state = reducer(currentState, LoadStories)
 
-        assertEquals(Data.Loading, state.stories)
+        assertTrue(state.stories is Data.Loading)
     }
 
     @Test
     fun `should bring uiState to Success state when load action is ended with success`() {
-        val currentState = ListUiState(stories = Data.Loading)
+        val currentState = ListUiState(stories = Data.Loading())
         val (_, reducer) = ResultActionReducer()
         val state = reducer(currentState, ResultAction(LoadStories, Result.success(listOf(createRandomStory(1), createRandomStory(2)).map(::listUiRowStateMapper))))
 
@@ -39,7 +39,7 @@ class HackerNewsListReducerTest {
 
     @Test
     fun `should bring uiState to Failure state when load action is ended with failure`() {
-        val currentState = ListUiState(stories = Data.Loading)
+        val currentState = ListUiState(stories = Data.Loading())
         val (_, reducer) = ResultActionReducer()
         val state = reducer(currentState, ResultAction(LoadStories, Result.error(LoadStoriesError("Cannot load stories"))))
 
@@ -56,12 +56,12 @@ class HackerNewsListReducerTest {
         val (_, reducer) = LoadNextStoriesReducer()
         val state = reducer(currentState, LoadNextStories(2))
 
-        assertEquals(Data.Loading, state.nextStories)
+        assertTrue(state.nextStories is Data.Loading)
     }
 
     @Test
     fun `should bring uiState to Success state when load next action is ended with success`() {
-        val currentState = ListUiState(nextStories = Data.Loading)
+        val currentState = ListUiState(nextStories = Data.Loading())
         val (_, reducer) = ResultActionReducer()
         val state = reducer(currentState, ResultAction(LoadNextStories(2), Result.success(listOf(createRandomStory(3), createRandomStory(4)).map(::listUiRowStateMapper))))
 
@@ -75,7 +75,7 @@ class HackerNewsListReducerTest {
 
     @Test
     fun `should bring uiState to Failure state when load next action is ended with failure`() {
-        val currentState = ListUiState(nextStories = Data.Loading)
+        val currentState = ListUiState(nextStories = Data.Loading())
         val (_, reducer) = ResultActionReducer()
         val state = reducer(currentState, ResultAction(LoadNextStories(2), Result.error(LoadNextStoriesError("Cannot load next stories"))))
 

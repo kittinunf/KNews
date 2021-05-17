@@ -73,6 +73,7 @@ dependencies {
     implementation(AndroidX.coreKtx)
 
     // compose
+    implementation(Android.accompanist)
     implementation(AndroidX.composeActivity)
     implementation(AndroidX.composeMaterial)
     implementation(AndroidX.composeTooling)

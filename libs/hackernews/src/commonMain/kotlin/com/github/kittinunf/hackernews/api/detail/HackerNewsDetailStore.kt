@@ -60,12 +60,12 @@ internal fun SetInitialStoryReducer() = "SetInitialStory" to Reducer { currentSt
 
 @Suppress("FunctionName")
 internal fun LoadStoryReducer() = "LoadStory" to Reducer { currentState: DetailUiState, _: LoadStory ->
-    currentState.copy(story = Data.Loading)
+    currentState.copy(story = Data.Loading(currentState.story.get()))
 }
 
 @Suppress("FunctionName")
 internal fun LoadStoryCommentsReducer() = "LoadStoryComments" to Reducer { currentState: DetailUiState, _: LoadStoryComments ->
-    currentState.copy(comments = Data.Loading)
+    currentState.copy(comments = Data.Loading(currentState.comments.get()))
 }
 
 @Suppress("FunctionName")
@@ -127,7 +127,7 @@ internal fun LoadStoryCommentsEffect(environment: DetailEnvironment, mapper: Map
                 scope.launch {
                     // check value we have a valid story object, or we fetch the story first to get all of the kids then fetch the comment
                     val result = if (state.story is Data.Success) {
-                        val ids = state.story.value.commentIds
+                        val ids = state.story.value?.commentIds
                         if (ids == null) Result.success<List<Comment>?>(null) else repository.getComments(state.story.value.commentIds)
                     } else repository.getStoryComments(state.storyId)
 

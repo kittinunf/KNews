@@ -32,7 +32,7 @@ class HackerNewsDetailReducerTest {
         val (_, reducer) = LoadStoryReducer()
         val state = reducer(currentState, LoadStory)
 
-        assertEquals(Data.Loading, state.story)
+        assertTrue(state.story is Data.Loading)
     }
 
     @Test
@@ -40,7 +40,7 @@ class HackerNewsDetailReducerTest {
         val currentState = DetailUiState(mockStoryId)
         val (_, reducer) = LoadStoryCommentsReducer()
         val state = reducer(currentState, LoadStoryComments)
-        assertEquals(Data.Loading, state.comments)
+        assertTrue(state.comments is Data.Loading)
     }
 
     @Test
