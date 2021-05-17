@@ -8,7 +8,7 @@ consumes [HackerNews API](https://github.com/HackerNews/API) with Kotlin Multi-P
 My idea is to build 2-page simple mobile applications (for both iOS and Android :) ). We want to
 build something relatively complex enough that can represent the real-world example-ish app that
 also comprises of the quality of modern mobile app architecture which is implemented/powered by
-using Kotlin Mutli-platform Mobile
+Kotlin Mutli-platform Mobile
 
 ## Project structure
 
