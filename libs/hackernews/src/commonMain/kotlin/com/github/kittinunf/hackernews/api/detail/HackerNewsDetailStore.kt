@@ -41,17 +41,11 @@ class LoadStoryCommentsError(val error: String) : DetailError(error)
 
 internal typealias DetailAction = Any
 
-internal class SetInitialStory(val state: DetailUiStoryState) : DetailAction(), Identifiable {
-    override val identifier: String = "SetInitialStory"
-}
+internal class SetInitialStory(val state: DetailUiStoryState) : DetailAction(), Identifiable
 
-internal object LoadStory : LoadAction<Nothing>(), Identifiable {
-    override val identifier: String = "LoadStory"
-}
+internal object LoadStory : LoadAction<Nothing>(), Identifiable
 
-internal object LoadStoryComments : LoadAction<Nothing>(), Identifiable {
-    override val identifier: String = "LoadStoryComments"
-}
+internal object LoadStoryComments : LoadAction<Nothing>(), Identifiable
 
 @Suppress("FunctionName")
 internal fun SetInitialStoryReducer() = "SetInitialStory" to Reducer { currentState: DetailUiState, action: SetInitialStory ->

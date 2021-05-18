@@ -192,7 +192,7 @@ fun StoryListComponent(
                             overlineText = {
                                 Text(
                                     // we don't wanna show the "http://www part
-                                    text = "(${rowState.url.host.substringAfter("www.")})",
+                                    text = "(${rowState.url?.host?.substringAfter("www.")})",
                                     style = typography.overline
                                 )
                             }

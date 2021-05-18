@@ -67,10 +67,12 @@ struct StoryListView : View {
     var body: some View {
         List {
             ForEach(stories) { rowState in
-                NavigationLink(destination: KNewsDetailView(state: DetailUiStoryState(id: rowState.id, title: rowState.title, url: rowState.url, commentIds: rowState.commentIds, descendants: rowState.descendants), service: HackerNewsServiceImpl(api: HackerNewsDependency().networkModule))) {
-                    StoryRowView(state: rowState)
+                rowState.url.map {
+                    NavigationLink(destination: KNewsDetailView(state: DetailUiStoryState(id: rowState.id, title: rowState.title, url: $0, commentIds: rowState.commentIds, descendants: rowState.descendants), service: HackerNewsServiceImpl(api: HackerNewsDependency().networkModule))) {
+                        StoryRowView(state: rowState)
+                    }
+                    .buttonStyle(PlainButtonStyle())
                 }
-                .buttonStyle(PlainButtonStyle())
             }
 
             ProgressView().progressViewStyle(CircularProgressViewStyle())
@@ -88,7 +90,7 @@ struct StoryRowView : View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("(\(state.url.host))")
+            Text("(\(state.url?.host ?? "null"))")
                 .font(.caption)
                 .padding(2)
 

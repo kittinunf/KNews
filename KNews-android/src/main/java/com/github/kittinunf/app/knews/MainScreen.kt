@@ -1,5 +1,6 @@
 package com.github.kittinunf.app.knews
 
+import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.AnimatedVisibility
@@ -18,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.style.TextOverflow
 import com.github.kittinunf.app.knews.screen.KNewsDetailScreen
@@ -52,6 +54,8 @@ fun MainScaffold() {
         }
     }
 
+    val context = LocalContext.current
+
     Scaffold(backgroundColor = KNewsColor.tan,
         topBar = {
             TopAppBar(title = {
@@ -78,7 +82,12 @@ fun MainScaffold() {
                                 isSortButtonSelected = !isSortButtonSelected
                             },
                             onStoryClick = { state ->
-                                navigationState = NavigationState.DetailScreen(state.id, state.title, state.url, state.commentIds, state.descendants)
+                                val url = state.url
+                                if (url == null) {
+                                    Toast.makeText(context, "You can't open story without url", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    navigationState = NavigationState.DetailScreen(state.id, state.title, url, state.commentIds, state.descendants)
+                                }
                             },
                             service = service
                         )

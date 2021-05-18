@@ -35,7 +35,7 @@ enum class ListUiSortCondition(val comparator: Comparator<ListUiRowState>?) {
 data class ListUiRowState(
     val id: Int,
     val title: String,
-    val url: Url,
+    val url: Url?,
     val score: Int,
     val by: String,
     val fromNow: Long,
@@ -56,17 +56,11 @@ class LoadNextStoriesError(val error: String) : ListError(error)
 
 internal typealias ListAction = Any
 
-internal object LoadStories : LoadAction<Nothing>() {
-    override val identifier: String = "LoadStories"
-}
+internal object LoadStories : LoadAction<Nothing>(), Identifiable
 
-internal class LoadNextStories(val page: Int) : LoadAction<Int>(page) {
-    override val identifier: String = "LoadNextStories"
-}
+internal class LoadNextStories(val page: Int) : LoadAction<Int>(page), Identifiable
 
-internal class Sort(val sortCondition: ListUiSortCondition) : ListAction(), Identifiable {
-    override val identifier: String = "Sort"
-}
+internal class Sort(val sortCondition: ListUiSortCondition) : ListAction(), Identifiable
 
 @Suppress("FunctionName")
 internal fun LoadStoriesReducer() = "LoadStories" to Reducer { currentState: ListUiState, _: LoadStories ->

@@ -24,7 +24,7 @@ internal interface Item {
 data class Story(
     override val id: Int,
     val title: String,
-    val url: String,
+    val url: String = "", // this is based on the real-world testing that it can be missing from the json object
     val score: Int,
     override val by: String,
     override val time: Int,

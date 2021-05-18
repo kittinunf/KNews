@@ -12,7 +12,7 @@ fun listUiRowStateMapper(story: Story): ListUiRowState {
     return ListUiRowState(
         id = story.id,
         title = story.title,
-        url = Url(story.url),
+        url = story.url.takeIf { it.isNotEmpty() }?.let { Url(it) },
         score = story.score,
         by = story.by,
         fromNow = diff,
