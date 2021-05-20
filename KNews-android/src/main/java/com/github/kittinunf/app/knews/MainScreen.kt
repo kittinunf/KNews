@@ -95,15 +95,11 @@ fun MainScaffold() {
                     is NavigationState.DetailScreen -> {
                         KNewsDetailScreen(
                             detailUiState = DetailUiState(
-                                navigation.id, Data.Success(
-                                    DetailUiStoryState(
-                                        navigation.id,
-                                        navigation.title,
-                                        navigation.url,
-                                        navigation.commentIds,
-                                        navigation.descendants
-                                    )
-                                )
+                                navigation.id,
+                                navigation.title,
+                                navigation.url,
+                                navigation.commentIds,
+                                navigation.descendants
                             ),
                             service = service
                         )

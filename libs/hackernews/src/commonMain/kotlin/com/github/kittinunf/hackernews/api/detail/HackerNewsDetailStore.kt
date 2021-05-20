@@ -33,7 +33,15 @@ data class DetailUiState(
     val storyId: Int = -1,
     val story: Data<DetailUiStoryState, DetailError> = Data.Initial,
     val comments: Data<List<DetailUiCommentRowState>?, DetailError> = Data.Initial
-) : State
+) : State {
+    constructor(
+        id: Int,
+        title: String,
+        url: Url,
+        commentIds: List<Int>?,
+        descendants: Int?
+    ) : this(id, Data.Success(DetailUiStoryState(id, title, url, commentIds, descendants)))
+}
 
 sealed class DetailError(message: String) : Throwable(message)
 class LoadStoryError(val error: String) : DetailError(error)

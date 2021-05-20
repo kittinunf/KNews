@@ -4,13 +4,13 @@ import WebKit
 
 struct KNewsDetailView: View {
 
-    let state: DetailUiStoryState
+    let state: DetailUiState
 
     @ObservedObject var viewModel: HackerNewsDetailViewModelWrapper
 
     @State private var bottomSheetShown = false
 
-    init(state: DetailUiStoryState, service: HackerNewsService) {
+    init(state: DetailUiState, service: HackerNewsService) {
         self.state = state
         self.viewModel = HackerNewsDetailViewModelWrapper(service: service)
     }
@@ -19,27 +19,31 @@ struct KNewsDetailView: View {
         let comments = viewModel.state.comments
 
         ZStack {
-            WebView(request: URLRequest(url: URL(string: state.url.description())!))
+            WebView(request: URLRequest(url: URL(string: state.story.get()!.url.description())!))
             GeometryReader { geo in
                 BottomSheetView(isOpen: self.$bottomSheetShown, maxHeight: geo.size.height * 0.8, content: {
                     if (comments.isLoading) {
                         LoadingView()
                     } else if (comments.isSuccess) {
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Comments: \(state.commentIds?.count ?? 0)")
+                            Text("Comments: \(state.story.get()!.commentIds?.count ?? 0)")
                                 .font(.system(size: 14))
                                 .padding(10)
                             CommentListView(comments: comments.get() as? [DetailUiCommentRowState] ?? [])
                         }
                     } else if (comments.isFailure) {
-                        
+
                     }
                 })
             }.edgesIgnoringSafeArea(.all)
         }
-        .navigationBarTitle(Text(state.title))
+        .navigationBarTitle(Text(state.story.get()!.title))
         .onAppear {
-            viewModel.setInitialStory(state: state)
+            if (state.story.isSuccess) {
+                viewModel.setInitialStory(state: state.story.get()!)
+            } else {
+                viewModel.loadStory()
+            }
             viewModel.loadStoryComments()
         }
     }

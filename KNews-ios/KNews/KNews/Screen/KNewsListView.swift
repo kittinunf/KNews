@@ -68,7 +68,12 @@ struct StoryListView : View {
         List {
             ForEach(stories) { rowState in
                 rowState.url.map {
-                    NavigationLink(destination: KNewsDetailView(state: DetailUiStoryState(id: rowState.id, title: rowState.title, url: $0, commentIds: rowState.commentIds, descendants: rowState.descendants), service: HackerNewsServiceImpl(api: HackerNewsDependency().networkModule))) {
+                    NavigationLink(
+                        destination: KNewsDetailView(
+                            state: DetailUiState(id: rowState.id, title: rowState.title, url: $0, commentIds: rowState.commentIds, descendants: rowState.descendants),
+                            service: HackerNewsServiceImpl(api: HackerNewsDependency().networkModule)
+                        )
+                    ) {
                         StoryRowView(state: rowState)
                     }
                     .buttonStyle(PlainButtonStyle())
