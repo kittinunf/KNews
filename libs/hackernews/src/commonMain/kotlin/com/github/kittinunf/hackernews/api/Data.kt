@@ -6,12 +6,14 @@ sealed class Data<out V : Any?, out E : Any> {
     open operator fun component2(): E? = null
 
     open fun get(): V? = null
+    open fun getOrNull(): V? = null
 
     object Initial : Data<Nothing, Nothing>(), Incomplete
 
     class Loading<out V>(val value: V? = null) : Data<V, Nothing>(), Incomplete {
 
         override fun get(): V? = value
+        override fun getOrNull(): V? = value
     }
 
     class Success<out V>(val value: V?) : Data<V, Nothing>(), Complete {
@@ -19,6 +21,7 @@ sealed class Data<out V : Any?, out E : Any> {
         override fun component1(): V? = value
 
         override fun get(): V? = value
+        override fun getOrNull(): V? = value
 
         override fun toString() = "[Success: $value]"
     }
@@ -28,6 +31,7 @@ sealed class Data<out V : Any?, out E : Any> {
         override fun component2(): E = error
 
         override fun get() = throw IllegalStateException(toString())
+        override fun getOrNull() = null
 
         override fun toString(): String = "[Failure: $error]"
     }

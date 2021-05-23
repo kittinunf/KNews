@@ -64,7 +64,7 @@ internal class Sort(val sortCondition: ListUiSortCondition) : ListAction(), Iden
 
 @Suppress("FunctionName")
 internal fun LoadStoriesReducer() = "LoadStories" to Reducer { currentState: ListUiState, _: LoadStories ->
-    currentState.copy(stories = Data.Loading(currentState.stories.get()))
+    currentState.copy(stories = Data.Loading(currentState.stories.getOrNull()))
 }
 
 @Suppress("FunctionName")

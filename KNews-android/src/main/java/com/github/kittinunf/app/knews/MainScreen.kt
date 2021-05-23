@@ -47,7 +47,7 @@ fun MainScaffold() {
 
     val scrollState = rememberLazyListState()
 
-    LocalOnBackPressedDispatcherOwner.current.onBackPressedDispatcher.apply {
+    LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher?.apply {
         addCallback(owner = LocalLifecycleOwner.current, enabled = true) {
             isEnabled = navigationState is NavigationState.DetailScreen
             navigationState = NavigationState.ListScreen

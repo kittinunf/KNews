@@ -51,7 +51,6 @@ import com.github.kittinunf.hackernews.api.list.ListUiSortCondition
 import com.github.kittinunf.hackernews.repository.HackerNewsService
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshState
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable

@@ -16,24 +16,24 @@ object Android {
     const val targetSdkVersion = 30
     const val compileSdkVersion = 30
 
-    private const val version = "7.0.0-alpha15"
+    private const val version = "7.1.0-alpha01"
     const val plugin = "com.android.tools.build:gradle:$version"
 
     private const val materialVersion = "1.3.0"
     const val material = "com.google.android.material:material:$materialVersion"
 
-    private const val accompanistVersion = "0.9.1"
+    private const val accompanistVersion = "0.10.0"
     const val accompanist = "com.google.accompanist:accompanist-swiperefresh:$accompanistVersion"
 }
 
 object AndroidX {
 
     object Versions {
-        const val core = "1.3.2"
+        const val core = "1.6.0-alpha03"
         const val lifeCycle = "2.4.0-alpha01"
-        const val compose = "1.0.0-beta06"
-        const val composeActivity = "1.3.0-alpha05"
-        const val composeViewModel = "1.0.0-alpha03"
+        const val compose = "1.0.0-beta07"
+        const val composeActivity = "1.3.0-alpha08"
+        const val composeViewModel = "1.0.0-alpha05"
     }
 
     const val coreKtx = "androidx.core:core-ktx:${Versions.core}"
