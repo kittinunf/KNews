@@ -24,6 +24,9 @@ object Android {
 
     private const val accompanistVersion = "0.10.0"
     const val accompanist = "com.google.accompanist:accompanist-swiperefresh:$accompanistVersion"
+
+    private const val desugarJdkLibsVersion = "1.1.5"
+    const val desugarJdkLibs = "com.android.tools:desugar_jdk_libs:$desugarJdkLibsVersion"
 }
 
 object AndroidX {
