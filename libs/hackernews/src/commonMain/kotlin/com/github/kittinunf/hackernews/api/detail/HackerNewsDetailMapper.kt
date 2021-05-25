@@ -8,7 +8,7 @@ import kotlinx.datetime.Clock
 import kotlin.time.ExperimentalTime
 
 fun detailUiStoryStateMapper(story: Story): DetailUiStoryState =
-    DetailUiStoryState(id = story.id, title = story.title, url = Url(story.url), commentIds = story.kids, descendants = story.descendants)
+    DetailUiStoryState(id = story.id, title = story.title, url = Url(story.url!!), commentIds = story.kids, descendants = story.descendants)
 
 @OptIn(ExperimentalTime::class)
 fun detailUiCommentRowStateMapper(comment: Comment): DetailUiCommentRowState {
