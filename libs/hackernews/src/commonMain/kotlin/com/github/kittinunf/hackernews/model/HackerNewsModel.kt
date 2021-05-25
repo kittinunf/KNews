@@ -4,6 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
 
 @Serializable
 data class User(
@@ -24,7 +25,7 @@ internal interface Item {
 data class Story(
     override val id: Int,
     val title: String,
-    val url: String = "", // this is based on the real-world testing that it can be missing from the json object
+    val url: String? = null, // this is based on the real-world testing that it can be missing from the json object
     val score: Int,
     override val by: String,
     override val time: Int,
@@ -45,7 +46,7 @@ data class Comment(
 
 internal val hackerNewsSerializersModule = SerializersModule {
     polymorphic(Item::class) {
-        subclass(Story::class, Story.serializer())
-        subclass(Comment::class, Comment.serializer())
+        subclass(Story::class)
+        subclass(Comment::class)
     }
 }
