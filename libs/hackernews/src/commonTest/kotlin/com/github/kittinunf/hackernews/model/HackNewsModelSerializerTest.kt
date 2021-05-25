@@ -56,7 +56,7 @@ class HackNewsModelSerializerTest {
     }
 
     @Test
-    fun `should serialize and deserialize item wih story with "kids" missing fields`() {
+    fun `should serialize and deserialize item wih story with 'kids' missing fields`() {
         val str = """
             {
               "by" : "dhouston",
@@ -78,7 +78,7 @@ class HackNewsModelSerializerTest {
     }
 
     @Test
-    fun `should serialize and deserialize item wih story with "url" missing fields`() {
+    fun `should serialize and deserialize item wih story with 'url' missing fields`() {
         val str = """
             {
                "by":"Flex247A",
