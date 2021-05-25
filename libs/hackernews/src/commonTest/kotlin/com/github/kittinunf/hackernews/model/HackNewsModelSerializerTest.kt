@@ -4,6 +4,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class HackNewsModelSerializerTest {
 
@@ -55,7 +56,7 @@ class HackNewsModelSerializerTest {
     }
 
     @Test
-    fun `should serialize and deserialize item wih story with missing fields`() {
+    fun `should serialize and deserialize item wih story with "kids" missing fields`() {
         val str = """
             {
               "by" : "dhouston",
@@ -74,6 +75,30 @@ class HackNewsModelSerializerTest {
         assertEquals(0, story.kids?.size ?: 0)
         assertEquals(71, story.descendants ?: 0)
         assertEquals("My YC app: Dropbox - Throw away your USB drive", story.title)
+    }
+
+    @Test
+    fun `should serialize and deserialize item wih story with "url" missing fields`() {
+        val str = """
+            {
+               "by":"Flex247A",
+               "descendants":40,
+               "id":272,
+               "kids":[],
+               "score":95,
+               "text":"I recently picked up &#x27;The Audio Programming Book&#x27; [0] and so far, I am really liking it.",
+               "time":1621925683,
+               "title":"Ask HN: How to get started with audio programming?",
+               "type":"story"
+            }
+        """.trimIndent()
+        val story = format.decodeFromString<Story>(str)
+        assertEquals(272, story.id)
+        assertNull(story.url)
+        assertEquals("Flex247A", story.by)
+        assertEquals(0, story.kids?.size ?: 0)
+        assertEquals(40, story.descendants ?: 0)
+        assertEquals("I recently picked up &#x27;The Audio Programming Book&#x27; [0] and so far, I am really liking it.", story.title)
     }
 
     @Test
