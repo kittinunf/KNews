@@ -98,7 +98,7 @@ class HackNewsModelSerializerTest {
         assertEquals("Flex247A", story.by)
         assertEquals(0, story.kids?.size ?: 0)
         assertEquals(40, story.descendants ?: 0)
-        assertEquals("I recently picked up &#x27;The Audio Programming Book&#x27; [0] and so far, I am really liking it.", story.title)
+        assertEquals("Ask HN: How to get started with audio programming?", story.title)
     }
 
     @Test
