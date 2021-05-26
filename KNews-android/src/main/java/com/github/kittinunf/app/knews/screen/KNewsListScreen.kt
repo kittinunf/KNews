@@ -1,5 +1,6 @@
 package com.github.kittinunf.app.knews.screen
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
@@ -40,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.kittinunf.app.knews.ui.theme.typography
@@ -95,9 +97,15 @@ fun KNewsListScreen(isSortSelected: Boolean, scrollState: LazyListState, onSortS
         }
     }
 
-    AnimatedVisibility(visible = states.nextStories is Data.Loading) {
-        Row(modifier = Modifier.fillMaxWidth()) {
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+    when (val nextStories = states.nextStories) {
+        is Data.Failure -> {
+            val context = LocalContext.current
+            Toast.makeText(context, "You can't open story without url", Toast.LENGTH_SHORT).show()
+        }
+        else -> AnimatedVisibility(visible = nextStories is Data.Loading) {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            }
         }
     }
 }

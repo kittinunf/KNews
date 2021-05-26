@@ -1,7 +1,6 @@
 package com.github.kittinunf.hackernews.api.detail
 
 import com.github.kittinunf.hackernews.api.Data
-import com.github.kittinunf.hackernews.api.common.ResultAction
 import com.github.kittinunf.hackernews.repository.createRandomComment
 import com.github.kittinunf.hackernews.repository.createRandomStory
 import com.github.kittinunf.hackernews.util.Result
@@ -46,8 +45,8 @@ class HackerNewsDetailReducerTest {
     @Test
     fun `should bring uiState to Success state when load story action is ended with success`() {
         val currentState = DetailUiState(mockStoryId)
-        val (_, reducer) = ResultActionReducer()
-        val state = reducer(currentState, ResultAction(LoadStory, Result.success(detailUiStoryStateMapper(createRandomStory(10)))))
+        val (_, reducer) = LoadStoryResultReducer()
+        val state = reducer(currentState, LoadStoryResult(Result.success(detailUiStoryStateMapper(createRandomStory(10)))))
 
         assertTrue(state.story.isSuccess)
 
@@ -60,8 +59,8 @@ class HackerNewsDetailReducerTest {
     @Test
     fun `should bring uiState to Success state when load comment action is ended with success`() {
         val currentState = DetailUiState(mockStoryId)
-        val (_, reducer) = ResultActionReducer()
-        val state = reducer(currentState, ResultAction(LoadStoryComments, Result.success((1..3).map(::createRandomComment).map(::detailUiCommentRowStateMapper))))
+        val (_, reducer) = LoadStoryCommentsResultReducer()
+        val state = reducer(currentState, LoadStoryCommentsResult(Result.success((1..3).map(::createRandomComment).map(::detailUiCommentRowStateMapper))))
 
         assertTrue(state.comments.isSuccess)
 
@@ -74,8 +73,8 @@ class HackerNewsDetailReducerTest {
     @Test
     fun `should bring uiState to Failure state when load story action is ended with failure`() {
         val currentState = DetailUiState(mockStoryId)
-        val (_,reducer) = ResultActionReducer()
-        val state = reducer(currentState, ResultAction(LoadStory, Result.error(LoadStoryError("Cannot load story"))))
+        val (_, reducer) = LoadStoryResultReducer()
+        val state = reducer(currentState, LoadStoryResult(Result.error(LoadStoryError("Cannot load story"))))
 
         assertTrue(state.story.isFailure)
 
@@ -88,8 +87,8 @@ class HackerNewsDetailReducerTest {
     @Test
     fun `should bring uiState to Failure state when load comment action is ended with failure`() {
         val currentState = DetailUiState(mockStoryId)
-        val (_, reducer) = ResultActionReducer()
-        val state = reducer(currentState, ResultAction(LoadStoryComments, Result.error(LoadStoryCommentsError("Cannot load comments"))))
+        val (_, reducer) = LoadStoryCommentsResultReducer()
+        val state = reducer(currentState, LoadStoryCommentsResult(Result.error(LoadStoryCommentsError("Cannot load comments"))))
 
         assertTrue(state.comments.isFailure)
 
