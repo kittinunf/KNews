@@ -8,7 +8,7 @@ all: android ios
 install: install_android install_ios
 
 lib:
-	./gradlew :libs:hackernews:build -x sourcesJar
+	./gradlew :libs:hackernews:build
 
 ios: lib
 	./gradlew createXCFramework

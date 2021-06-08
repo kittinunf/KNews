@@ -25,10 +25,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.github.kittinunf.app.knews.screen.KNewsDetailScreen
 import com.github.kittinunf.app.knews.screen.KNewsListScreen
 import com.github.kittinunf.app.knews.ui.theme.KNewsColor
-import com.github.kittinunf.hackernews.api.Data
 import com.github.kittinunf.hackernews.api.HackerNewsDependency
 import com.github.kittinunf.hackernews.api.detail.DetailUiState
-import com.github.kittinunf.hackernews.api.detail.DetailUiStoryState
 import com.github.kittinunf.hackernews.repository.HackerNewsServiceImpl
 import io.ktor.http.Url
 
@@ -60,7 +58,7 @@ fun MainScaffold() {
         topBar = {
             TopAppBar(title = {
                 when (val state = navigationState) {
-                    is NavigationState.DetailScreen -> Text(text = state.title, maxLines = 1,overflow = TextOverflow.Ellipsis)
+                    is NavigationState.DetailScreen -> Text(text = state.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     else -> Text(text = "KNews")
                 }
             }, actions = {
@@ -82,6 +80,7 @@ fun MainScaffold() {
                                 isSortButtonSelected = !isSortButtonSelected
                             },
                             onStoryClick = { state ->
+                                Toast.makeText(context, "click $state", Toast.LENGTH_SHORT).show()
                                 val url = state.url
                                 if (url == null) {
                                     Toast.makeText(context, "You can't open story without url", Toast.LENGTH_SHORT).show()

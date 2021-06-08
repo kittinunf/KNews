@@ -44,6 +44,10 @@ android {
         compose = true
     }
 
+    composeOptions {
+        kotlinCompilerExtensionVersion = AndroidX.Versions.compose
+    }
+
     kotlinOptions {
         useIR = true
         jvmTarget = "1.8"
@@ -57,10 +61,8 @@ dependencies {
     // implementation(group = "com.github.kittinunf.hackernews", name = "hackernews-debug", version = "+")
     implementation(project(":libs:hackernews"))
     implementation(Coroutines.core)
-    implementation(Coroutines.android)
     implementation(Ktor.core)
     implementation(Ktor.logging)
-    implementation(Ktor.android)
     implementation(Ktor.okttp)
     implementation(Serialization.json)
     implementation(Time.core)

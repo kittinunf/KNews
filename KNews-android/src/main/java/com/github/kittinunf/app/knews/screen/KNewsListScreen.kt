@@ -175,11 +175,10 @@ fun StoryListComponent(
                     shape = RoundedCornerShape(8.dp),
                     backgroundColor = Color.White,
                     modifier = Modifier
-                        .fillParentMaxWidth()
-                        .padding(8.dp)
-                        .clickable {
+                        .padding(16.dp)
+                        .clickable(onClick = {
                             onStoryClick(index, rowState)
-                        }
+                        })
                 ) {
                     Column {
                         ListItem(

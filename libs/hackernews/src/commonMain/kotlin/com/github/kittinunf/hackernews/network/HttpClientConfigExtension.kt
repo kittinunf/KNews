@@ -26,6 +26,8 @@ internal fun HttpClientConfig<*>.addHackerNewsJsonSerializer() {
         serializer = KotlinxSerializer(KotlinxSerializationJson {
             serializersModule = hackerNewsSerializersModule
             ignoreUnknownKeys = true
+            // this is a bug for Kotlinx Serialization 1.2.1, for more information please see https://github.com/Kotlin/kotlinx.serialization/issues/1450
+            useAlternativeNames = false
         })
     }
 }
