@@ -50,6 +50,7 @@ kotlin {
 
         val androidMain by getting {
             dependencies {
+                implementation(Ktor.android)
                 implementation(Ktor.okttp)
 
                 implementation(AndroidX.lifeCycleViewModel)

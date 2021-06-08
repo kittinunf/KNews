@@ -75,6 +75,7 @@ object Ktor {
 
     const val core = "io.ktor:ktor-client-core:$version"
     const val okttp = "io.ktor:ktor-client-okhttp:$version"
+    const val android = "io.ktor:ktor-client-android:$version"
     const val ios = "io.ktor:ktor-client-ios:$version"
 
     const val serialization = "io.ktor:ktor-client-serialization:$version"
