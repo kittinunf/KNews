@@ -97,10 +97,7 @@ fun KNewsDetailScreen(detailUiState: DetailUiState, service: HackerNewsService) 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun StoryComponent(state: DetailUiStoryState) {
-    AndroidView(
-        modifier = Modifier.fillMaxSize(),
-        factory = ::WebView
-    ) { view ->
+    AndroidView(modifier = Modifier.fillMaxSize(), factory = ::WebView) { view ->
         with(view) {
             settings.javaScriptEnabled = true
             webViewClient = object : WebViewClient() {
@@ -116,10 +113,7 @@ fun StoryComponent(state: DetailUiStoryState) {
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CommentComponent(comments: List<DetailUiCommentRowState>) {
-    Text(
-        text = "Comments: ${comments.size}",
-        style = typography.caption
-    )
+    Text(text = "Comments: ${comments.size}", style = typography.caption)
 
     Spacer(modifier = Modifier.height(8.dp))
 

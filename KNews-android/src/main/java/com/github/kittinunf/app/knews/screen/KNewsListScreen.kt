@@ -117,12 +117,9 @@ fun SortOverlayComponent(selected: Boolean, currentSortingCondition: ListUiSortC
         content()
         // it has to be on top of the content provided
         AnimatedVisibility(visible = selected) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.White),
-                verticalArrangement = Arrangement.Center
-            ) {
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White), verticalArrangement = Arrangement.Center) {
                 ListUiSortCondition.values().forEach { sortCondition ->
                     SortOverlayItemComponent(text = sortCondition.name, selected = currentSortingCondition == sortCondition) {
                         onSortConditionSelected(sortCondition)
@@ -135,18 +132,16 @@ fun SortOverlayComponent(selected: Boolean, currentSortingCondition: ListUiSortC
 
 @Composable
 fun SortOverlayItemComponent(text: String, selected: Boolean, onClick: () -> Unit = {}) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(48.dp)
-            .clickable { onClick() },
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .height(48.dp)
+        .clickable { onClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (selected) {
             Icon(modifier = Modifier.padding(8.dp), imageVector = Icons.Default.Check, contentDescription = null)
         }
-        Text(
-            modifier = Modifier.padding(8.dp),
+        Text(modifier = Modifier.padding(8.dp),
             text = text,
             style = typography.subtitle1.copy(background = Color.White),
             maxLines = 1
@@ -166,53 +161,33 @@ fun StoryListComponent(
 ) {
     val lastIndex = rowStates.lastIndex
 
-    SwipeRefresh(state = swipeRefreshState, onRefresh = {
-        onReload()
-    }) {
+    SwipeRefresh(state = swipeRefreshState, onRefresh = { onReload() }) {
         LazyColumn(state = scrollState) {
             itemsIndexed(items = rowStates, key = { _, rowState -> rowState.id }, itemContent = { index, rowState ->
-                Card(
-                    shape = RoundedCornerShape(8.dp),
+                Card(shape = RoundedCornerShape(8.dp),
                     backgroundColor = Color.White,
-                    modifier = Modifier
-                        .fillParentMaxWidth()
-                        .padding(8.dp)
-                        .clickable {
-                            onStoryClick(index, rowState)
-                        }
+                    modifier = Modifier.padding(8.dp)
                 ) {
-                    Column {
-                        ListItem(
-                            modifier = Modifier.padding(4.dp),
+                    Column(modifier = Modifier.clickable { onStoryClick(index, rowState) }) {
+                        ListItem(modifier = Modifier.padding(4.dp),
                             text = {
-                                Text(
-                                    text = rowState.title,
-                                    style = typography.h5
-                                )
+                                Text(text = rowState.title, style = typography.h5)
                             },
                             secondaryText = {
-                                Text(
-                                    text = "by: ${rowState.by} | ${rowState.fromNowText}",
-                                    style = typography.subtitle1
-                                )
+                                Text(text = "by: ${rowState.by} | ${rowState.fromNowText}", style = typography.subtitle1)
                             },
                             overlineText = {
-                                Text(
-                                    // we don't wanna show the "http://www part
-                                    text = "(${rowState.url?.host?.substringAfter("www.")})",
-                                    style = typography.overline
-                                )
+                                // we don't wanna show the "http://www part
+                                Text(text = "(${rowState.url?.host?.substringAfter("www.")})", style = typography.overline)
                             }
                         )
 
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp),
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
+                        Row(modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
                             IconAndTextComponent(image = Icons.Default.Star, text = rowState.score.toString())
-                            IconAndTextComponent(image = Icons.Default.Person, text = (rowState.commentIds?.size ?: 0).toString())
+                            IconAndTextComponent(image = Icons.Default.Person, text = (rowState.commentIds?.size
+                                ?: 0).toString())
                         }
                     }
                 }
@@ -236,11 +211,7 @@ fun IconAndTextComponent(modifier: Modifier = Modifier, image: ImageVector, text
 
 @Composable
 fun LoadingComponent() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
         CircularProgressIndicator(modifier = Modifier.wrapContentWidth(Alignment.CenterHorizontally))
     }
 }

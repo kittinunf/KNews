@@ -4,18 +4,6 @@ plugins {
     id("com.android.library")
 }
 
-// this is workaround to make it work with Kotlin 1.4, it will not be needed anymore in Kotlin 1.5
-android {
-    configurations {
-        create("androidTestApi")
-        create("androidTestDebugApi")
-        create("androidTestReleaseApi")
-        create("testApi")
-        create("testDebugApi")
-        create("testReleaseApi")
-    }
-}
-
 kotlin {
     android()
     ios { // comment/uncomment this for building both the arm64 + x64 framework
@@ -54,8 +42,7 @@ kotlin {
 
         val commonTest by getting {
             dependencies {
-                implementation(Kotlin.testCommon)
-                implementation(Kotlin.testAnnotationsCommon)
+                implementation(kotlin("test"))
 
                 implementation(Ktor.mock)
             }
@@ -63,8 +50,6 @@ kotlin {
 
         val androidMain by getting {
             dependencies {
-                implementation(Coroutines.android)
-
                 implementation(Ktor.android)
                 implementation(Ktor.okttp)
 
@@ -75,8 +60,6 @@ kotlin {
         val androidTest by getting {
             dependencies {
                 implementation(Coroutines.test)
-
-                implementation(Kotlin.testJunit)
             }
         }
 
