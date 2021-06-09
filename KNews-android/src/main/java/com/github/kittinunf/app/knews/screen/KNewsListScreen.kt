@@ -69,28 +69,28 @@ fun KNewsListScreen(isSortSelected: Boolean, scrollState: LazyListState, onSortS
             if (stories.get() == null) LoadingComponent()
             else
                 SortOverlayComponent(selected = isSortSelected,
-                        currentSortingCondition = states.sortCondition,
-                        onSortConditionSelected = { sortCondition ->
-                            onSortSelected()
-                            viewModel.sortBy(sortCondition)
-                            if (sortCondition == ListUiSortCondition.None) { //if the sortCondition is none, then we load everything again from the api
+                    currentSortingCondition = states.sortCondition,
+                    onSortConditionSelected = { sortCondition ->
+                        onSortSelected()
+                        viewModel.sortBy(sortCondition)
+                        if (sortCondition == ListUiSortCondition.None) { //if the sortCondition is none, then we load everything again from the api
+                            viewModel.loadStories()
+                        }
+                    },
+                    content = {
+                        StoryListComponent(rowStates = stories.get().orEmpty(),
+                            swipeRefreshState = SwipeRefreshState(stories.isIncomplete),
+                            scrollState = scrollState,
+                            onReload = {
                                 viewModel.loadStories()
-                            }
-                        },
-                        content = {
-                            StoryListComponent(rowStates = stories.get().orEmpty(),
-                                    swipeRefreshState = SwipeRefreshState(stories.isIncomplete),
-                                    scrollState = scrollState,
-                                    onReload = {
-                                        viewModel.loadStories()
-                                    },
-                                    onStoryClick = { _, state ->
-                                        onStoryClick(state)
-                                    },
-                                    onLoadNext = {
-                                        viewModel.loadNextStories()
-                                    })
-                        })
+                            },
+                            onStoryClick = { _, state ->
+                                onStoryClick(state)
+                            },
+                            onLoadNext = {
+                                viewModel.loadNextStories()
+                            })
+                    })
         }
         is Data.Failure -> {
             ErrorComponent { viewModel.loadStories() }
@@ -117,7 +117,9 @@ fun SortOverlayComponent(selected: Boolean, currentSortingCondition: ListUiSortC
         content()
         // it has to be on top of the content provided
         AnimatedVisibility(visible = selected) {
-            Column(modifier = Modifier.fillMaxWidth().background(Color.White), verticalArrangement = Arrangement.Center) {
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White), verticalArrangement = Arrangement.Center) {
                 ListUiSortCondition.values().forEach { sortCondition ->
                     SortOverlayItemComponent(text = sortCondition.name, selected = currentSortingCondition == sortCondition) {
                         onSortConditionSelected(sortCondition)
@@ -131,18 +133,18 @@ fun SortOverlayComponent(selected: Boolean, currentSortingCondition: ListUiSortC
 @Composable
 fun SortOverlayItemComponent(text: String, selected: Boolean, onClick: () -> Unit = {}) {
     Row(modifier = Modifier
-            .fillMaxWidth()
-            .height(48.dp)
-            .clickable { onClick() },
-            verticalAlignment = Alignment.CenterVertically
+        .fillMaxWidth()
+        .height(48.dp)
+        .clickable { onClick() },
+        verticalAlignment = Alignment.CenterVertically
     ) {
         if (selected) {
             Icon(modifier = Modifier.padding(8.dp), imageVector = Icons.Default.Check, contentDescription = null)
         }
         Text(modifier = Modifier.padding(8.dp),
-                text = text,
-                style = typography.subtitle1.copy(background = Color.White),
-                maxLines = 1
+            text = text,
+            style = typography.subtitle1.copy(background = Color.White),
+            maxLines = 1
         )
     }
 }
@@ -150,44 +152,42 @@ fun SortOverlayItemComponent(text: String, selected: Boolean, onClick: () -> Uni
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun StoryListComponent(
-        rowStates: List<ListUiRowState>,
-        swipeRefreshState: SwipeRefreshState,
-        scrollState: LazyListState,
-        onReload: () -> Unit,
-        onStoryClick: (Int, ListUiRowState) -> Unit,
-        onLoadNext: @Composable () -> Unit
+    rowStates: List<ListUiRowState>,
+    swipeRefreshState: SwipeRefreshState,
+    scrollState: LazyListState,
+    onReload: () -> Unit,
+    onStoryClick: (Int, ListUiRowState) -> Unit,
+    onLoadNext: @Composable () -> Unit
 ) {
     val lastIndex = rowStates.lastIndex
 
-    SwipeRefresh(state = swipeRefreshState, onRefresh = {
-        onReload()
-    }) {
+    SwipeRefresh(state = swipeRefreshState, onRefresh = { onReload() }) {
         LazyColumn(state = scrollState) {
             itemsIndexed(items = rowStates, key = { _, rowState -> rowState.id }, itemContent = { index, rowState ->
                 Card(shape = RoundedCornerShape(8.dp),
-                        backgroundColor = Color.White,
-                        modifier = Modifier.padding(8.dp)
+                    backgroundColor = Color.White,
+                    modifier = Modifier.padding(8.dp)
                 ) {
                     Column(modifier = Modifier.clickable { onStoryClick(index, rowState) }) {
                         ListItem(modifier = Modifier.padding(4.dp),
-                                text = {
-                                    Text(text = rowState.title, style = typography.h5)
-                                },
-                                secondaryText = {
-                                    Text(text = "by: ${rowState.by} | ${rowState.fromNowText}", style = typography.subtitle1)
-                                },
-                                overlineText = {
-                                    // we don't wanna show the "http://www part
-                                    Text(text = "(${rowState.url?.host?.substringAfter("www.")})", style = typography.overline)
-                                }
+                            text = {
+                                Text(text = rowState.title, style = typography.h5)
+                            },
+                            secondaryText = {
+                                Text(text = "by: ${rowState.by} | ${rowState.fromNowText}", style = typography.subtitle1)
+                            },
+                            overlineText = {
+                                // we don't wanna show the "http://www part
+                                Text(text = "(${rowState.url?.host?.substringAfter("www.")})", style = typography.overline)
+                            }
                         )
 
                         Row(modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+                            .fillMaxWidth()
+                            .padding(8.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
                             IconAndTextComponent(image = Icons.Default.Star, text = rowState.score.toString())
                             IconAndTextComponent(image = Icons.Default.Person, text = (rowState.commentIds?.size
-                                    ?: 0).toString())
+                                ?: 0).toString())
                         }
                     }
                 }
