@@ -80,7 +80,6 @@ fun MainScaffold() {
                                 isSortButtonSelected = !isSortButtonSelected
                             },
                             onStoryClick = { state ->
-                                Toast.makeText(context, "click $state", Toast.LENGTH_SHORT).show()
                                 val url = state.url
                                 if (url == null) {
                                     Toast.makeText(context, "You can't open story without url", Toast.LENGTH_SHORT).show()

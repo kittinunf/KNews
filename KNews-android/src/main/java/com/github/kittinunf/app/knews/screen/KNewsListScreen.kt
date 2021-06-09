@@ -135,8 +135,7 @@ fun SortOverlayComponent(selected: Boolean, currentSortingCondition: ListUiSortC
 
 @Composable
 fun SortOverlayItemComponent(text: String, selected: Boolean, onClick: () -> Unit = {}) {
-    Row(
-        modifier = Modifier
+    Row(modifier = Modifier
             .fillMaxWidth()
             .height(48.dp)
             .clickable { onClick() },
@@ -174,13 +173,9 @@ fun StoryListComponent(
                 Card(
                     shape = RoundedCornerShape(8.dp),
                     backgroundColor = Color.White,
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .clickable(onClick = {
-                            onStoryClick(index, rowState)
-                        })
+                    modifier = Modifier.padding(8.dp)
                 ) {
-                    Column {
+                    Column(modifier = Modifier.clickable { onStoryClick(index, rowState) }) {
                         ListItem(
                             modifier = Modifier.padding(4.dp),
                             text = {
@@ -204,12 +199,7 @@ fun StoryListComponent(
                             }
                         )
 
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp),
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
+                        Row(modifier = Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
                             IconAndTextComponent(image = Icons.Default.Star, text = rowState.score.toString())
                             IconAndTextComponent(image = Icons.Default.Person, text = (rowState.commentIds?.size ?: 0).toString())
                         }
@@ -235,11 +225,7 @@ fun IconAndTextComponent(modifier: Modifier = Modifier, image: ImageVector, text
 
 @Composable
 fun LoadingComponent() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
         CircularProgressIndicator(modifier = Modifier.wrapContentWidth(Alignment.CenterHorizontally))
     }
 }

@@ -47,11 +47,9 @@ object AndroidX {
 
 object Coroutines {
 
-    private const val mtVersion = "1.5.0-native-mt"
-    private const val version = "1.5.0"
+    private const val version = "1.5.0-native-mt"
 
-    const val core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$mtVersion"
-
+    const val core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version"
     const val test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$version"
 }
 
