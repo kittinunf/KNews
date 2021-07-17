@@ -1,7 +1,7 @@
 allprojects {
     repositories {
-        jcenter()
         mavenCentral()
         google()
+        maven("https://oss.sonatype.org/content/repositories/snapshots")
     }
 }

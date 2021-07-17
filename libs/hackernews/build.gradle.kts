@@ -37,6 +37,7 @@ kotlin {
                 implementation(Serialization.json)
 
                 implementation(Time.core)
+                implementation(Result.core)
             }
         }
 

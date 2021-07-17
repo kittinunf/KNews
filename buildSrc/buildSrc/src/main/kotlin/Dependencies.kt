@@ -1,6 +1,6 @@
 object Kotlin {
 
-    private const val version = "1.5.10"
+    private const val version = "1.5.20"
 
     const val plugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"
     const val pluginSerialization = "org.jetbrains.kotlin:kotlin-serialization:$version"
@@ -89,14 +89,19 @@ object CoRed {
     const val core = "com.github.kittinunf.cored:cored:$version"
 }
 
+object Result {
+
+    private const val version = "5.1.0"
+
+    const val core = "com.github.kittinunf.result:result:$version"
+}
+
 // Test libraries
 object JUnit {
 
     private const val version = "4.13.1"
-    private const val jacocoVersion = "0.16.0"
 
     const val jvm = "junit:junit:$version"
-    const val pluginJacoco = "gradle.plugin.com.vanniktech:gradle-android-junit-jacoco-plugin:$jacocoVersion"
 }
 
 object Jacoco {

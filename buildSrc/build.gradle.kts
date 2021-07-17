@@ -5,7 +5,6 @@ plugins {
 repositories {
     google()
     mavenCentral()
-    jcenter()
     maven { setUrl("https://plugins.gradle.org/m2/") }
 }
 
@@ -21,6 +20,5 @@ dependencies {
 
     // plugins
     implementation(Android.plugin)
-    implementation(JUnit.pluginJacoco)
     implementation(Kotlin.pluginSerialization)
 }

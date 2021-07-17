@@ -1,6 +1,6 @@
 package com.github.kittinunf.hackernews.network
 
-import com.github.kittinunf.hackernews.util.Result
+import com.github.kittinunf.result.Result
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.header
@@ -28,7 +28,7 @@ class NetworkModule(val client: HttpClient) {
             }
             Result.success(value)
         } catch (t: Throwable) {
-            Result.error(t)
+            Result.failure(t)
         }
 
     suspend inline fun <R : Any, reified T> post(
@@ -48,6 +48,6 @@ class NetworkModule(val client: HttpClient) {
             }
             Result.success(value)
         } catch (t: Throwable) {
-            Result.error(t)
+            Result.failure(t)
         }
 }

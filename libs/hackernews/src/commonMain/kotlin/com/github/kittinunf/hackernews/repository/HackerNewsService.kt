@@ -3,7 +3,7 @@ package com.github.kittinunf.hackernews.repository
 import com.github.kittinunf.hackernews.model.Comment
 import com.github.kittinunf.hackernews.model.Story
 import com.github.kittinunf.hackernews.network.NetworkModule
-import com.github.kittinunf.hackernews.util.Result
+import com.github.kittinunf.result.Result
 
 interface HackerNewsService {
 

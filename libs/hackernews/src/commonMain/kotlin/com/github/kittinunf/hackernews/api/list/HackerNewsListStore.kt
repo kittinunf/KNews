@@ -11,8 +11,8 @@ import com.github.kittinunf.hackernews.api.common.ResultAction
 import com.github.kittinunf.hackernews.api.common.toData
 import com.github.kittinunf.hackernews.api.map
 import com.github.kittinunf.hackernews.repository.HackerNewsRepository
-import com.github.kittinunf.hackernews.util.Result
-import com.github.kittinunf.hackernews.util.map
+import com.github.kittinunf.result.Result
+import com.github.kittinunf.result.map
 import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineScope
 import kotlin.time.ExperimentalTime
@@ -63,7 +63,7 @@ internal fun LoadStoriesReducer() = "LoadStories" to Reducer { currentState: Lis
 @Suppress("FunctionName")
 internal fun LoadStoriesResultReducer() = "LoadStoriesResult" to Reducer { currentState: ListUiState, action: LoadStoriesResult ->
     with(currentState) {
-        val sortedResult = action.result.map<List<ListUiRowState>, List<ListUiRowState>, ListError> {
+        val sortedResult = action.result.map {
             val comparator = currentState.sortCondition.comparator
             if (comparator != null) {
                 val list = it.toMutableList()
@@ -72,7 +72,7 @@ internal fun LoadStoriesResultReducer() = "LoadStoriesResult" to Reducer { curre
             } else it
         }
 
-        copy(stories = sortedResult.toData() as Data<List<ListUiRowState>, ListError>)
+        copy(stories = sortedResult.toData())
     }
 }
 
@@ -121,6 +121,7 @@ internal fun SortReducer() = "Sort" to Reducer { currentState: ListUiState, acti
 internal class ListEnvironment(val scope: CoroutineScope, val repository: HackerNewsRepository) : Environment
 
 internal typealias Store = StoreType<ListUiState, ListEnvironment>
+
 @Suppress("FunctionName")
 internal fun ListStore(scope: CoroutineScope, environment: ListEnvironment): Store {
     return createStore(

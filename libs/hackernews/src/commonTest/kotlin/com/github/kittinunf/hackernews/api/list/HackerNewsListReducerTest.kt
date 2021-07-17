@@ -2,7 +2,7 @@ package com.github.kittinunf.hackernews.api.list
 
 import com.github.kittinunf.hackernews.api.Data
 import com.github.kittinunf.hackernews.repository.createRandomStory
-import com.github.kittinunf.hackernews.util.Result
+import com.github.kittinunf.result.Result
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -40,7 +40,7 @@ class HackerNewsListReducerTest {
     fun `should bring uiState to Failure state when load action is ended with failure`() {
         val currentState = ListUiState(stories = Data.Loading())
         val (_, reducer) = LoadStoriesResultReducer()
-        val state = reducer(currentState, LoadStoriesResult(Result.error(LoadStoriesError("Cannot load stories"))))
+        val state = reducer(currentState, LoadStoriesResult(Result.failure(LoadStoriesError("Cannot load stories"))))
 
         assertTrue(state.stories.isFailure)
         val (_, err) = state.stories
@@ -76,7 +76,7 @@ class HackerNewsListReducerTest {
     fun `should bring uiState to Failure state when load next action is ended with failure`() {
         val currentState = ListUiState(nextStories = Data.Loading())
         val (_, reducer) = LoadNextStoriesResultReducer()
-        val state = reducer(currentState, LoadNextStoriesResult(Result.error(LoadNextStoriesError("Cannot load next stories"))))
+        val state = reducer(currentState, LoadNextStoriesResult(Result.failure(LoadNextStoriesError("Cannot load next stories"))))
 
         assertTrue(state.nextStories.isFailure)
         val (_, err) = state.nextStories
@@ -155,7 +155,7 @@ class HackerNewsListReducerTest {
         val currentState = ListUiState()
         val (_, reducer) = LoadStoriesResultReducer()
 
-        val state0 = reducer(currentState, LoadStoriesResult(Result.error(LoadNextStoriesError("Error loading stories"))))
+        val state0 = reducer(currentState, LoadStoriesResult(Result.failure(LoadNextStoriesError("Error loading stories"))))
         assertEquals(state0.sortCondition, ListUiSortCondition.None)
 
         val (_, sortReducer) = SortReducer()
