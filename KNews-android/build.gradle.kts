@@ -18,7 +18,7 @@ android {
     compileSdk = Android.compileSdkVersion
 
     defaultConfig {
-        applicationId = "com.github.kittinunf.app.knews"
+        applicationId = "com.github.kittinunf.hackernews.knews"
         minSdk = Android.minSdkVersion
         targetSdk = Android.targetSdkVersion
         versionCode = 1
