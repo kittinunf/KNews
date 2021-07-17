@@ -2,7 +2,7 @@ package com.github.kittinunf.hackernews.repository
 
 import com.github.kittinunf.hackernews.model.Comment
 import com.github.kittinunf.hackernews.model.Story
-import com.github.kittinunf.hackernews.util.Result
+import com.github.kittinunf.result.Result
 import com.github.kittinunf.hackernews.util.runBlockingTest
 import kotlinx.coroutines.delay
 import kotlin.test.Test
@@ -178,18 +178,18 @@ class HackerNewsStoryFailureMockService : HackerNewsService {
 
     override suspend fun getTopStories(): Result<List<Int>, Throwable> = Result.success(listOf(1, 2, 3, 4, 5, 6))
 
-    override suspend fun getStory(id: Int): Result<Story, Throwable> = Result.error(NotImplementedError())
+    override suspend fun getStory(id: Int): Result<Story, Throwable> = Result.failure(NotImplementedError())
 
-    override suspend fun getComment(id: Int): Result<Comment, Throwable> = Result.error(NotImplementedError())
+    override suspend fun getComment(id: Int): Result<Comment, Throwable> = Result.failure(NotImplementedError())
 }
 
 class HackerNewsTopStoriesFailureMockService : HackerNewsService {
 
-    override suspend fun getTopStories(): Result<List<Int>, Throwable> = Result.error(NotImplementedError())
+    override suspend fun getTopStories(): Result<List<Int>, Throwable> = Result.failure(NotImplementedError())
 
-    override suspend fun getStory(id: Int): Result<Story, Throwable> = Result.error(NotImplementedError())
+    override suspend fun getStory(id: Int): Result<Story, Throwable> = Result.failure(NotImplementedError())
 
-    override suspend fun getComment(id: Int): Result<Comment, Throwable> = Result.error(NotImplementedError())
+    override suspend fun getComment(id: Int): Result<Comment, Throwable> = Result.failure(NotImplementedError())
 }
 
 class HackerNewsSuccessfulMockService(private val list: List<Int>, private val withDelayMillis: Long = 0) : HackerNewsService {
@@ -216,12 +216,12 @@ class HackerNewsSuccessfulMockService(private val list: List<Int>, private val w
     }
 
     override suspend fun getStory(id: Int): Result<Story, Throwable> {
-        val story = inMemoryStories[id] ?: return Result.error(IllegalArgumentException("No story found"))
+        val story = inMemoryStories[id] ?: return Result.failure(IllegalArgumentException("No story found"))
         return Result.success(story)
     }
 
     override suspend fun getComment(id: Int): Result<Comment, Throwable> {
-        val comment = inMemoryComments[id] ?: return Result.error(IllegalArgumentException("No comment found"))
+        val comment = inMemoryComments[id] ?: return Result.failure(IllegalArgumentException("No comment found"))
         return Result.success(comment)
     }
 }
