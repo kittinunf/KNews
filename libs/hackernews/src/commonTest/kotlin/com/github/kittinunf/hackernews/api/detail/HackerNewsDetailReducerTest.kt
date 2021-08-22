@@ -3,7 +3,7 @@ package com.github.kittinunf.hackernews.api.detail
 import com.github.kittinunf.hackernews.api.Data
 import com.github.kittinunf.hackernews.repository.createRandomComment
 import com.github.kittinunf.hackernews.repository.createRandomStory
-import com.github.kittinunf.hackernews.util.Result
+import com.github.kittinunf.result.Result
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -74,7 +74,7 @@ class HackerNewsDetailReducerTest {
     fun `should bring uiState to Failure state when load story action is ended with failure`() {
         val currentState = DetailUiState(mockStoryId)
         val (_, reducer) = LoadStoryResultReducer()
-        val state = reducer(currentState, LoadStoryResult(Result.error(LoadStoryError("Cannot load story"))))
+        val state = reducer(currentState, LoadStoryResult(Result.failure(LoadStoryError("Cannot load story"))))
 
         assertTrue(state.story.isFailure)
 
@@ -88,7 +88,7 @@ class HackerNewsDetailReducerTest {
     fun `should bring uiState to Failure state when load comment action is ended with failure`() {
         val currentState = DetailUiState(mockStoryId)
         val (_, reducer) = LoadStoryCommentsResultReducer()
-        val state = reducer(currentState, LoadStoryCommentsResult(Result.error(LoadStoryCommentsError("Cannot load comments"))))
+        val state = reducer(currentState, LoadStoryCommentsResult(Result.failure(LoadStoryCommentsError("Cannot load comments"))))
 
         assertTrue(state.comments.isFailure)
 

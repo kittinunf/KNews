@@ -10,7 +10,7 @@ import com.github.kittinunf.hackernews.api.Data
 import com.github.kittinunf.hackernews.api.common.ResultAction
 import com.github.kittinunf.hackernews.api.common.toData
 import com.github.kittinunf.hackernews.repository.HackerNewsRepository
-import com.github.kittinunf.hackernews.util.Result
+import com.github.kittinunf.result.Result
 import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineScope
 import kotlin.time.ExperimentalTime

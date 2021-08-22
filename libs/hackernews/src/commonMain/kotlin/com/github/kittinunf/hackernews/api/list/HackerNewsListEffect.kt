@@ -6,7 +6,7 @@ import com.github.kittinunf.cored.Order
 import com.github.kittinunf.hackernews.api.Data
 import com.github.kittinunf.hackernews.model.Story
 import com.github.kittinunf.hackernews.util.Mapper
-import com.github.kittinunf.hackernews.util.Result
+import com.github.kittinunf.result.Result
 import kotlinx.coroutines.launch
 
 internal typealias Effect<A> = EffectType<ListUiState, A, ListEnvironment>
@@ -27,7 +27,7 @@ internal fun LoadStoriesEffect(environment: ListEnvironment, mapper: Mapper<Stor
                     result.fold(success = {
                         store.dispatch(LoadStoriesResult(Result.success(it?.map(mapper::invoke).orEmpty())))
                     }, failure = {
-                        store.dispatch(LoadStoriesResult(Result.error(LoadStoriesError(it.message ?: "Unknown error"))))
+                        store.dispatch(LoadStoriesResult(Result.failure(LoadStoriesError(it.message ?: "Unknown error"))))
                     })
                 }
             }
@@ -47,7 +47,7 @@ internal fun LoadNextStoriesEffect(environment: ListEnvironment, mapper: Mapper<
             if (state.nextStories is Data.Loading) return
             if (state.stories.isSuccess.not()) {
                 with(environment) {
-                    scope.launch { store.dispatch(LoadNextStoriesResult(Result.error(LoadNextStoriesError("Data inconsistency, not loading next page")))) }
+                    scope.launch { store.dispatch(LoadNextStoriesResult(Result.failure(LoadNextStoriesError("Data inconsistency, not loading next page")))) }
                 }
                 return
             }
@@ -58,7 +58,7 @@ internal fun LoadNextStoriesEffect(environment: ListEnvironment, mapper: Mapper<
                     result.fold(success = {
                         store.dispatch(LoadNextStoriesResult(Result.success(it?.map(mapper::invoke))))
                     }, failure = {
-                        store.dispatch(LoadNextStoriesResult(Result.error(LoadNextStoriesError(it.message ?: "Unknown error"))))
+                        store.dispatch(LoadNextStoriesResult(Result.failure(LoadNextStoriesError(it.message ?: "Unknown error"))))
                     })
                 }
             }

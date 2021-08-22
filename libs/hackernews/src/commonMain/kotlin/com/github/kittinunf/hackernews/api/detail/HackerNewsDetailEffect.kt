@@ -7,7 +7,7 @@ import com.github.kittinunf.hackernews.api.Data
 import com.github.kittinunf.hackernews.model.Comment
 import com.github.kittinunf.hackernews.model.Story
 import com.github.kittinunf.hackernews.util.Mapper
-import com.github.kittinunf.hackernews.util.Result
+import com.github.kittinunf.result.Result
 import kotlinx.coroutines.launch
 
 internal typealias Effect<A> = EffectType<DetailUiState, A, DetailEnvironment>
@@ -28,7 +28,8 @@ internal fun LoadStoryEffect(environment: DetailEnvironment, mapper: Mapper<Stor
                     result.fold(success = {
                         store.dispatch(LoadStoryResult(Result.success(mapper(it))))
                     }, failure = {
-                        store.dispatch(LoadStoryResult(Result.error(LoadStoryError(it.message ?: "Unknown error"))))
+                        store.dispatch(LoadStoryResult(Result.failure(LoadStoryError(it.message
+                            ?: "Unknown error"))))
                     })
                 }
             }
@@ -58,7 +59,8 @@ internal fun LoadStoryCommentsEffect(environment: DetailEnvironment, mapper: Map
                     result.fold(success = {
                         store.dispatch(LoadStoryCommentsResult(Result.success(it?.map(mapper::invoke))))
                     }, failure = {
-                        store.dispatch(LoadStoryCommentsResult(Result.Failure(LoadStoryCommentsError(it.message ?: "Unknown error"))))
+                        store.dispatch(LoadStoryCommentsResult(Result.failure(LoadStoryCommentsError(it.message
+                            ?: "Unknown error"))))
                     })
                 }
             }

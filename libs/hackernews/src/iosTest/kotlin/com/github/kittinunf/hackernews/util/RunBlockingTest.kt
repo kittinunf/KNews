@@ -2,6 +2,7 @@ package com.github.kittinunf.hackernews.util
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.launch
@@ -12,6 +13,7 @@ import platform.Foundation.performBlock
 import platform.Foundation.runUntilDate
 import kotlin.coroutines.CoroutineContext
 
+@OptIn(DelicateCoroutinesApi::class)
 actual fun <T> runBlockingTest(block: suspend CoroutineScope.() -> T): T {
     val expectation = Expectation<T>()
 

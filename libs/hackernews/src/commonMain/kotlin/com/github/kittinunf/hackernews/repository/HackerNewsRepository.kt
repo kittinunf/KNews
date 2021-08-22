@@ -2,9 +2,9 @@ package com.github.kittinunf.hackernews.repository
 
 import com.github.kittinunf.hackernews.model.Comment
 import com.github.kittinunf.hackernews.model.Story
-import com.github.kittinunf.hackernews.util.Result
-import com.github.kittinunf.hackernews.util.flatMap
-import com.github.kittinunf.hackernews.util.lift
+import com.github.kittinunf.result.Result
+import com.github.kittinunf.result.flatMap
+import com.github.kittinunf.result.lift
 
 interface HackerNewsRepository {
 
@@ -23,7 +23,7 @@ class HackerNewsRepositoryImpl(private val service: HackerNewsService) : HackerN
 
     class InitialStateException : Throwable("Initial State: Repository has no data yet")
 
-    private var cacheTopStories: Result<List<Int>, Throwable> = Result.error(InitialStateException())
+    private var cacheTopStories: Result<List<Int>, Throwable> = Result.failure(InitialStateException())
 
     companion object {
         const val defaultPageSize = 5
@@ -41,7 +41,7 @@ class HackerNewsRepositoryImpl(private val service: HackerNewsService) : HackerN
      *  (page - 1)*pageSize ... ((page - 1)*pageSize + pageSize) - 1
      */
     override suspend fun getTopStories(page: Int): Result<List<Story>?, Throwable> {
-        if (page <= 0) return Result.error(IllegalArgumentException("Page is not less than or equal to 0"))
+        if (page <= 0) return Result.failure(IllegalArgumentException("Page is not less than or equal to 0"))
 
         if (page == 1 || cacheTopStories is Result.Failure) {
             cacheTopStories = service.getTopStories()
