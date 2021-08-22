@@ -49,7 +49,6 @@ android {
     }
 
     kotlinOptions {
-        useIR = true
         jvmTarget = "1.8"
         freeCompilerArgs = listOf("-P", "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true")
     }
@@ -82,5 +81,4 @@ dependencies {
 
     // lifecycle
     implementation(AndroidX.lifeCycleViewModel)
-    implementation(AndroidX.lifeCycleRuntime)
 }

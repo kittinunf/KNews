@@ -1,6 +1,6 @@
 object Kotlin {
 
-    private const val version = "1.5.20"
+    private const val version = "1.5.21"
 
     const val plugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"
     const val pluginSerialization = "org.jetbrains.kotlin:kotlin-serialization:$version"
@@ -28,11 +28,11 @@ object Android {
 object AndroidX {
 
     object Versions {
-        const val core = "1.6.0-alpha03"
+        const val core = "1.6.0"
         const val lifeCycle = "2.4.0-alpha01"
-        const val compose = "1.0.0-beta08"
-        const val composeActivity = "1.3.0-alpha08"
-        const val composeViewModel = "1.0.0-alpha05"
+        const val compose = "1.0.1"
+        const val composeActivity = "1.3.1"
+        const val composeViewModel = "1.0.0-alpha07"
     }
 
     const val coreKtx = "androidx.core:core-ktx:${Versions.core}"
@@ -42,7 +42,6 @@ object AndroidX {
     const val composeUi = "androidx.compose.ui:ui:${Versions.compose}"
     const val composeViewModel = "androidx.lifecycle:lifecycle-viewmodel-compose:${Versions.composeViewModel}"
     const val lifeCycleViewModel = "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifeCycle}"
-    const val lifeCycleRuntime = "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifeCycle}"
 }
 
 object Coroutines {
