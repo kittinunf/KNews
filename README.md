@@ -227,13 +227,14 @@ To recap, this is the table represents what we are discussing so far.
 ┌──────────────────────────────────┐
 │            Application           │
 └─────────────────▲────────────────┘
- @Published (iOS) │ StateFlow<T> (Android)
-                  │
-┌──────────────────────────────────┐
-│  VM Wrapper for iOS and Android  │
-└─────────────────▲────────────────┘
-                  │
-                  │ Flow<T>
+ @Published (iOS) │ State<T> (Android)
+                  │          ▲
+                  │          │
+┌──────────────────┐         │
+│ VM Wrapper (iOS) │         │  We can use VM directly for (Android)
+└─────────▲────────┘         │  convert to State<T> with collectAsState()
+          │                  │
+          │ StateFlow<T>     │
 ┌──────────────────────────────────┐
 │             ViewModel            │
 └──────────────────────────────────┘
