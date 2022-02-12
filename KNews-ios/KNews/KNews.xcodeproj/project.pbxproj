@@ -9,8 +9,8 @@
 /* Begin PBXBuildFile section */
 		FA452FE62621942800023C68 /* FlowPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA452FE52621942800023C68 /* FlowPublisher.swift */; };
 		FA452FEC262542E400023C68 /* BottomSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA452FEB262542E400023C68 /* BottomSheetView.swift */; };
-		FA780A9D27B7A0D600C7A648 /* hackernews.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA780A9C27B7A0D600C7A648 /* hackernews.xcframework */; };
-		FA780A9E27B7A0D600C7A648 /* hackernews.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FA780A9C27B7A0D600C7A648 /* hackernews.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FA780AA027B7AE7800C7A648 /* HackerNews.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA780A9F27B7AE7800C7A648 /* HackerNews.xcframework */; };
+		FA780AA127B7AE7800C7A648 /* HackerNews.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FA780A9F27B7AE7800C7A648 /* HackerNews.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		FA918E72261D96020000FD7A /* KNewsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA918E71261D96020000FD7A /* KNewsListView.swift */; };
 		FA918E74261D961F0000FD7A /* KNewsDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA918E73261D961F0000FD7A /* KNewsDetailView.swift */; };
 		FA918E77261D97BB0000FD7A /* HackerNewsListViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA918E76261D97BB0000FD7A /* HackerNewsListViewModelWrapper.swift */; };
@@ -18,7 +18,6 @@
 		FA918E82261DABD90000FD7A /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA918E81261DABD90000FD7A /* LoadingView.swift */; };
 		FA918E84261DBE100000FD7A /* SwiftUIExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA918E83261DBE100000FD7A /* SwiftUIExt.swift */; };
 		FA94E7D0261D68C2002C6B22 /* KNewsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA94E7CF261D68C2002C6B22 /* KNewsApp.swift */; };
-		FA94E7D2261D68C2002C6B22 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA94E7D1261D68C2002C6B22 /* ContentView.swift */; };
 		FA94E7D4261D68C7002C6B22 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA94E7D3261D68C7002C6B22 /* Assets.xcassets */; };
 		FA94E7D7261D68C7002C6B22 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA94E7D6261D68C7002C6B22 /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
@@ -30,7 +29,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				FA780A9E27B7A0D600C7A648 /* hackernews.xcframework in Embed Frameworks */,
+				FA780AA127B7AE7800C7A648 /* HackerNews.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -40,7 +39,7 @@
 /* Begin PBXFileReference section */
 		FA452FE52621942800023C68 /* FlowPublisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowPublisher.swift; sourceTree = "<group>"; };
 		FA452FEB262542E400023C68 /* BottomSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetView.swift; sourceTree = "<group>"; };
-		FA780A9C27B7A0D600C7A648 /* hackernews.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = hackernews.xcframework; path = ../../libs/hackernews/build/XCFrameworks/debug/hackernews.xcframework; sourceTree = "<group>"; };
+		FA780A9F27B7AE7800C7A648 /* HackerNews.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = HackerNews.xcframework; path = ../../libs/hackernews/build/XCFrameworks/debug/HackerNews.xcframework; sourceTree = "<group>"; };
 		FA918E71261D96020000FD7A /* KNewsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KNewsListView.swift; sourceTree = "<group>"; };
 		FA918E73261D961F0000FD7A /* KNewsDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KNewsDetailView.swift; sourceTree = "<group>"; };
 		FA918E76261D97BB0000FD7A /* HackerNewsListViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HackerNewsListViewModelWrapper.swift; sourceTree = "<group>"; };
@@ -49,7 +48,6 @@
 		FA918E83261DBE100000FD7A /* SwiftUIExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIExt.swift; sourceTree = "<group>"; };
 		FA94E7CC261D68C2002C6B22 /* KNews.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KNews.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA94E7CF261D68C2002C6B22 /* KNewsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KNewsApp.swift; sourceTree = "<group>"; };
-		FA94E7D1261D68C2002C6B22 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		FA94E7D3261D68C7002C6B22 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FA94E7D6261D68C7002C6B22 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		FA94E7D8261D68C7002C6B22 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -60,7 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA780A9D27B7A0D600C7A648 /* hackernews.xcframework in Frameworks */,
+				FA780AA027B7AE7800C7A648 /* HackerNews.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -128,7 +126,6 @@
 				FA918E75261D97A30000FD7A /* ViewModel */,
 				FA918E70261D95CE0000FD7A /* Screen */,
 				FA94E7CF261D68C2002C6B22 /* KNewsApp.swift */,
-				FA94E7D1261D68C2002C6B22 /* ContentView.swift */,
 				FA94E7D3261D68C7002C6B22 /* Assets.xcassets */,
 				FA94E7D8261D68C7002C6B22 /* Info.plist */,
 				FA94E7D5261D68C7002C6B22 /* Preview Content */,
@@ -147,7 +144,7 @@
 		FA94E7DF261D7112002C6B22 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				FA780A9C27B7A0D600C7A648 /* hackernews.xcframework */,
+				FA780A9F27B7AE7800C7A648 /* HackerNews.xcframework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -226,7 +223,6 @@
 				FA452FEC262542E400023C68 /* BottomSheetView.swift in Sources */,
 				FA918E72261D96020000FD7A /* KNewsListView.swift in Sources */,
 				FA918E79261D97F90000FD7A /* HackerNewsDetailViewModelWrapper.swift in Sources */,
-				FA94E7D2261D68C2002C6B22 /* ContentView.swift in Sources */,
 				FA452FE62621942800023C68 /* FlowPublisher.swift in Sources */,
 				FA918E74261D961F0000FD7A /* KNewsDetailView.swift in Sources */,
 				FA918E82261DABD90000FD7A /* LoadingView.swift in Sources */,

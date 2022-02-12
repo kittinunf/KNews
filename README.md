@@ -36,16 +36,13 @@ The top level overview project structure is the following;
 ├── build.gradle.kts
 ├── libs
 │ ├── hackernews
-│ │   ├── build
-│ |        └── bin
-| |             └── ios     
-│ |                  ├── HackerNews-debug.xcframework (*)
-│ |                  └── HackerNews-release.xcframework (*)
+│ │   ├── XCFrameworks
+│ |        └── debug
+│ |            └── HackerNews-debug.xcframework (*)
+│ |        └── release
+│ |            └── HackerNews-release.xcframework (*)
 │ │   ├── build.gradle.kts
 │ │   └── src
-│ └── redux
-│     ├── build.gradle.kts
-│     └── src
 └── settings.gradle.kts
 ```
 
@@ -54,7 +51,7 @@ iOS and Android app named [KNews-ios](KNews-ios) and [KNew-android](KNews-androi
 The second one is the libs modules. Inside of the [libs](libs) modules contains 1 module that
 contain a domain-specific library which relates to HackerNews API.
 
-The core of the HackerNews library uses redux implementation in KMP
+The core of the HackerNews library uses my interpretation of redux implementation in KMP
 named [CoRed](https://github.com/kittinunf/CoRed).
 
 (*) is the final artifacts that can be used by the App which are `.aar` and `.xcframework` for debug
@@ -152,7 +149,7 @@ internal fun ListStore(scope: CoroutineScope, environment: ListEnvironment): Sto
 
 class HackerNewsDetailViewModel(private val service: HackerNewsService) : NativeViewModel() {
 
-    private val store: Store by lazy {
+    private val store by lazy {
         ListStore(scope, ListEnvironment(scope, HackerNewsRepositoryImpl(service)))
     }
 

@@ -14,9 +14,7 @@ class FlowPublisher<T> : Kotlinx_coroutines_coreFlowCollector {
         subject = PassthroughSubject<T, Never>()
         values = subject.eraseToAnyPublisher()
 
-        underlyingFlow.collect(collector: self) { (_, err) in
-            print(err)
-        }
+        underlyingFlow.collect(collector: self) { (_, err) in print(err) }
     }
 
     func emit(value: Any?, completionHandler: @escaping (KotlinUnit?, Error?) -> Void) {

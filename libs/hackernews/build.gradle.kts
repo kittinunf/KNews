@@ -129,37 +129,3 @@ android {
         }
     }
 }
-
-tasks {
-    fun getFrameworks(buildType: String): List<String> {
-        val arm64 = project.buildDir.resolve("bin/iosArm64/${buildType}Framework/HackerNews.framework").toString()
-        val x64 = project.buildDir.resolve("bin/iosx64/${buildType}Framework/HackerNews.framework").toString()
-        return listOf(
-            "-framework", arm64,
-            "-debug-symbols", "$arm64.dSYM",
-            "-framework", x64,
-            "-debug-symbols", "$x64.dSYM"
-        )
-    }
-
-    fun getTaskCommand(buildType: String, outputDir: File): List<String> {
-        val name = "HackerNews-$buildType.xcframework"
-        return listOf("xcodebuild", "-create-xcframework") + getFrameworks(buildType) + listOf("-output", File("$outputDir/$name").toString())
-    }
-
-    val createXCFramework by registering {
-        val buildTypes = listOf("debug", "release")
-        val output = project.buildDir.resolve("bin/ios")
-
-        if (output.exists()) project.delete(output)
-
-        doLast {
-            buildTypes.forEach { buildType ->
-                project.exec {
-                    commandLine = getTaskCommand(buildType, output)
-                }
-            }
-        }
-    }
-}
-
