@@ -7,7 +7,7 @@ import kotlinx.coroutines.launch
 
 class HackerNewsListViewModel(private val service: HackerNewsService) : NativeViewModel() {
 
-    private val store: Store by lazy { ListStore(scope, ListEnvironment(scope, HackerNewsRepositoryImpl(service))) }
+    private val store by lazy { ListStore(scope, ListEnvironment(scope, HackerNewsRepositoryImpl(service))) }
 
     @Suppress("Unused")
     val currentState

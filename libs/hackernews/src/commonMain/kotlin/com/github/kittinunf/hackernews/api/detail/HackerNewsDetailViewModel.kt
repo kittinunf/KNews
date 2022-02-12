@@ -7,7 +7,7 @@ import kotlinx.coroutines.launch
 
 class HackerNewsDetailViewModel(private val service: HackerNewsService) : NativeViewModel() {
 
-    private val store: Store by lazy { DetailStore(scope = scope, environment = DetailEnvironment(scope, HackerNewsRepositoryImpl(service))) }
+    private val store by lazy { DetailStore(scope = scope, environment = DetailEnvironment(scope, HackerNewsRepositoryImpl(service))) }
 
     @Suppress("Unused")
     val currentState

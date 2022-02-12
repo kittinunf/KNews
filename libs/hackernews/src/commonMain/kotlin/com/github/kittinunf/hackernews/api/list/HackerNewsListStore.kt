@@ -1,11 +1,7 @@
 package com.github.kittinunf.hackernews.api.list
 
-import com.github.kittinunf.cored.Environment
-import com.github.kittinunf.cored.Identifiable
-import com.github.kittinunf.cored.Reducer
-import com.github.kittinunf.cored.State
-import com.github.kittinunf.cored.StoreType
-import com.github.kittinunf.cored.createStore
+import com.github.kittinunf.cored.reducer
+import com.github.kittinunf.cored.store.Store
 import com.github.kittinunf.hackernews.api.Data
 import com.github.kittinunf.hackernews.api.common.ResultAction
 import com.github.kittinunf.hackernews.api.common.toData
@@ -41,27 +37,27 @@ data class ListUiState(
     val sortCondition: ListUiSortCondition = ListUiSortCondition.None,
     val stories: Data<List<ListUiRowState>, ListError> = Data.Initial,
     val nextStories: Data<List<ListUiRowState>?, ListError> = Data.Initial
-) : State
+)
 
 sealed class ListError(message: String) : Throwable(message)
 class LoadStoriesError(val error: String) : ListError(error)
 class LoadNextStoriesError(val error: String) : ListError(error)
 
-internal class Sort(val sortCondition: ListUiSortCondition) : Identifiable
+internal class Sort(val sortCondition: ListUiSortCondition)
 
-internal object LoadStories : Identifiable
-internal class LoadStoriesResult(result: Result<List<ListUiRowState>, ListError>) : ResultAction<List<ListUiRowState>, ListError>(result), Identifiable
+internal object LoadStories
+internal class LoadStoriesResult(result: Result<List<ListUiRowState>, ListError>) : ResultAction<List<ListUiRowState>, ListError>(result)
 
-internal class LoadNextStories(val page: Int) : Identifiable
-internal class LoadNextStoriesResult(result: Result<List<ListUiRowState>?, ListError>) : ResultAction<List<ListUiRowState>?, ListError>(result), Identifiable
+internal class LoadNextStories(val page: Int)
+internal class LoadNextStoriesResult(result: Result<List<ListUiRowState>?, ListError>) : ResultAction<List<ListUiRowState>?, ListError>(result)
 
 @Suppress("FunctionName")
-internal fun LoadStoriesReducer() = "LoadStories" to Reducer { currentState: ListUiState, _: LoadStories ->
+internal fun LoadStoriesReducer() = reducer { currentState: ListUiState, _: LoadStories ->
     currentState.copy(stories = Data.Loading(currentState.stories.getOrNull()))
 }
 
 @Suppress("FunctionName")
-internal fun LoadStoriesResultReducer() = "LoadStoriesResult" to Reducer { currentState: ListUiState, action: LoadStoriesResult ->
+internal fun LoadStoriesResultReducer() = reducer { currentState: ListUiState, action: LoadStoriesResult ->
     with(currentState) {
         val sortedResult = action.result.map {
             val comparator = currentState.sortCondition.comparator
@@ -77,12 +73,12 @@ internal fun LoadStoriesResultReducer() = "LoadStoriesResult" to Reducer { curre
 }
 
 @Suppress("FunctionName")
-internal fun LoadNextStoriesReducer() = "LoadNextStories" to Reducer { currentState: ListUiState, _: LoadNextStories ->
+internal fun LoadNextStoriesReducer() = reducer { currentState: ListUiState, _: LoadNextStories ->
     currentState.copy(nextStories = Data.Loading())
 }
 
 @Suppress("FunctionName")
-internal fun LoadNextStoriesResultReducer() = "LoadNextStoriesResult" to Reducer { currentState: ListUiState, action: LoadNextStoriesResult ->
+internal fun LoadNextStoriesResultReducer() = reducer { currentState: ListUiState, action: LoadNextStoriesResult ->
     with(currentState) {
         // when loadNextStories success we need to append our data into the stories
         val result = action.result
@@ -104,12 +100,12 @@ internal fun LoadNextStoriesResultReducer() = "LoadNextStoriesResult" to Reducer
 }
 
 @Suppress("FunctionName")
-internal fun SortReducer() = "Sort" to Reducer { currentState: ListUiState, action: Sort ->
+internal fun SortReducer() = reducer { currentState: ListUiState, action: Sort ->
     with(currentState) {
         val newSortCondition = action.sortCondition
         val newSortComparator = action.sortCondition.comparator
 
-        if (newSortCondition == sortCondition) return@Reducer currentState
+        if (newSortCondition == sortCondition) return@reducer currentState
 
         copy(sortCondition = newSortCondition, stories = currentState.stories.map {
             it ?: return@map emptyList()
@@ -118,13 +114,11 @@ internal fun SortReducer() = "Sort" to Reducer { currentState: ListUiState, acti
     }
 }
 
-internal class ListEnvironment(val scope: CoroutineScope, val repository: HackerNewsRepository) : Environment
-
-internal typealias Store = StoreType<ListUiState, ListEnvironment>
+internal class ListEnvironment(val scope: CoroutineScope, val repository: HackerNewsRepository)
 
 @Suppress("FunctionName")
-internal fun ListStore(scope: CoroutineScope, environment: ListEnvironment): Store {
-    return createStore(
+internal fun ListStore(scope: CoroutineScope, environment: ListEnvironment): Store<ListUiState> {
+    return Store(
         scope = scope,
         initialState = ListUiState(),
         reducers = mapOf(

@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
+
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
@@ -6,21 +8,32 @@ plugins {
 
 kotlin {
     android()
-    ios { // comment/uncomment this for building both the arm64 + x64 framework
-//    iosX64("ios") { // comment/uncomment this for just building the x64 framework
+
+    val xcFramework = XCFramework("HackerNews")
+    ios {
         binaries {
             framework {
                 baseName = "HackerNews"
+                xcFramework.add(this)
             }
         }
     }
+    iosSimulatorArm64 {
+        binaries {
+            framework {
+                baseName = "HackerNews"
+                xcFramework.add(this)
+            }
+        }
+    }
+
     sourceSets {
         all {
             languageSettings.apply {
-                useExperimentalAnnotation("kotlin.RequiresOptIn")
-                useExperimentalAnnotation("kotlin.time.ExperimentalTime")
-                useExperimentalAnnotation("kotlinx.coroutines.ExperimentalCoroutinesApi")
-                useExperimentalAnnotation("kotlinx.coroutines.OptInAnnotation")
+                optIn("kotlin.RequiresOptIn")
+                optIn("kotlin.time.ExperimentalTime")
+                optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
+                optIn("kotlinx.coroutines.OptInAnnotation")
             }
         }
 
@@ -66,7 +79,23 @@ kotlin {
 
         val iosMain by getting {
             dependencies {
+                implementation(Coroutines.core) {
+                    version {
+                        strictly(Coroutines.version)
+                    }
+                }
                 implementation(Ktor.ios)
+            }
+        }
+
+        val iosSimulatorArm64Main by getting {
+            dependencies {
+                implementation(Coroutines.core) {
+                    version {
+                        strictly(Coroutines.version)
+                    }
+                }
+                implementation(Ktor.iosSimArm64)
             }
         }
     }

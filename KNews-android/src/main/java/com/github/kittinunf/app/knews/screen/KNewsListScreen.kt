@@ -34,6 +34,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -58,13 +59,15 @@ import com.google.accompanist.swiperefresh.SwipeRefreshState
 @Composable
 fun KNewsListScreen(isSortSelected: Boolean, scrollState: LazyListState, onSortSelected: () -> Unit, onStoryClick: (ListUiRowState) -> Unit, service: HackerNewsService) {
     val viewModel = viewModel<HackerNewsListViewModel>(factory = HackerNewsListViewModelFactory(service))
-
     val states by viewModel.states.collectAsState(rememberCoroutineScope().coroutineContext)
 
+    // action
+    LaunchedEffect(Unit) {
+        viewModel.loadStories()
+    }
+
+    // handle UI
     when (val stories = states.stories) {
-        is Data.Initial -> {
-            viewModel.loadStories()
-        }
         is Data.Loading, is Data.Success -> {
             if (stories.get() == null) LoadingComponent()
             else
@@ -95,6 +98,7 @@ fun KNewsListScreen(isSortSelected: Boolean, scrollState: LazyListState, onSortS
         is Data.Failure -> {
             ErrorComponent { viewModel.loadStories() }
         }
+        else -> {}
     }
 
     when (val nextStories = states.nextStories) {

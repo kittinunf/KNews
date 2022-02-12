@@ -1,6 +1,6 @@
 object Kotlin {
 
-    private const val version = "1.5.21"
+    private const val version = "1.6.10"
 
     const val plugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"
     const val pluginSerialization = "org.jetbrains.kotlin:kotlin-serialization:$version"
@@ -9,16 +9,16 @@ object Kotlin {
 object Android {
 
     const val minSdkVersion = 24
-    const val targetSdkVersion = 30
-    const val compileSdkVersion = 30
+    const val targetSdkVersion = 31
+    const val compileSdkVersion = 31
 
-    private const val version = "7.1.0-alpha01"
+    private const val version = "7.1.1"
     const val plugin = "com.android.tools.build:gradle:$version"
 
-    private const val materialVersion = "1.3.0"
+    private const val materialVersion = "1.5.0"
     const val material = "com.google.android.material:material:$materialVersion"
 
-    private const val accompanistVersion = "0.11.1"
+    private const val accompanistVersion = "0.23.0"
     const val accompanist = "com.google.accompanist:accompanist-swiperefresh:$accompanistVersion"
 
     private const val desugarJdkLibsVersion = "1.1.5"
@@ -28,11 +28,10 @@ object Android {
 object AndroidX {
 
     object Versions {
-        const val core = "1.6.0"
-        const val lifeCycle = "2.4.0-alpha01"
-        const val compose = "1.0.1"
-        const val composeActivity = "1.3.1"
-        const val composeViewModel = "1.0.0-alpha07"
+        const val core = "1.7.0"
+        const val lifeCycle = "2.4.1"
+        const val compose = "1.1.0"
+        const val composeActivity = "1.4.0"
     }
 
     const val coreKtx = "androidx.core:core-ktx:${Versions.core}"
@@ -40,13 +39,13 @@ object AndroidX {
     const val composeMaterial = "androidx.compose.material:material:${Versions.compose}"
     const val composeTooling = "androidx.compose.ui:ui-tooling:${Versions.compose}"
     const val composeUi = "androidx.compose.ui:ui:${Versions.compose}"
-    const val composeViewModel = "androidx.lifecycle:lifecycle-viewmodel-compose:${Versions.composeViewModel}"
     const val lifeCycleViewModel = "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifeCycle}"
+    const val lifeCycleViewModelCompose = "androidx.lifecycle:lifecycle-viewmodel-compose:${Versions.lifeCycle}"
 }
 
 object Coroutines {
 
-    private const val version = "1.5.0-native-mt"
+    const val version = "1.6.0-native-mt"
 
     const val core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version"
     const val test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$version"
@@ -54,26 +53,29 @@ object Coroutines {
 
 object Serialization {
 
-    private const val version = "1.2.1"
+    private const val version = "1.3.1"
 
     const val json = "org.jetbrains.kotlinx:kotlinx-serialization-json:$version"
 }
 
 object Time {
 
-    private const val version = "0.2.1"
+    private const val version = "0.3.2"
 
     const val core = "org.jetbrains.kotlinx:kotlinx-datetime:$version"
 }
 
 object Ktor {
 
-    private const val version = "1.6.0"
+    private const val version = "1.6.7"
 
     const val core = "io.ktor:ktor-client-core:$version"
+
     const val okttp = "io.ktor:ktor-client-okhttp:$version"
     const val android = "io.ktor:ktor-client-android:$version"
+
     const val ios = "io.ktor:ktor-client-ios:$version"
+    const val iosSimArm64 = "io.ktor:ktor-client-ios-iossimulatorarm64:$version"
 
     const val serialization = "io.ktor:ktor-client-serialization:$version"
 
@@ -83,14 +85,14 @@ object Ktor {
 
 object CoRed {
 
-    private const val version = "0.2.0"
+    private const val version = "0.7.0"
 
     const val core = "com.github.kittinunf.cored:cored:$version"
 }
 
 object Result {
 
-    private const val version = "5.1.0"
+    private const val version = "5.2.1"
 
     const val core = "com.github.kittinunf.result:result:$version"
 }
@@ -98,7 +100,7 @@ object Result {
 // Test libraries
 object JUnit {
 
-    private const val version = "4.13.1"
+    private const val version = "4.13.2"
 
     const val jvm = "junit:junit:$version"
 }

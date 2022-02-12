@@ -26,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.rememberBackdropScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -48,15 +49,25 @@ import com.github.kittinunf.hackernews.repository.HackerNewsService
 @Composable
 fun KNewsDetailScreen(detailUiState: DetailUiState, service: HackerNewsService) {
     val viewModel = viewModel<HackerNewsDetailViewModel>(factory = HackerNewsDetailViewModelFactory(service))
-
     val states by viewModel.states.collectAsState(rememberCoroutineScope().coroutineContext)
 
-    when (val story = detailUiState.story) {
-        is Data.Success -> viewModel.setInitialStory(story.value ?: error("No story"))
-        else -> viewModel.loadStory()
+    // action
+    LaunchedEffect(Unit) {
+        viewModel.loadStory()
+        viewModel.loadStoryComments()
     }
 
-    viewModel.loadStoryComments()
+    // handle UI
+    when (val story = detailUiState.story) {
+        is Data.Success -> viewModel.setInitialStory(story.value ?: error("No story"))
+        is Data.Failure -> {
+            ErrorComponent {
+                viewModel.loadStory()
+                viewModel.loadStoryComments()
+            }
+        }
+        else -> {}
+    }
 
     BackdropScaffold(appBar = {},
         scaffoldState = rememberBackdropScaffoldState(BackdropValue.Revealed),
@@ -71,6 +82,7 @@ fun KNewsDetailScreen(detailUiState: DetailUiState, service: HackerNewsService) 
                 is Data.Failure -> {
                     ErrorComponent { viewModel.loadStory() }
                 }
+                else -> {}
             }
         },
         frontLayerContent = {
@@ -87,6 +99,7 @@ fun KNewsDetailScreen(detailUiState: DetailUiState, service: HackerNewsService) 
                         is Data.Failure -> {
                             ErrorComponent { viewModel.loadStoryComments() }
                         }
+                        else -> {}
                     }
                 }
             }
