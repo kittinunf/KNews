@@ -11,14 +11,14 @@ lib:
 	./gradlew :libs:hackernews:build
 
 ios: lib
-	./gradlew createXCFramework
+	./gradlew assembleHackerNewsXCFramework
 
 install_ios : ios
 	xcodebuild clean -project KNews-ios/KNews/KNews.xcodeproj -scheme KNews
 	xcodebuild -project KNews-ios/KNews/KNews.xcodeproj \
 	-scheme KNews \
 	-configuration Debug \
-	-destination 'platform=iOS Simulator,name=iPhone 11,OS=14.4' \
+	-destination 'platform=iOS Simulator,name=iPhone 11,OS=15.2' \
 	-derivedDataPath KNews-ios/build
 	xcrun simctl install \
 	"iPhone 11" \
