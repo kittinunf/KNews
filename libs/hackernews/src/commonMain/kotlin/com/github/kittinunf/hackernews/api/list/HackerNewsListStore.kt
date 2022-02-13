@@ -10,6 +10,7 @@ import com.github.kittinunf.hackernews.repository.HackerNewsRepository
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.map
 import io.ktor.http.Url
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlin.time.ExperimentalTime
 
@@ -114,13 +115,11 @@ internal fun SortReducer() = reducer { currentState: ListUiState, action: Sort -
     }
 }
 
-internal class ListEnvironment(val scope: CoroutineScope, val repository: HackerNewsRepository)
-
 @Suppress("FunctionName")
-internal fun ListStore(scope: CoroutineScope, environment: ListEnvironment): Store<ListUiState> {
+internal fun ListStore(initialState: ListUiState = ListUiState(), scope: CoroutineScope, dispatcher: CoroutineDispatcher, repository: HackerNewsRepository): Store<ListUiState> {
     return Store(
         scope = scope,
-        initialState = ListUiState(),
+        initialState = initialState,
         reducers = mapOf(
             LoadStoriesReducer(),
             LoadStoriesResultReducer(),
@@ -129,8 +128,8 @@ internal fun ListStore(scope: CoroutineScope, environment: ListEnvironment): Sto
             SortReducer(),
         ),
         middlewares = mapOf(
-            LoadStoriesEffect(environment, ::listUiRowStateMapper),
-            LoadNextStoriesEffect(environment, ::listUiRowStateMapper)
+            LoadStoriesEffect(scope, dispatcher, repository, ::listUiRowStateMapper),
+            LoadNextStoriesEffect(scope, dispatcher, repository, ::listUiRowStateMapper)
         )
     )
 }

@@ -42,6 +42,7 @@ kotlin {
                 api(CoRed.core)
 
                 implementation(Coroutines.core)
+                implementation(Coroutines.test)
 
                 implementation(Ktor.core)
                 implementation(Ktor.logging)
@@ -73,16 +74,13 @@ kotlin {
 
         val androidTest by getting {
             dependencies {
-                implementation(Coroutines.test)
             }
         }
 
         val iosMain by getting {
             dependencies {
                 implementation(Coroutines.core) {
-                    version {
-                        strictly(Coroutines.version)
-                    }
+                    version { strictly(Coroutines.version) }
                 }
                 implementation(Ktor.ios)
             }
@@ -91,9 +89,7 @@ kotlin {
         val iosSimulatorArm64Main by getting {
             dependencies {
                 implementation(Coroutines.core) {
-                    version {
-                        strictly(Coroutines.version)
-                    }
+                    version { strictly(Coroutines.version) }
                 }
                 implementation(Ktor.iosSimArm64)
             }

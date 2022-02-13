@@ -5,12 +5,12 @@ import com.github.kittinunf.hackernews.api.list.printDebug
 import com.github.kittinunf.hackernews.repository.HackerNewsRepositoryImpl
 import com.github.kittinunf.hackernews.repository.HackerNewsSuccessfulMockService
 import com.github.kittinunf.hackernews.repository.createRandomStory
-import com.github.kittinunf.hackernews.util.runBlockingTest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.withIndex
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -21,11 +21,11 @@ class HackerNewsDetailStoreTest {
 
     private val testScope = CoroutineScope(Dispatchers.Unconfined)
     private val testRepository = HackerNewsRepositoryImpl(HackerNewsSuccessfulMockService((1..10).toList(), 0))
-    private val store = DetailStore(DetailUiState(1), testScope, DetailEnvironment(testScope, testRepository))
+    private val store = DetailStore(DetailUiState(1), testScope, Dispatchers.Unconfined, testRepository)
 
     @Test
     fun `should update the story state with loading then ended with success`() {
-        runBlockingTest {
+        runTest {
             store.states
                 .withIndex()
                 .onEach { (index, state) ->
@@ -53,7 +53,7 @@ class HackerNewsDetailStoreTest {
 
     @Test
     fun `should update the story state without loading`() {
-        runBlockingTest {
+        runTest {
             store.states
                 .withIndex()
                 .onEach { (index, state) ->
@@ -76,7 +76,7 @@ class HackerNewsDetailStoreTest {
 
     @Test
     fun `should update the comments state with loading then ended with success`() {
-        runBlockingTest {
+        runTest {
             store.states
                 .withIndex()
                 .onEach { (index, state) ->
@@ -104,7 +104,7 @@ class HackerNewsDetailStoreTest {
 
     @Test
     fun `should update the comment state even the story itself is not in the success`() {
-        runBlockingTest {
+        runTest {
             store.states
                 .withIndex()
                 .onEach { (index, state) ->
@@ -131,7 +131,7 @@ class HackerNewsDetailStoreTest {
 
     @Test
     fun `should update the comment state when the story is already in success`() {
-        runBlockingTest {
+        runTest {
             store.states
                 .withIndex()
                 .onEach { (index, state) ->
@@ -165,9 +165,9 @@ class HackerNewsDetailStoreTest {
 
     @Test
     fun `should update the story state with loading then ended with failure`() {
-        val store = DetailStore(DetailUiState(101), testScope, DetailEnvironment(testScope, testRepository))
+        val store = DetailStore(DetailUiState(101), testScope, Dispatchers.Unconfined, testRepository)
 
-        runBlockingTest {
+        runTest {
             store.states
                 .withIndex()
                 .onEach { (index, state) ->
@@ -191,9 +191,9 @@ class HackerNewsDetailStoreTest {
 
     @Test
     fun `should update the comments state with loading then ended with failure`() {
-        val store = DetailStore(DetailUiState(5), testScope, DetailEnvironment(testScope, testRepository))
+        val store = DetailStore(DetailUiState(5), testScope, Dispatchers.Unconfined, testRepository)
 
-        runBlockingTest {
+        runTest {
             store.states
                 .withIndex()
                 .onEach { (index, state) ->
@@ -214,9 +214,9 @@ class HackerNewsDetailStoreTest {
 
     @Test
     fun `should update the comment state with loading then ended with success for story without comments`() {
-        val store = DetailStore(DetailUiState(100), testScope, DetailEnvironment(testScope, testRepository))
+        val store = DetailStore(DetailUiState(100), testScope, Dispatchers.Unconfined, testRepository)
 
-        runBlockingTest {
+        runTest {
             store.states
                 .withIndex()
                 .onEach { (index, state) ->

@@ -5,13 +5,13 @@ import com.github.kittinunf.hackernews.repository.HackerNewsRepositoryImpl
 import com.github.kittinunf.hackernews.repository.HackerNewsStoryFailureMockService
 import com.github.kittinunf.hackernews.repository.HackerNewsStoryNextPageFailureMockService
 import com.github.kittinunf.hackernews.repository.HackerNewsSuccessfulMockService
-import com.github.kittinunf.hackernews.util.runBlockingTest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.withIndex
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -21,11 +21,11 @@ class HackerNewsListStoreTest {
 
     private val testScope = CoroutineScope(Dispatchers.Unconfined)
     private val testRepository = HackerNewsRepositoryImpl(HackerNewsSuccessfulMockService((1..10).toList(), 0))
-    private val store = ListStore(testScope, ListEnvironment(testScope, testRepository))
+    private val store = ListStore(scope = testScope, dispatcher = Dispatchers.Unconfined, repository = testRepository)
 
     @Test
     fun `should update the stories state with loading then ended with success`() {
-        runBlockingTest {
+        runTest {
             store.states
                 .withIndex()
                 .onEach { (index, state) ->
@@ -55,7 +55,7 @@ class HackerNewsListStoreTest {
 
     @Test
     fun `should update the next stories state with loading then ended with success`() {
-        runBlockingTest {
+        runTest {
             store.states
                 .withIndex()
                 .onEach { (index, state) ->
@@ -105,9 +105,9 @@ class HackerNewsListStoreTest {
     fun `should update the stories state with loading then ended with failure`() {
         val repository = HackerNewsRepositoryImpl(HackerNewsStoryFailureMockService())
 
-        val store = ListStore(testScope, ListEnvironment(testScope, repository))
+        val store = ListStore(scope = testScope, dispatcher = Dispatchers.Unconfined, repository = repository)
 
-        runBlockingTest {
+        runTest {
             store.states
                 .withIndex()
                 .onEach { (index, state) ->
@@ -131,9 +131,9 @@ class HackerNewsListStoreTest {
     fun `should update the next stories state with loading then ended with failure`() {
         val repository = HackerNewsRepositoryImpl(HackerNewsStoryFailureMockService())
 
-        val store = ListStore(testScope, ListEnvironment(testScope, repository))
+        val store = ListStore(scope = testScope, dispatcher = Dispatchers.Unconfined, repository = repository)
 
-        runBlockingTest {
+        runTest {
             store.states
                 .withIndex()
                 .onEach { (index, state) ->
@@ -166,9 +166,9 @@ class HackerNewsListStoreTest {
     fun `should update the next stories state with loading then end with failure while the stories is intact`() {
         val repository = HackerNewsRepositoryImpl(HackerNewsStoryNextPageFailureMockService())
 
-        val store = ListStore(testScope, ListEnvironment(testScope, repository))
+        val store = ListStore(scope = testScope, dispatcher = Dispatchers.Unconfined, repository = repository)
 
-        runBlockingTest {
+        runTest {
             store.states
                 .withIndex()
                 .onEach { (index, state) ->
@@ -199,7 +199,7 @@ class HackerNewsListStoreTest {
 
     @Test
     fun `should sort the stories according to new sorting condition`() {
-        runBlockingTest {
+        runTest {
             store.states
                 .withIndex()
                 .onEach { (index, state) ->
@@ -245,7 +245,7 @@ class HackerNewsListStoreTest {
 
     @Test
     fun `should sort the stories according to the current sorting condition`() {
-        runBlockingTest {
+        runTest {
             store.states
                 .withIndex()
                 .onEach { (index, state) ->

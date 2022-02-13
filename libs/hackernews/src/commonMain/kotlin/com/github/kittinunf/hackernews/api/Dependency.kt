@@ -6,7 +6,7 @@ import com.github.kittinunf.hackernews.network.addBaseUrl
 import com.github.kittinunf.hackernews.network.addHackerNewsJsonSerializer
 import com.github.kittinunf.hackernews.network.addLogging
 
-object HackerNewsDependency {
+object Dependency {
 
     val networkModule = NetworkModule(HttpClient {
         addBaseUrl("https://hacker-news.firebaseio.com/")

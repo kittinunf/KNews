@@ -8,6 +8,7 @@ import com.github.kittinunf.hackernews.api.common.toData
 import com.github.kittinunf.hackernews.repository.HackerNewsRepository
 import com.github.kittinunf.result.Result
 import io.ktor.http.Url
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlin.time.ExperimentalTime
 
@@ -67,10 +68,8 @@ internal fun LoadStoryCommentsResultReducer() = reducer { currentState: DetailUi
     currentState.copy(comments = action.result.toData())
 }
 
-internal class DetailEnvironment(val scope: CoroutineScope, val repository: HackerNewsRepository)
-
 @Suppress("FunctionName")
-internal fun DetailStore(initialState: DetailUiState = DetailUiState(), scope: CoroutineScope, environment: DetailEnvironment): Store<DetailUiState> {
+internal fun DetailStore(initialState: DetailUiState = DetailUiState(), scope: CoroutineScope, dispatcher: CoroutineDispatcher, repository: HackerNewsRepository): Store<DetailUiState> {
     return Store(
         scope = scope,
         initialState = initialState,
@@ -82,8 +81,8 @@ internal fun DetailStore(initialState: DetailUiState = DetailUiState(), scope: C
             LoadStoryCommentsResultReducer(),
         ),
         middlewares = mapOf(
-            LoadStoryEffect(environment, ::detailUiStoryStateMapper),
-            LoadStoryCommentsEffect(environment, ::detailUiCommentRowStateMapper)
+            LoadStoryEffect(scope, dispatcher, repository, ::detailUiStoryStateMapper),
+            LoadStoryCommentsEffect(scope, dispatcher, repository, ::detailUiCommentRowStateMapper)
         )
     )
 }

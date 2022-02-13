@@ -3,11 +3,12 @@ package com.github.kittinunf.hackernews.api.list
 import com.github.kittinunf.hackernews.api.NativeViewModel
 import com.github.kittinunf.hackernews.repository.HackerNewsRepositoryImpl
 import com.github.kittinunf.hackernews.repository.HackerNewsService
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class HackerNewsListViewModel(private val service: HackerNewsService) : NativeViewModel() {
 
-    private val store by lazy { ListStore(scope, ListEnvironment(scope, HackerNewsRepositoryImpl(service))) }
+    private val store by lazy { ListStore(scope = scope, dispatcher = defaultDispatchers, repository = HackerNewsRepositoryImpl(service)) }
 
     @Suppress("Unused")
     val currentState

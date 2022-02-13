@@ -77,8 +77,8 @@ dependencies {
     implementation(AndroidX.composeMaterial)
     implementation(AndroidX.composeTooling)
     implementation(AndroidX.composeUi)
-    implementation(AndroidX.lifeCycleViewModelCompose)
 
     // lifecycle
     implementation(AndroidX.lifeCycleViewModel)
+    implementation(AndroidX.lifeCycleViewModelCompose)
 }

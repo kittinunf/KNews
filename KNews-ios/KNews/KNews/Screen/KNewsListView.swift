@@ -71,7 +71,7 @@ struct StoryListView : View {
                     NavigationLink(
                         destination: KNewsDetailView(
                             state: DetailUiState(id: rowState.id, title: rowState.title, url: $0, commentIds: rowState.commentIds, descendants: rowState.descendants),
-                            service: HackerNewsServiceImpl(api: HackerNewsDependency().networkModule)
+                            service: HackerNewsServiceImpl(api: Dependency.shared.networkModule)
                         )
                     ) {
                         StoryRowView(state: rowState)

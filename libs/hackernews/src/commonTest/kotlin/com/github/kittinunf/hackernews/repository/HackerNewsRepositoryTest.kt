@@ -3,8 +3,8 @@ package com.github.kittinunf.hackernews.repository
 import com.github.kittinunf.hackernews.model.Comment
 import com.github.kittinunf.hackernews.model.Story
 import com.github.kittinunf.result.Result
-import com.github.kittinunf.hackernews.util.runBlockingTest
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -17,160 +17,176 @@ class HackerNewsRepositoryTest {
 
     @Test
     fun `should return a story`() {
-        val result = runBlockingTest {
-            repository.getStory(1)
-        }
+        runTest {
+            val result = repository.getStory(1)
 
-        assertTrue(result is Result.Success)
-        val story = result.get()
-        assertEquals(1, story.id)
-        assertEquals("Story1", story.title)
-        assertEquals("http://1.com", story.url)
+            assertTrue(result is Result.Success)
+
+            val story = result.get()
+            assertEquals(1, story.id)
+            assertEquals("Story1", story.title)
+            assertEquals("http://1.com", story.url)
+        }
     }
 
     @Test
     fun `should not return a story`() {
-        val result = runBlockingTest {
-            repository.getStory(1000)
-        }
+        runTest {
+            val result = repository.getStory(1000)
 
-        assertTrue(result is Result.Failure)
+            assertTrue(result is Result.Failure)
+        }
     }
 
     @Test
     fun `should return a comment`() {
-        val result = runBlockingTest {
-            repository.getComment(1)
-        }
+        runTest {
+            val result = repository.getComment(1)
 
-        assertTrue(result is Result.Success)
-        val comment = result.get()
-        assertEquals(1, comment.id)
-        assertEquals(11, comment.parent)
-        assertEquals("Comment1", comment.text)
+            assertTrue(result is Result.Success)
+            val comment = result.get()
+            assertEquals(1, comment.id)
+            assertEquals(11, comment.parent)
+            assertEquals("Comment1", comment.text)
+        }
     }
 
     @Test
     fun `should not return a comment`() {
-        val result = runBlockingTest {
-            repository.getStory(1000)
-        }
+        runTest {
+            val result = repository.getStory(1000)
 
-        assertTrue(result is Result.Failure)
+            assertTrue(result is Result.Failure)
+        }
     }
 
     @Test
     fun `should return top stories in a consumable format with page`() {
-        val result = runBlockingTest { repository.getTopStories(1) }
-        assertTrue(result is Result.Success)
+        runTest {
+            val result = repository.getTopStories(1)
+            assertTrue(result is Result.Success)
 
-        val stories1 = result.get()
+            val stories1 = result.get()
 
-        val anotherResult = runBlockingTest { repository.getTopStories(2) }
-        assertTrue(anotherResult is Result.Success)
+            val anotherResult = repository.getTopStories(2)
+            assertTrue(anotherResult is Result.Success)
 
-        val stories2 = anotherResult.get()
+            val stories2 = anotherResult.get()
 
-        assertNotNull(stories1)
-        assertNotNull(stories2)
+            assertNotNull(stories1)
+            assertNotNull(stories2)
 
-        stories1.forEachIndexed { index, story ->
-            assertEquals(index + 1, story.id)
-            assertEquals(index + 101, story.time)
-        }
-        stories2.forEachIndexed { index, story ->
-            assertEquals(index + 6, story.id)
-            assertEquals(index + 106, story.time)
+            stories1.forEachIndexed { index, story ->
+                assertEquals(index + 1, story.id)
+                assertEquals(index + 101, story.time)
+            }
+            stories2.forEachIndexed { index, story ->
+                assertEquals(index + 6, story.id)
+                assertEquals(index + 106, story.time)
+            }
         }
     }
 
     @Test
     fun `should return null top stories if the page is over the available items`() {
-        val result = runBlockingTest { repository.getTopStories(3) }
+        runTest {
+            val result = repository.getTopStories(3)
 
-        assertTrue(result is Result.Success)
+            assertTrue(result is Result.Success)
 
-        val stories = result.get()
+            val stories = result.get()
 
-        assertNull(stories)
+            assertNull(stories)
+        }
     }
 
     @Test
     fun `should return failure if the top stories is failure to fetch`() {
         val repository = HackerNewsRepositoryImpl(HackerNewsTopStoriesFailureMockService())
 
-        val result = runBlockingTest { repository.getTopStories(1) }
+        runTest {
+            val result = repository.getTopStories(1)
 
-        assertTrue(result is Result.Failure)
-        assertTrue(result.error is NotImplementedError)
+            assertTrue(result is Result.Failure)
+            assertTrue(result.error is NotImplementedError)
+        }
     }
 
     @Test
     fun `should return failure if the individual story is failure to fetch`() {
         val repository = HackerNewsRepositoryImpl(HackerNewsStoryFailureMockService())
 
-        val result = runBlockingTest { repository.getTopStories(1) }
-
-        assertTrue(result is Result.Failure)
+        runTest {
+            val result = repository.getTopStories(1)
+            assertTrue(result is Result.Failure)
+        }
     }
 
     @Test
     fun `should return comments of a story`() {
         val repository = HackerNewsRepositoryImpl(HackerNewsSuccessfulMockService(((1..10).toList())))
 
-        val result = runBlockingTest { repository.getStoryComments(1) }
+        runTest {
+            val result = repository.getStoryComments(1)
 
-        assertTrue(result is Result.Success)
+            assertTrue(result is Result.Success)
 
-        val (value, _) = result
-        assertNotNull(value)
-        assertEquals(11, value[0].id)
-        assertEquals("Comment11", value[0].text)
-        assertEquals(21, value[1].id)
-        assertEquals(221, value[1].time)
-        assertEquals(31, value[2].id)
+            val (value, _) = result
+            assertNotNull(value)
+            assertEquals(11, value[0].id)
+            assertEquals("Comment11", value[0].text)
+            assertEquals(21, value[1].id)
+            assertEquals(221, value[1].time)
+            assertEquals(31, value[2].id)
+        }
     }
 
     @Test
     fun `should return comments of a story with a list of ids`() {
         val repository = HackerNewsRepositoryImpl(HackerNewsSuccessfulMockService(((1..10).toList())))
 
-        val result = runBlockingTest { repository.getComments(listOf(11, 21, 31)) }
+        runTest {
+            val result = repository.getComments(listOf(11, 21, 31))
 
-        assertTrue(result is Result.Success)
+            assertTrue(result is Result.Success)
 
-        val (value, _) = result
-        assertNotNull(value)
+            val (value, _) = result
+            assertNotNull(value)
 
-        assertEquals(11, value[0].id)
-        assertEquals("Comment11", value[0].text)
-        assertEquals(21, value[1].id)
-        assertEquals(221, value[1].time)
-        assertEquals(31, value[2].id)
+            assertEquals(11, value[0].id)
+            assertEquals("Comment11", value[0].text)
+            assertEquals(21, value[1].id)
+            assertEquals(221, value[1].time)
+            assertEquals(31, value[2].id)
+        }
     }
 
     @Test
     fun `should return null comments of a story without the comments`() {
         val repository = HackerNewsRepositoryImpl(HackerNewsSuccessfulMockService(((1..10).toList())))
 
-        val result = runBlockingTest { repository.getStoryComments(100) }
+        runTest {
+            val result = repository.getStoryComments(100)
 
-        assertTrue(result is Result.Success)
+            assertTrue(result is Result.Success)
 
-        val (value, _) = result
-        assertNull(value)
+            val (value, _) = result
+            assertNull(value)
+        }
     }
 
     @Test
     fun `should return failure if the individual comment is not found`() {
         val repository = HackerNewsRepositoryImpl(HackerNewsSuccessfulMockService(((1..10).toList())))
 
-        val result = runBlockingTest { repository.getStoryComments(101) }
+        runTest {
+            val result = repository.getStoryComments(101)
 
-        assertTrue(result is Result.Failure)
+            assertTrue(result is Result.Failure)
 
-        val (_, error) = result
-        assertNotNull(error)
+            val (_, error) = result
+            assertNotNull(error)
+        }
     }
 }
 
@@ -227,6 +243,7 @@ class HackerNewsSuccessfulMockService(private val list: List<Int>, private val w
 }
 
 // 1*10 + 1 = 11, 21, 31 | 12, 22, 32
-internal fun createRandomStory(id: Int) = Story(id, "Story$id", "http://$id.com", 100 * id, "Ann$id", 100 + id, (1..3).map { id + 10 * it }, 10)
+internal fun createRandomStory(id: Int) =
+    Story(id, "Story$id", "http://$id.com", 100 * id, "Ann$id", 100 + id, (1..3).map { id + 10 * it }, 10)
 
 internal fun createRandomComment(id: Int) = Comment(id, 10 + id, "Comment$id", "Ann$id", 200 + id, (0 until 3).map { id + 10 * it })

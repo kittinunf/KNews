@@ -25,7 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.github.kittinunf.app.knews.screen.KNewsDetailScreen
 import com.github.kittinunf.app.knews.screen.KNewsListScreen
 import com.github.kittinunf.app.knews.ui.theme.KNewsColor
-import com.github.kittinunf.hackernews.api.HackerNewsDependency
+import com.github.kittinunf.hackernews.api.Dependency
 import com.github.kittinunf.hackernews.api.detail.DetailUiState
 import com.github.kittinunf.hackernews.repository.HackerNewsServiceImpl
 import io.ktor.http.Url
@@ -38,7 +38,7 @@ sealed class NavigationState {
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MainScaffold() {
-    val service = HackerNewsServiceImpl(HackerNewsDependency.networkModule)
+    val service = HackerNewsServiceImpl(Dependency.networkModule)
 
     var navigationState by remember { mutableStateOf<NavigationState>(NavigationState.ListScreen) }
     var isSortButtonSelected by remember { mutableStateOf(false) }
