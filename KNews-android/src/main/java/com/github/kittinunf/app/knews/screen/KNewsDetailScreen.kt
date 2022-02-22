@@ -35,21 +35,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.kittinunf.app.knews.ui.theme.typography
 import com.github.kittinunf.hackernews.api.Data
 import com.github.kittinunf.hackernews.api.detail.DetailUiCommentRowState
-import com.github.kittinunf.hackernews.api.detail.DetailUiState
 import com.github.kittinunf.hackernews.api.detail.DetailUiStoryState
 import com.github.kittinunf.hackernews.api.detail.HackerNewsDetailViewModel
-import com.github.kittinunf.hackernews.api.detail.HackerNewsDetailViewModelFactory
-import com.github.kittinunf.hackernews.repository.HackerNewsService
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun KNewsDetailScreen(detailUiState: DetailUiState, service: HackerNewsService) {
-    val viewModel = viewModel<HackerNewsDetailViewModel>(factory = HackerNewsDetailViewModelFactory(service))
-    val states by viewModel.states.collectAsState(rememberCoroutineScope().coroutineContext)
+fun KNewsDetailScreen(viewModel: HackerNewsDetailViewModel) {
+    val states by viewModel.states.collectAsState()
 
     // action
     LaunchedEffect(Unit) {
@@ -58,17 +53,6 @@ fun KNewsDetailScreen(detailUiState: DetailUiState, service: HackerNewsService) 
     }
 
     // handle UI
-    when (val story = detailUiState.story) {
-        is Data.Success -> viewModel.setInitialStory(story.value ?: error("No story"))
-        is Data.Failure -> {
-            ErrorComponent {
-                viewModel.loadStory()
-                viewModel.loadStoryComments()
-            }
-        }
-        else -> {}
-    }
-
     BackdropScaffold(appBar = {},
         scaffoldState = rememberBackdropScaffoldState(BackdropValue.Revealed),
         frontLayerScrimColor = Color.Transparent,
@@ -89,7 +73,11 @@ fun KNewsDetailScreen(detailUiState: DetailUiState, service: HackerNewsService) 
             val bottomSheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 0.dp, bottomEnd = 0.dp)
             Surface(modifier = Modifier.fillMaxSize(), color = Color.White, shape = bottomSheetShape) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Icon(modifier = Modifier.align(Alignment.CenterHorizontally), imageVector = Icons.Default.KeyboardArrowUp, contentDescription = null)
+                    Icon(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        imageVector = Icons.Default.KeyboardArrowUp,
+                        contentDescription = null
+                    )
 
                     when (val comments = states.comments) {
                         is Data.Loading -> LoadingComponent()

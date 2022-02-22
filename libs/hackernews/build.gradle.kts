@@ -67,8 +67,6 @@ kotlin {
             dependencies {
                 implementation(Ktor.android)
                 implementation(Ktor.okttp)
-
-                implementation(AndroidX.lifeCycleViewModel)
             }
         }
 

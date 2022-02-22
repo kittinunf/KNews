@@ -4,14 +4,15 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 
-actual open class NativeViewModel actual constructor() {
+actual open class ViewModel {
 
     private val job = SupervisorJob()
-    actual val scope: CoroutineScope = CoroutineScope(job + Dispatchers.Main)
+    actual open val scope: CoroutineScope = CoroutineScope(job + Dispatchers.Main)
     actual val defaultDispatchers: CoroutineDispatcher = Dispatchers.Main
 
     actual fun cancel() {
-        job.cancel()
+        scope.cancel()
     }
 }

@@ -1,26 +1,27 @@
 package com.github.kittinunf.hackernews.api.detail
 
-import com.github.kittinunf.hackernews.api.NativeViewModel
+import com.github.kittinunf.hackernews.api.ViewModel
 import com.github.kittinunf.hackernews.repository.HackerNewsRepositoryImpl
 import com.github.kittinunf.hackernews.repository.HackerNewsService
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-class HackerNewsDetailViewModel(private val service: HackerNewsService) : NativeViewModel() {
+class HackerNewsDetailViewModel(state: DetailUiState, override val scope: CoroutineScope, private val service: HackerNewsService) : ViewModel() {
 
-    private val store by lazy { DetailStore(scope = scope, dispatcher = defaultDispatchers, repository = HackerNewsRepositoryImpl(service)) }
+    private val store by lazy {
+        DetailStore(
+            initialState = state,
+            scope = scope,
+            dispatcher = defaultDispatchers,
+            repository = HackerNewsRepositoryImpl(service)
+        )
+    }
 
     @Suppress("Unused")
     val currentState
         get() = store.currentState
 
     val states = store.states
-
-    fun setInitialStory(state: DetailUiStoryState) {
-        scope.launch {
-            store.dispatch(SetInitialStory(state))
-        }
-    }
 
     fun loadStory() {
         scope.launch {

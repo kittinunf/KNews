@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -27,18 +28,22 @@ import com.github.kittinunf.app.knews.screen.KNewsListScreen
 import com.github.kittinunf.app.knews.ui.theme.KNewsColor
 import com.github.kittinunf.hackernews.api.Dependency
 import com.github.kittinunf.hackernews.api.detail.DetailUiState
+import com.github.kittinunf.hackernews.api.detail.HackerNewsDetailViewModel
+import com.github.kittinunf.hackernews.api.list.HackerNewsListViewModel
 import com.github.kittinunf.hackernews.repository.HackerNewsServiceImpl
 import io.ktor.http.Url
 
 sealed class NavigationState {
     object ListScreen : NavigationState()
-    data class DetailScreen(val id: Int, val title: String, val url: Url, val commentIds: List<Int>? = null, val descendants: Int? = null) : NavigationState()
+    data class DetailScreen(val id: Int, val title: String, val url: Url, val commentIds: List<Int>? = null, val descendants: Int? = null) :
+        NavigationState()
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MainScaffold() {
     val service = HackerNewsServiceImpl(Dependency.networkModule)
+    val listViewModel = HackerNewsListViewModel(rememberCoroutineScope(), service)
 
     var navigationState by remember { mutableStateOf<NavigationState>(NavigationState.ListScreen) }
     var isSortButtonSelected by remember { mutableStateOf(false) }
@@ -74,32 +79,29 @@ fun MainScaffold() {
                 when (val navigation = it) {
                     NavigationState.ListScreen -> {
                         KNewsListScreen(
+                            viewModel = listViewModel,
                             isSortSelected = isSortButtonSelected,
                             scrollState = scrollState,
                             onSortSelected = {
                                 isSortButtonSelected = !isSortButtonSelected
-                            },
-                            onStoryClick = { state ->
-                                val url = state.url
-                                if (url == null) {
-                                    Toast.makeText(context, "You can't open story without url", Toast.LENGTH_SHORT).show()
-                                } else {
-                                    navigationState = NavigationState.DetailScreen(state.id, state.title, url, state.commentIds, state.descendants)
-                                }
-                            },
-                            service = service
-                        )
+                            }
+                        ) { state ->
+                            val url = state.url
+                            if (url == null) {
+                                Toast.makeText(context, "You can't open story without url", Toast.LENGTH_SHORT).show()
+                            } else {
+                                navigationState =
+                                    NavigationState.DetailScreen(state.id, state.title, url, state.commentIds, state.descendants)
+                            }
+                        }
                     }
                     is NavigationState.DetailScreen -> {
                         KNewsDetailScreen(
-                            detailUiState = DetailUiState(
-                                navigation.id,
-                                navigation.title,
-                                navigation.url,
-                                navigation.commentIds,
-                                navigation.descendants
-                            ),
-                            service = service
+                            viewModel = HackerNewsDetailViewModel(
+                                DetailUiState(storyId = navigation.id),
+                                rememberCoroutineScope(),
+                                service
+                            )
                         )
                     }
                 }

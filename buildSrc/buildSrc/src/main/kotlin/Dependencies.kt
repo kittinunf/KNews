@@ -42,10 +42,6 @@ object AndroidX {
     const val composeMaterial = "androidx.compose.material:material:${Versions.compose}"
     const val composeTooling = "androidx.compose.ui:ui-tooling:${Versions.compose}"
     const val composeUi = "androidx.compose.ui:ui:${Versions.compose}"
-
-    // Lifecycle
-    const val lifeCycleViewModel = "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifeCycle}"
-    const val lifeCycleViewModelCompose = "androidx.lifecycle:lifecycle-viewmodel-compose:${Versions.lifeCycle}"
 }
 
 object Coroutines {

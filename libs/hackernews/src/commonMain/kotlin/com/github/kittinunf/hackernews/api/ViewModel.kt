@@ -3,9 +3,9 @@ package com.github.kittinunf.hackernews.api
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 
-expect open class NativeViewModel() {
+expect open class ViewModel() {
 
-    val scope: CoroutineScope
+    open val scope: CoroutineScope
     val defaultDispatchers: CoroutineDispatcher
 
     fun cancel()

@@ -44,22 +44,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.kittinunf.app.knews.ui.theme.typography
 import com.github.kittinunf.hackernews.api.Data
 import com.github.kittinunf.hackernews.api.list.HackerNewsListViewModel
-import com.github.kittinunf.hackernews.api.list.HackerNewsListViewModelFactory
 import com.github.kittinunf.hackernews.api.list.ListUiRowState
 import com.github.kittinunf.hackernews.api.list.ListUiSortCondition
-import com.github.kittinunf.hackernews.repository.HackerNewsService
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshState
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun KNewsListScreen(isSortSelected: Boolean, scrollState: LazyListState, onSortSelected: () -> Unit, onStoryClick: (ListUiRowState) -> Unit, service: HackerNewsService) {
-    val viewModel = viewModel<HackerNewsListViewModel>(factory = HackerNewsListViewModelFactory(service))
-    val states by viewModel.states.collectAsState(rememberCoroutineScope().coroutineContext)
+fun KNewsListScreen(
+    viewModel: HackerNewsListViewModel,
+    isSortSelected: Boolean,
+    scrollState: LazyListState,
+    onSortSelected: () -> Unit,
+    onStoryClick: (ListUiRowState) -> Unit
+) {
+    val states by viewModel.states.collectAsState()
 
     // action
     LaunchedEffect(Unit) {
@@ -116,14 +118,21 @@ fun KNewsListScreen(isSortSelected: Boolean, scrollState: LazyListState, onSortS
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun SortOverlayComponent(selected: Boolean, currentSortingCondition: ListUiSortCondition, onSortConditionSelected: (ListUiSortCondition) -> Unit, content: @Composable () -> Unit) {
+fun SortOverlayComponent(
+    selected: Boolean,
+    currentSortingCondition: ListUiSortCondition,
+    onSortConditionSelected: (ListUiSortCondition) -> Unit,
+    content: @Composable () -> Unit
+) {
     Box {
         content()
         // it has to be on top of the content provided
         AnimatedVisibility(visible = selected) {
-            Column(modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White), verticalArrangement = Arrangement.Center) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White), verticalArrangement = Arrangement.Center
+            ) {
                 ListUiSortCondition.values().forEach { sortCondition ->
                     SortOverlayItemComponent(text = sortCondition.name, selected = currentSortingCondition == sortCondition) {
                         onSortConditionSelected(sortCondition)
@@ -136,16 +145,18 @@ fun SortOverlayComponent(selected: Boolean, currentSortingCondition: ListUiSortC
 
 @Composable
 fun SortOverlayItemComponent(text: String, selected: Boolean, onClick: () -> Unit = {}) {
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .height(48.dp)
-        .clickable { onClick() },
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp)
+            .clickable { onClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (selected) {
             Icon(modifier = Modifier.padding(8.dp), imageVector = Icons.Default.Check, contentDescription = null)
         }
-        Text(modifier = Modifier.padding(8.dp),
+        Text(
+            modifier = Modifier.padding(8.dp),
             text = text,
             style = typography.subtitle1.copy(background = Color.White),
             maxLines = 1
@@ -168,7 +179,8 @@ fun StoryListComponent(
     SwipeRefresh(state = swipeRefreshState, onRefresh = { onReload() }) {
         LazyColumn(state = scrollState) {
             itemsIndexed(items = rowStates, key = { _, rowState -> rowState.id }, itemContent = { index, rowState ->
-                Card(shape = RoundedCornerShape(8.dp),
+                Card(
+                    shape = RoundedCornerShape(8.dp),
                     backgroundColor = Color.White,
                     modifier = Modifier.padding(8.dp)
                 ) {
@@ -186,12 +198,16 @@ fun StoryListComponent(
                             }
                         )
 
-                        Row(modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp), horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
                             IconAndTextComponent(image = Icons.Default.Star, text = rowState.score.toString())
-                            IconAndTextComponent(image = Icons.Default.Person, text = (rowState.commentIds?.size
-                                ?: 0).toString())
+                            IconAndTextComponent(
+                                image = Icons.Default.Person, text = (rowState.commentIds?.size
+                                    ?: 0).toString()
+                            )
                         }
                     }
                 }
@@ -215,7 +231,11 @@ fun IconAndTextComponent(modifier: Modifier = Modifier, image: ImageVector, text
 
 @Composable
 fun LoadingComponent() {
-    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         CircularProgressIndicator(modifier = Modifier.wrapContentWidth(Alignment.CenterHorizontally))
     }
 }

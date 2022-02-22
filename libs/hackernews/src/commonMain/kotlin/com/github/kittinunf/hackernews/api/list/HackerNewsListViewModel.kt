@@ -1,12 +1,12 @@
 package com.github.kittinunf.hackernews.api.list
 
-import com.github.kittinunf.hackernews.api.NativeViewModel
+import com.github.kittinunf.hackernews.api.ViewModel
 import com.github.kittinunf.hackernews.repository.HackerNewsRepositoryImpl
 import com.github.kittinunf.hackernews.repository.HackerNewsService
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-class HackerNewsListViewModel(private val service: HackerNewsService) : NativeViewModel() {
+class HackerNewsListViewModel(override val scope: CoroutineScope, private val service: HackerNewsService) : ViewModel() {
 
     private val store by lazy { ListStore(scope = scope, dispatcher = defaultDispatchers, repository = HackerNewsRepositoryImpl(service)) }
 
