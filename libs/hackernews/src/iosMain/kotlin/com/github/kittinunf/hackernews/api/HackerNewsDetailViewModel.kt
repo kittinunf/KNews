@@ -7,5 +7,5 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 
-fun HackerNewsDetailViewModel(state: DetailUiState, service: HackerNewsService) =
+fun HackerNewsDetailViewModel.Companion.create(state: DetailUiState, service: HackerNewsService) =
     HackerNewsDetailViewModel(state, CoroutineScope(SupervisorJob() + Dispatchers.Main), service)

@@ -10,8 +10,8 @@ class HackerNewsDetailViewModelWrapper: ObservableObject {
 
     private var cancellable: AnyCancellable?
 
-    init(service: HackerNewsService) {
-        viewModel = HackerNewsDetailViewModel(service: service)
+    init(initialState: DetailUiState, service: HackerNewsService) {
+        viewModel = HackerNewsDetailViewModel.Companion().create(state: initialState, service: service)
         
         state = viewModel.currentState
 

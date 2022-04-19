@@ -6,7 +6,10 @@ import com.github.kittinunf.hackernews.repository.HackerNewsService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-class HackerNewsDetailViewModel(state: DetailUiState, override val scope: CoroutineScope, private val service: HackerNewsService) : ViewModel() {
+class HackerNewsDetailViewModel(state: DetailUiState, override val scope: CoroutineScope, private val service: HackerNewsService) :
+    ViewModel() {
+
+    companion object {}
 
     private val store by lazy {
         DetailStore(

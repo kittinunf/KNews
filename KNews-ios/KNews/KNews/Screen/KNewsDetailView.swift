@@ -12,7 +12,7 @@ struct KNewsDetailView: View {
 
     init(state: DetailUiState, service: HackerNewsService) {
         self.state = state
-        self.viewModel = HackerNewsDetailViewModelWrapper(service: service)
+        self.viewModel = HackerNewsDetailViewModelWrapper(initialState: state, service: service)
     }
     
     var body: some View {
@@ -39,11 +39,7 @@ struct KNewsDetailView: View {
         }
         .navigationBarTitle(Text(state.story.get()!.title))
         .onAppear {
-            if (state.story.isSuccess) {
-                viewModel.setInitialStory(state: state.story.get()!)
-            } else {
-                viewModel.loadStory()
-            }
+            viewModel.loadStory()
             viewModel.loadStoryComments()
         }
     }
