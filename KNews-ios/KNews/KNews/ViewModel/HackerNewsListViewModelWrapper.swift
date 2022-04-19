@@ -11,7 +11,7 @@ class HackerNewsListViewModelWrapper: ObservableObject {
     private var cancellable: AnyCancellable?
 
     init(service: HackerNewsService) {
-        viewModel = HackerNewsListViewModel(service: service)
+        viewModel = HackerNewsListViewModel(scope: , service: service)
 
         state = viewModel.currentState 
 

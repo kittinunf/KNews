@@ -19,11 +19,7 @@ class HackerNewsDetailViewModelWrapper: ObservableObject {
             .toAnyPublisher()
             .assign(to: \.state, on: self)
     }
-
-    func setInitialStory(state: DetailUiStoryState) {
-        viewModel.setInitialStory(state: state)
-    }
-
+    
     func loadStory() {
         viewModel.loadStory()
     }

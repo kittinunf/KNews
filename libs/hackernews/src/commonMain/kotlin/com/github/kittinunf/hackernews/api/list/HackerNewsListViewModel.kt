@@ -4,6 +4,8 @@ import com.github.kittinunf.hackernews.api.ViewModel
 import com.github.kittinunf.hackernews.repository.HackerNewsRepositoryImpl
 import com.github.kittinunf.hackernews.repository.HackerNewsService
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
 class HackerNewsListViewModel(override val scope: CoroutineScope, private val service: HackerNewsService) : ViewModel() {

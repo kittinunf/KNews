@@ -1,5 +1,6 @@
 package com.github.kittinunf.app.knews
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
@@ -39,6 +40,7 @@ sealed class NavigationState {
         NavigationState()
 }
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MainScaffold() {

@@ -29,8 +29,7 @@ object AndroidX {
 
     object Versions {
         const val core = "1.7.0"
-        const val lifeCycle = "2.4.1"
-        const val compose = "1.1.0"
+        const val compose = "1.2.0-alpha07"
         const val composeActivity = "1.4.0"
     }
 
