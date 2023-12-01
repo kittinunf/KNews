@@ -1,4 +1,4 @@
-package com.github.kittinunf.app.knews.ui.theme
+package com.github.kittinunf.app.theme
 
 import androidx.compose.ui.graphics.Color
 

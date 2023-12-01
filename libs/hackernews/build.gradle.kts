@@ -7,10 +7,18 @@ plugins {
 }
 
 kotlin {
-    android()
+    androidTarget()
 
     val xcFramework = XCFramework("HackerNews")
-    ios {
+    iosX64 {
+        binaries {
+            framework {
+                baseName = "HackerNews"
+                xcFramework.add(this)
+            }
+        }
+    }
+    iosArm64 {
         binaries {
             framework {
                 baseName = "HackerNews"
@@ -37,13 +45,15 @@ kotlin {
             }
         }
 
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 api(CoRed.core)
 
                 implementation(Coroutines.core)
 
                 implementation(Ktor.core)
+                implementation(Ktor.content)
+                implementation(Ktor.json)
                 implementation(Ktor.logging)
                 implementation(Ktor.serialization)
 
@@ -54,7 +64,7 @@ kotlin {
             }
         }
 
-        val commonTest by getting {
+        commonTest {
             dependencies {
                 implementation(kotlin("test"))
                 implementation(Coroutines.test)
@@ -62,21 +72,30 @@ kotlin {
             }
         }
 
-        val androidMain by getting {
+        jvmMain {
             dependencies {
                 implementation(Ktor.android)
                 implementation(Ktor.okttp)
             }
         }
 
-        val androidTest by getting {
+        androidMain {
+            val jvmMain by getting
+            dependsOn(jvmMain)
+        }
+
+        val androidUnitTest by getting {
             dependencies {
             }
         }
 
-        val iosMain by getting {
+        iosMain {
             val iosSimulatorArm64Main by getting
+            val iosArm64Main by getting
+            val iosX64Main by getting
             iosSimulatorArm64Main.dependsOn(this)
+            iosArm64Main.dependsOn(this)
+            iosX64Main.dependsOn(this)
 
             dependencies {
                 implementation(Coroutines.core) {
@@ -84,12 +103,18 @@ kotlin {
                 }
                 implementation(Ktor.ios)
             }
+
+            val commonMain by getting
+            dependsOn(commonMain)
         }
     }
+
+    jvmToolchain(17)
 }
 
 android {
     compileSdk = Android.compileSdkVersion
+    namespace = "com.github.kittinunf.libs"
 
     sourceSets {
         getByName("main") {

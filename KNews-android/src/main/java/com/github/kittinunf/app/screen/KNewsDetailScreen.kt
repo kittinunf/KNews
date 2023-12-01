@@ -1,4 +1,4 @@
-package com.github.kittinunf.app.knews.screen
+package com.github.kittinunf.app.screen
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
@@ -29,13 +29,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.github.kittinunf.app.knews.ui.theme.typography
+import com.github.kittinunf.app.theme.typography
 import com.github.kittinunf.hackernews.api.Data
 import com.github.kittinunf.hackernews.api.detail.DetailUiCommentRowState
 import com.github.kittinunf.hackernews.api.detail.DetailUiStoryState

@@ -1,4 +1,4 @@
-package com.github.kittinunf.app.knews
+package com.github.kittinunf.app
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -6,7 +6,9 @@ import androidx.activity.compose.setContent
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.github.kittinunf.app.knews.ui.theme.KNewsTheme
+import com.github.kittinunf.app.theme.KNewsTheme
+import com.github.kittinunf.hackernews.api.Dependency
+import com.github.kittinunf.hackernews.repository.HackerNewsServiceImpl
 
 class MainActivity : ComponentActivity() {
 
@@ -16,12 +18,14 @@ class MainActivity : ComponentActivity() {
         setContent {
             KNewsTheme(windows = window) {
                 Surface {
-                    MainScaffold()
+                    MainScaffold(service)
                 }
             }
         }
     }
 }
+
+val service = HackerNewsServiceImpl(Dependency.networkModule)
 
 @Preview(showBackground = true)
 @Composable

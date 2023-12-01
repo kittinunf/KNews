@@ -9,7 +9,7 @@ import kotlinx.coroutines.cancel
 actual open class ViewModel {
 
     actual open val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-    actual val defaultDispatchers: CoroutineDispatcher = Dispatchers.Main
+    actual val defaultDispatchers: CoroutineDispatcher = Dispatchers.Default
 
     actual fun cancel() {
         scope.cancel()
