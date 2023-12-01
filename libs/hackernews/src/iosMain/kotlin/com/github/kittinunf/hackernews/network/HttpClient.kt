@@ -10,19 +10,19 @@ import platform.Foundation.NSURLSessionAuthChallengeUseCredential
 import platform.Foundation.credentialForTrust
 import platform.Foundation.serverTrust
 
-@OptIn(ExperimentalForeignApi::class)
-actual fun createHttpClient(clientConfig: HttpClientConfig<*>.() -> Unit): HttpClient = HttpClient(Darwin) {
-    engine {
-        handleChallenge { _, _, challenge, completionHandler ->
-            if (challenge.protectionSpace.serverTrust == null) completionHandler(
-                NSURLSessionAuthChallengeCancelAuthenticationChallenge,
-                null
-            )
-            else completionHandler(
-                NSURLSessionAuthChallengeUseCredential,
-                NSURLCredential.credentialForTrust(challenge.protectionSpace.serverTrust)
-            )
-        }
-    }
-    clientConfig(this)
-}
+//@OptIn(ExperimentalForeignApi::class)
+//actual fun createHttpClient(clientConfig: HttpClientConfig<*>.() -> Unit): HttpClient = HttpClient(Darwin) {
+//    engine {
+//        handleChallenge { _, _, challenge, completionHandler ->
+//            if (challenge.protectionSpace.serverTrust == null) completionHandler(
+//                NSURLSessionAuthChallengeCancelAuthenticationChallenge,
+//                null
+//            )
+//            else completionHandler(
+//                NSURLSessionAuthChallengeUseCredential,
+//                NSURLCredential.credentialForTrust(challenge.protectionSpace.serverTrust)
+//            )
+//        }
+//    }
+//    clientConfig(this)
+//}

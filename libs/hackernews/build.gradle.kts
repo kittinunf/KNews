@@ -91,7 +91,11 @@ kotlin {
 
         iosMain {
             val iosSimulatorArm64Main by getting
+            val iosArm64Main by getting
+            val iosX64Main by getting
             iosSimulatorArm64Main.dependsOn(this)
+            iosArm64Main.dependsOn(this)
+            iosX64Main.dependsOn(this)
 
             dependencies {
                 implementation(Coroutines.core) {
@@ -99,6 +103,9 @@ kotlin {
                 }
                 implementation(Ktor.ios)
             }
+
+            val commonMain by getting
+            dependsOn(commonMain)
         }
     }
 
