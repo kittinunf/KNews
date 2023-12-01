@@ -7,10 +7,18 @@ plugins {
 }
 
 kotlin {
-    android()
+    androidTarget()
 
     val xcFramework = XCFramework("HackerNews")
-    ios {
+    iosX64 {
+        binaries {
+            framework {
+                baseName = "HackerNews"
+                xcFramework.add(this)
+            }
+        }
+    }
+    iosArm64 {
         binaries {
             framework {
                 baseName = "HackerNews"
@@ -37,13 +45,15 @@ kotlin {
             }
         }
 
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 api(CoRed.core)
 
                 implementation(Coroutines.core)
 
                 implementation(Ktor.core)
+                implementation(Ktor.content)
+                implementation(Ktor.json)
                 implementation(Ktor.logging)
                 implementation(Ktor.serialization)
 
@@ -54,7 +64,7 @@ kotlin {
             }
         }
 
-        val commonTest by getting {
+        commonTest {
             dependencies {
                 implementation(kotlin("test"))
                 implementation(Coroutines.test)
@@ -62,19 +72,19 @@ kotlin {
             }
         }
 
-        val androidMain by getting {
+        androidMain {
             dependencies {
                 implementation(Ktor.android)
                 implementation(Ktor.okttp)
             }
         }
 
-        val androidTest by getting {
+        val androidUnitTest by getting {
             dependencies {
             }
         }
 
-        val iosMain by getting {
+        iosMain {
             val iosSimulatorArm64Main by getting
             iosSimulatorArm64Main.dependsOn(this)
 
@@ -86,10 +96,13 @@ kotlin {
             }
         }
     }
+
+    jvmToolchain(17)
 }
 
 android {
     compileSdk = Android.compileSdkVersion
+    namespace = "com.github.kittinunf.libs"
 
     sourceSets {
         getByName("main") {

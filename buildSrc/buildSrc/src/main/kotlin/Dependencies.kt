@@ -1,6 +1,6 @@
 object Kotlin {
 
-    private const val version = "1.6.10"
+    private const val version = "1.9.21"
 
     const val plugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"
     const val pluginSerialization = "org.jetbrains.kotlin:kotlin-serialization:$version"
@@ -9,16 +9,16 @@ object Kotlin {
 object Android {
 
     const val minSdkVersion = 24
-    const val targetSdkVersion = 31
-    const val compileSdkVersion = 31
+    const val targetSdkVersion = 34
+    const val compileSdkVersion = 34
 
-    private const val version = "7.1.1"
+    private const val version = "8.1.3"
     const val plugin = "com.android.tools.build:gradle:$version"
 
-    private const val materialVersion = "1.5.0"
+    private const val materialVersion = "1.10.0"
     const val material = "com.google.android.material:material:$materialVersion"
 
-    private const val accompanistVersion = "0.23.0"
+    private const val accompanistVersion = "0.32.0"
     const val accompanist = "com.google.accompanist:accompanist-swiperefresh:$accompanistVersion"
 
     private const val desugarJdkLibsVersion = "1.1.5"
@@ -28,9 +28,9 @@ object Android {
 object AndroidX {
 
     object Versions {
-        const val core = "1.7.0"
-        const val compose = "1.2.0-alpha07"
-        const val composeActivity = "1.4.0"
+        const val core = "1.12.0"
+        const val compose = "1.5.4"
+        const val composeActivity = "1.7.2"
     }
 
     // Core
@@ -45,7 +45,7 @@ object AndroidX {
 
 object Coroutines {
 
-    const val version = "1.6.0-native-mt"
+    const val version = "1.7.3"
 
     const val core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version"
     const val test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$version"
@@ -53,23 +53,25 @@ object Coroutines {
 
 object Serialization {
 
-    private const val version = "1.3.1"
+    private const val version = "1.6.1"
 
     const val json = "org.jetbrains.kotlinx:kotlinx-serialization-json:$version"
 }
 
 object Time {
 
-    private const val version = "0.3.2"
+    private const val version = "0.4.1"
 
     const val core = "org.jetbrains.kotlinx:kotlinx-datetime:$version"
 }
 
 object Ktor {
 
-    private const val version = "1.6.7"
+    private const val version = "2.3.6"
 
     const val core = "io.ktor:ktor-client-core:$version"
+    const val content = "io.ktor:ktor-client-content-negotiation:$version"
+    const val json = "io.ktor:ktor-serialization-kotlinx-json:$version"
 
     const val okttp = "io.ktor:ktor-client-okhttp:$version"
     const val android = "io.ktor:ktor-client-android:$version"

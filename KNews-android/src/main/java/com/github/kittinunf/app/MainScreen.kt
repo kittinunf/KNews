@@ -1,4 +1,4 @@
-package com.github.kittinunf.app.knews
+package com.github.kittinunf.app
 
 import android.annotation.SuppressLint
 import android.widget.Toast
@@ -24,9 +24,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.style.TextOverflow
-import com.github.kittinunf.app.knews.screen.KNewsDetailScreen
-import com.github.kittinunf.app.knews.screen.KNewsListScreen
-import com.github.kittinunf.app.knews.ui.theme.KNewsColor
+import com.github.kittinunf.app.screen.KNewsDetailScreen
+import com.github.kittinunf.app.screen.KNewsListScreen
+import com.github.kittinunf.app.theme.KNewsColor
 import com.github.kittinunf.hackernews.api.Dependency
 import com.github.kittinunf.hackernews.api.detail.DetailUiState
 import com.github.kittinunf.hackernews.api.detail.HackerNewsDetailViewModel
@@ -43,8 +43,7 @@ sealed class NavigationState {
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun MainScaffold() {
-    val service = HackerNewsServiceImpl(Dependency.networkModule)
+fun MainScaffold(service: HackerNewsServiceImpl) {
     val listViewModel = HackerNewsListViewModel(rememberCoroutineScope(), service)
 
     var navigationState by remember { mutableStateOf<NavigationState>(NavigationState.ListScreen) }

@@ -2,33 +2,35 @@ package com.github.kittinunf.hackernews.network
 
 import com.github.kittinunf.hackernews.model.hackerNewsSerializersModule
 import io.ktor.client.HttpClientConfig
-import io.ktor.client.features.defaultRequest
-import io.ktor.client.features.json.Json
-import io.ktor.client.features.json.serializer.KotlinxSerializer
-import io.ktor.client.features.logging.DEFAULT
-import io.ktor.client.features.logging.LogLevel
-import io.ktor.client.features.logging.Logger
-import io.ktor.client.features.logging.Logging
-import io.ktor.http.URLBuilder
-import kotlinx.serialization.json.Json as KotlinxSerializationJson
+import io.ktor.client.plugins.DefaultRequest
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.logging.DEFAULT
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.headers
+import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.json.Json
 
 internal fun HttpClientConfig<*>.addBaseUrl(urlString: String) {
-    defaultRequest {
-        URLBuilder(urlString).run {
-            url.protocol = protocol
-            url.host = host
+    install(DefaultRequest) {
+        host = urlString
+        headers {
+            set(HttpHeaders.ContentType, ContentType.Application.Json.contentSubtype)
         }
     }
 }
 
 internal fun HttpClientConfig<*>.addHackerNewsJsonSerializer() {
-    Json {
-        serializer = KotlinxSerializer(KotlinxSerializationJson {
-            serializersModule = hackerNewsSerializersModule
-            ignoreUnknownKeys = true
-            // this is a bug for Kotlinx Serialization 1.2.1, for more information please see https://github.com/Kotlin/kotlinx.serialization/issues/1450
-            useAlternativeNames = false
-        })
+    install(ContentNegotiation) {
+        json(
+            json = Json {
+                serializersModule = hackerNewsSerializersModule
+                ignoreUnknownKeys = true
+            }
+        )
     }
 }
 
