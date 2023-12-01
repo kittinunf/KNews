@@ -72,11 +72,16 @@ kotlin {
             }
         }
 
-        androidMain {
+        jvmMain {
             dependencies {
                 implementation(Ktor.android)
                 implementation(Ktor.okttp)
             }
+        }
+
+        androidMain {
+            val jvmMain by getting
+            dependsOn(jvmMain)
         }
 
         val androidUnitTest by getting {

@@ -16,7 +16,7 @@ import kotlinx.serialization.json.Json
 
 internal fun HttpClientConfig<*>.addBaseUrl(urlString: String) {
     install(DefaultRequest) {
-        host = urlString
+        url(urlString)
         headers {
             set(HttpHeaders.ContentType, ContentType.Application.Json.contentSubtype)
         }

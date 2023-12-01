@@ -17,7 +17,6 @@ interface HackerNewsService {
 class HackerNewsServiceImpl(private val api: NetworkModule) : HackerNewsService {
 
     companion object {
-        const val baseURL = "https://hacker-news.firebaseio.com"
         const val topStories = "topstories"
         const val item = "item"
     }
